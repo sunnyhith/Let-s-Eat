@@ -1,16 +1,14 @@
 {
-  "name": "letseat",
-  "version": "1.0.0",
-  "description": "Let's Eat! A web application for simplifying the process of collaborating and scheduling food outings while recommending restaurants based on the interests and dietary restrictions specified by the interested members",
-  "main": "server.js",
+  "name": "demo-express-html",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "start": "node server.js",
-    "deploy": "gcloud app deploy",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./bin/www"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "morgan": "~1.9.1"
   }
 }
