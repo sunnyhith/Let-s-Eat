@@ -2,6 +2,9 @@
 
 We are working on developing a web application for simplifying the process of collaborating and scheduling food outings while recommending restaurants based on the interests and dietary restrictions specified by the interested members
 
+<<<<<<< README.md
+We are working on developing a web application for simplifying the process of collaborating and scheduling food outings while recommending restaurants based on the interests and dietary restrictions specified by the interested members
+
 ### To launch in local
 
 run `npm install` in both the `./source/LetsEat` and `./source/LetsEat/client` directories separately, which will install all the npm packages for server and client(React frontend) respectively.
@@ -29,3 +32,5 @@ npm start
 # deploy commands
 
 ```
+=======
+>>>>>>> README.md
