@@ -1,25 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
+import Navbar from "./components/layout/Navbar";
+import Home from "./components/generic/Home";
+import CreateEvent from "./components/events/createEvent";
+import UserPreferences from "./components/preferences/userPreferences";
+import SignIn from "./components/auth/signIn";
+import SignUp from "./components/auth/signUp";
+import Post from "./components/preferences/Post";
+import Survey from "./components/preferences/Survey";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <div className="App">
+        <header className="App-header">
+          <Navbar />
+          <Switch>
+            <Route path="/" exact component={Home} />
+            <Route path="/create" component={CreateEvent} />
+            <Route path="/preferences" component={UserPreferences} />
+            <Route path="/signin" component={SignIn} />
+            <Route path="/signup" component={SignUp} />
+            <Route path="/survey" component={Survey} />
+            <Route path="/business/:post_id" component={Post} />
+          </Switch>
+        </header>
+      </div>
+    </BrowserRouter>
   );
 }
 
