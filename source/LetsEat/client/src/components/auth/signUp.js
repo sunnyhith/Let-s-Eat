@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import emailSignUp from "../../backend/account/emailSignUp";
+import signUpWithGoogle from "../../backend/account/googleSignUp";
 
 class SignUp extends Component {
   state = {
@@ -16,7 +18,8 @@ class SignUp extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    console.log(this.state);
+    emailSignUp();
+    console.log(this.state);    
   };
 
   render() {
@@ -44,6 +47,11 @@ class SignUp extends Component {
             <button className="btn red z-depth-0">Sign Up</button>
           </div>
         </form>
+        <div>
+          <button onClick={signUpWithGoogle} className="btn red z-depth-0">
+              Sign up using Google
+          </button>
+        </div>
       </div>
     );
   }
