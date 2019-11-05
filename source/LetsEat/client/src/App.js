@@ -6,6 +6,7 @@ import CreateEvent from "./components/events/createEvent";
 import UserPreferences from "./components/preferences/userPreferences";
 import SignIn from "./components/auth/signIn";
 import SignUp from "./components/auth/signUp";
+import reqPswReset from "./components/auth/forgetPsw";
 import Post from "./components/preferences/Post";
 import Survey from "./components/preferences/Survey";
 
