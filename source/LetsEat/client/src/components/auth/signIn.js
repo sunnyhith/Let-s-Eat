@@ -1,61 +1,134 @@
-import React, { Component } from "react";
-import emailSignIn from "../../backend/account/emailSignIn";
-import signInWithGoogle from "../../backend/account/googleSignIn";
-import signOut from "../../backend/account/signOut";
-import resetPsw from "../../backend/account/emailPswReset";
+import React from "react";
+import { Redirect, Link } from "react-router-dom";
+// core components
+import Parallax from "components/Parallax/Parallax.js";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import Icon from "@material-ui/core/Icon";
+import GridContainer from "components/Grid/GridContainer.js";
+import GridItem from "components/Grid/GridItem.js";
+import Card from "components/Card/Card.js";
+import CardBody from "components/Card/CardBody.js";
+import CardFooter from "components/Card/CardFooter.js";
+import Button from "components/CustomButtons/Button.js";
+import CustomInput from "components/CustomInput/CustomInput.js";
 
-class SignIn extends Component {
-  state = {
-    sign_in_email: "",
-    sign_in_psw: ""
-  };
+import { emailSignIn, signInWithGoogle} from './authUtil.js';
 
-  handleChange = e => {
-    this.setState({
-      [e.target.id]: e.target.value
-    });
-  };
+import { withStyles } from "@material-ui/core/styles";
+import styles from "assets/jss/layout/AuthStyle.js";
+import PropTypes from 'prop-types';
 
-  handleSubmit = e => {
-    e.preventDefault();
-    emailSignIn();
-    console.log(this.state);
-    console.log('Sign in successful');
-  };
+class SignIn extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
+  }
 
   render() {
+    //For styling
+    const { classes } = this.props;
+    
+    if (this.props.isLogedin) {
+      return (
+        <Redirect to="/"/>
+      );
+    }
+    else 
     return (
-      <div className="container">
-        <form onSubmit={this.handleSubmit} className="white">
-          <h4 className="grey-text text-darken-3">Sign In</h4>
-          <div className="input-field">
-            <label htmlFor="email">Email</label>
-            <input type="email" id="sign_in_email" onChange={this.handleChange} />
-          </div>
-          <div className="input-field">
-            <label htmlFor="password">Password</label>
-            <input type="password" id="sign_in_psw" onChange={this.handleChange} />
-          </div>
-          <div className="input-field">
-            <button className="btn red z-depth-0">Login</button>
-            &nbsp;&nbsp;&nbsp;
-          </div>
-        </form>
-
-        <button onClick={signInWithGoogle} className="btn red z-depth-0">
-              Sign in using Google
-        </button>
-        &nbsp;&nbsp;&nbsp;
-        <button onClick={signOut} className="btn red z-depth-0">
-            Sign out
-        </button>
-        &nbsp;&nbsp;&nbsp;
-        <button onClick={resetPsw} className="btn red z-depth-0">
-            Forget password
-        </button>
+      <div>
+      <Parallax image={require("assets/img/bkg.jpg")} >
+      <div className={classes.container}>
+        <GridContainer justify="flex-start">
+          <GridItem xs={12} sm={12} md={4}>
+            <Card>
+              <form className={classes.form}>
+                <p className={classes.divider}>Login with Email</p>
+                <CardBody className={classes.cardBody}>
+                  <CustomInput
+                    labelText="Email"
+                    id="sign_in_email"
+                    formControlProps={{
+                      fullWidth: true
+                    }}
+                    inputProps={{
+                      type: "email",
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Icon className={classes.inputIconsColor}>
+                            mail_outline
+                          </Icon>
+                        </InputAdornment>
+                      )
+                    }}
+                  />
+                  <CustomInput
+                    labelText="Password"
+                    id="sign_in_psw"
+                    formControlProps={{
+                      fullWidth: true
+                    }}
+                    inputProps={{
+                      type: "password",
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Icon className={classes.inputIconsColor}>
+                            lock_outline
+                          </Icon>
+                        </InputAdornment>
+                      ),
+                      autoComplete: "off"
+                    }}
+                  />
+                  <Button 
+                    simple
+                    color="info" 
+                    size="sm"
+                  >
+                    Forget Password?
+                  </Button>
+                  <Button 
+                    round
+                    color="info" 
+                    onClick={emailSignIn}
+                    className={classes.inlineButton}
+                  >
+                    Log In
+                  </Button>
+                  <Button 
+                    color="rose" 
+                    round
+                    className={classes.inlineButton}
+                    component={ Link } to="/signup"
+                  >
+                    Sign Up
+                  </Button>
+                  <p className={classes.divider}>or</p>
+                </CardBody>
+                <CardFooter className={classes.cardFooter}>
+                  <Button 
+                    simple
+                    color="google" 
+                    round
+                    onClick={signInWithGoogle}
+                  >
+                    <i className={ "fab fa-google"} />
+                    &nbsp; Login with Google
+                  </Button>
+                </CardFooter>
+              </form>
+            </Card>
+          </GridItem>
+        </GridContainer>
+      </div>
+      </Parallax>
       </div>
     );
   }
 }
 
-export default SignIn;
+SignIn.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles)(SignIn);

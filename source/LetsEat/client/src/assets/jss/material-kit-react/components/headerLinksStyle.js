@@ -36,12 +36,22 @@ const headerLinksStyle = theme => ({
   listItemText: {
     padding: "0 !important"
   },
+  brand: {
+    fontSize: "26px",
+    fontWeight: "500",
+    color: "inherit",
+    display: "inline-flex",
+    position: "relative",
+    "&:hover,&:focus": {
+      color: "inherit",
+    },
+  },
   navLink: {
     color: "inherit",
     position: "relative",
     padding: "0.9375rem",
     fontWeight: "400",
-    fontSize: "12px",
+    fontSize: "14px",
     textTransform: "uppercase",
     borderRadius: "3px",
     lineHeight: "20px",
@@ -62,6 +72,10 @@ const headerLinksStyle = theme => ({
         justifyContent: "flex-start"
       }
     }
+  },
+  navLogo: {
+    fontSize: "18px",
+    textAlign: "left"
   },
   notificationNavLink: {
     color: "inherit",
@@ -84,7 +98,17 @@ const headerLinksStyle = theme => ({
     lineHeight: "20px",
     textDecoration: "none",
     margin: "0px",
-    display: "inline-flex"
+    marginLeft: "12px",
+    display: "inline-flex",
+    [theme.breakpoints.down("sm")]: {
+      marginLeft: "15px",
+      marginBottom: "12px",
+      marginTop: "8px",
+      textAlign: "left",
+      "& > span:first-child": {
+        justifyContent: "flex-start"
+      }
+    }
   },
   navLinkActive: {
     color: "inherit",

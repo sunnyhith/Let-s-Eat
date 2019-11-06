@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import emailSignIn from "../../backend/account/emailSignIn";
 import signInWithGoogle from "../../backend/account/googleSignIn";
 import signOut from "../../backend/account/signOut";
 import resetPsw from "../../backend/account/emailPswReset";
@@ -20,7 +19,6 @@ class reqPswReset extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    emailSignIn();
   };
 
   render() {

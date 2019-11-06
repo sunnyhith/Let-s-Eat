@@ -1,21 +1,33 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import Header from "components/Header/Header";
 import SignedIn from "./signedInLinks";
 import SignedOut from "./signedOutLinks";
-import Survey from "../preferences/Survey";
 
-const Navbar = () => {
-  return (
-    <nav className="nav-wrapper grey darken-3">
-      <div className="container">
-        <Link to="/" className="brand-logo">
-          Let's Eat!
-        </Link>
-        <SignedIn />
-        <SignedOut />
+class Navbar extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <div>
+        <Header
+          brand="Let's Eat"
+          color="transparent"
+          fixed
+          absolute
+          rightLinks={
+            this.props.isLogedin ? <SignedIn /> : <SignedOut />
+          }
+          changeColorOnScroll={{
+            height: 400,
+            color: "white"
+          }}
+        />
       </div>
-    </nav>
-  );
-};
+    );
+  }
+
+}
 
 export default Navbar;
