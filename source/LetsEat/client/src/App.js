@@ -6,11 +6,14 @@ import CreateEvent from "./components/events/createEvent";
 import UserPreferences from "./components/preferences/userPreferences";
 import SignIn from "./components/auth/signIn";
 import SignUp from "./components/auth/signUp";
+import ResetPassword from "./components/auth/resetPassword";
 import Post from "./components/preferences/Post";
 import Survey from "./components/preferences/Survey";
-import * as firebase from 'firebase/app';
 
 import "assets/scss/material-kit-react.scss?v=1.8.0";
+
+import * as firebase from 'firebase/app';
+require('firebase/auth');
 
 class App extends React.Component {
   constructor(props) {
@@ -52,13 +55,14 @@ class App extends React.Component {
           <Navbar isLogedin={this.state.authenticated} />
           <div className="App">
             <Switch>
-              <Route path="/create" render={ () => <CreateEvent isLogedin={this.state.authenticated}/>} />
-              <Route path="/preferences" render={ () => <UserPreferences isLogedin={this.state.authenticated}/>} />
+              <Route path="/" exact render={ () => <Home isLogedin={this.state.authenticated}/>} />
               <Route path="/signin" render={ () => <SignIn isLogedin={this.state.authenticated}/>} />
               <Route path="/signup" render={ () => <SignUp isLogedin={this.state.authenticated}/>} />
+              <Route path="/password_reset" render={ () => <ResetPassword isLogedin={this.state.authenticated}/>} />
+              <Route path="/create" render={ () => <CreateEvent isLogedin={this.state.authenticated}/>} />
+              <Route path="/preferences" render={ () => <UserPreferences isLogedin={this.state.authenticated}/>} />
               <Route path="/survey" render={ () => <Survey isLogedin={this.state.authenticated}/>} />
               <Route path="/business/:post_id" render={ () => <Post isLogedin={this.state.authenticated}/>} />
-              <Route path="/" exact render={ () => <Home isLogedin={this.state.authenticated}/>} />
             </Switch>
           </div>
         </BrowserRouter>

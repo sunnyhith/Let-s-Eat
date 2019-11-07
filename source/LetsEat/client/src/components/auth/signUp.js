@@ -12,13 +12,11 @@ import CardFooter from "components/Card/CardFooter.js";
 import Button from "components/CustomButtons/Button.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
 
-import { signInWithGoogle } from './authUtil.js';
+import { emailSignUp, signInWithGoogle } from './authUtil.js';
 
 import { withStyles } from "@material-ui/core/styles";
 import styles from "assets/jss/layout/AuthStyle.js";
 import PropTypes from 'prop-types';
-
-import emailSignUp from "../../backend/account/emailSignUp";
 
 class SignUp extends React.Component {
   constructor(props) {
@@ -26,12 +24,6 @@ class SignUp extends React.Component {
     this.state = {
     };
   }
-
-  handleSubmit = e => {
-    e.preventDefault();
-    emailSignUp();
-    console.log(this.state);    
-  };
 
   render() {
     //For styling
@@ -71,12 +63,12 @@ class SignUp extends React.Component {
                     />
                     <CustomInput
                       labelText="Last Name"
-                      id="sign_in_psw"
+                      id="lastName"
                       formControlProps={{
                         fullWidth: true
                       }}
                       inputProps={{
-                        type: "password",
+                        type: "text",
                         endAdornment: (
                           <InputAdornment position="end">
                             <Icon className={classes.inputIconsColor}>
@@ -89,7 +81,7 @@ class SignUp extends React.Component {
                     />
                     <CustomInput
                       labelText="Email"
-                      id="sign_in_email"
+                      id="email"
                       formControlProps={{
                         fullWidth: true
                       }}
@@ -106,7 +98,7 @@ class SignUp extends React.Component {
                     />
                     <CustomInput
                       labelText="Password"
-                      id="sign_in_psw"
+                      id="password"
                       formControlProps={{
                         fullWidth: true
                       }}
@@ -126,6 +118,7 @@ class SignUp extends React.Component {
                       color="rose" 
                       round
                       className={classes.inlineButton}
+                      onClick={emailSignUp}
                     >
                       Sign Up
                     </Button>
@@ -159,37 +152,6 @@ class SignUp extends React.Component {
         </div>
       );
     }
-    // return (
-    //   <div className="container">
-    //     <form onSubmit={this.handleSubmit} className="white">
-    //       <h4 className="grey-text text-darken-3">Sign Up</h4>
-    //       <div className="input-field">
-    //         <label htmlFor="firstName">First Name</label>
-    //         <input type="text" id="firstName" onChange={this.handleChange} />
-    //       </div>
-    //       <div className="input-field">
-    //         <label htmlFor="lastName">Last Name</label>
-    //         <input type="text" id="lastName" onChange={this.handleChange} />
-    //       </div>
-    //       <div className="input-field">
-    //         <label htmlFor="email">Email</label>
-    //         <input type="email" id="email" onChange={this.handleChange} />
-    //       </div>
-    //       <div className="input-field">
-    //         <label htmlFor="password">Password</label>
-    //         <input type="password" id="password" onChange={this.handleChange} />
-    //       </div>
-    //       <div className="input-field">
-    //         <button className="btn red z-depth-0">Sign Up</button>
-    //       </div>
-    //     </form>
-    //     <div>
-    //       <button onClick={signUpWithGoogle} className="btn red z-depth-0">
-    //           Sign up using Google
-    //       </button>
-    //     </div>
-    //   </div>
-    // );
   }
 }
 

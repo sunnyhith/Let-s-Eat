@@ -8,21 +8,26 @@ import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
 import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
-import CardFooter from "components/Card/CardFooter.js";
 import Button from "components/CustomButtons/Button.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
 
-import { emailSignIn, signInWithGoogle} from './authUtil.js';
+import { sendPWResetEmail } from './authUtil.js';
 
 import { withStyles } from "@material-ui/core/styles";
 import styles from "assets/jss/layout/AuthStyle.js";
 import PropTypes from 'prop-types';
 
-class SignIn extends React.Component {
+class ResetPassword extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
     };
+  }
+
+  handleSubmit = () => {
+    var email = document.getElementById("email").value;
+    //TODO: add email check
+    sendPWResetEmail(email);
   }
 
   render() {
@@ -43,11 +48,11 @@ class SignIn extends React.Component {
           <GridItem xs={12} sm={12} md={4}>
             <Card>
               <form className={classes.form}>
-                <p className={classes.divider}>Login with Email</p>
+                <p className={classes.divider}>Reset Password</p>
                 <CardBody className={classes.cardBody}>
                   <CustomInput
                     labelText="Email"
-                    id="sign_in_email"
+                    id="email"
                     formControlProps={{
                       fullWidth: true
                     }}
@@ -62,61 +67,23 @@ class SignIn extends React.Component {
                       )
                     }}
                   />
-                  <CustomInput
-                    labelText="Password"
-                    id="sign_in_psw"
-                    formControlProps={{
-                      fullWidth: true
-                    }}
-                    inputProps={{
-                      type: "password",
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <Icon className={classes.inputIconsColor}>
-                            lock_outline
-                          </Icon>
-                        </InputAdornment>
-                      ),
-                      autoComplete: "off"
-                    }}
-                  />
+                  <Button 
+                    round
+                    color="info" 
+                    onClick={this.handleSubmit}
+                    className={classes.inlineButton}
+                  >
+                    send reset email
+                  </Button>
                   <Button 
                     simple
-                    color="info" 
                     size="sm"
-                    component={ Link } to="/password_reset"
-                  >
-                    Forget Password?
-                  </Button>
-                  <Button 
-                    round
                     color="info" 
-                    onClick={emailSignIn}
-                    className={classes.inlineButton}
+                    component={ Link } to="/signIn"
                   >
-                    Log In
+                    Go back to Log in
                   </Button>
-                  <Button 
-                    color="rose" 
-                    round
-                    className={classes.inlineButton}
-                    component={ Link } to="/signup"
-                  >
-                    Sign Up
-                  </Button>
-                  <p className={classes.divider}>or</p>
                 </CardBody>
-                <CardFooter className={classes.cardFooter}>
-                  <Button 
-                    simple
-                    color="google" 
-                    round
-                    onClick={signInWithGoogle}
-                  >
-                    <i className={ "fab fa-google"} />
-                    &nbsp; Login with Google
-                  </Button>
-                </CardFooter>
               </form>
             </Card>
           </GridItem>
@@ -128,8 +95,8 @@ class SignIn extends React.Component {
   }
 }
 
-SignIn.propTypes = {
+ResetPassword.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(SignIn);
+export default withStyles(styles)(ResetPassword);
