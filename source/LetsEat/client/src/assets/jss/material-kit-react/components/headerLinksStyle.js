@@ -74,8 +74,13 @@ const headerLinksStyle = theme => ({
     }
   },
   navLogo: {
-    fontSize: "18px",
-    textAlign: "left"
+    margin: "0",
+    fontSize: "30px",
+    color: "inherit",
+    textAlign: "center",
+    "&:hover,&:focus": {
+      color: "inherit"
+    },
   },
   notificationNavLink: {
     color: "inherit",

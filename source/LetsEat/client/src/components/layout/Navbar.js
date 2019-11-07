@@ -1,5 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Header from "components/Header/Header";
+import Logo from "./NavLogo";
 import SignedIn from "./signedInLinks";
 import SignedOut from "./signedOutLinks";
 
@@ -12,7 +14,7 @@ class Navbar extends React.Component {
     return (
       <div>
         <Header
-          brand="Let's Eat"
+          brand={<Logo />}
           color="transparent"
           fixed
           absolute
