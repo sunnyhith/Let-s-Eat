@@ -62,7 +62,7 @@ class App extends React.Component {
               <Route path="/create" render={ () => <CreateEvent isLogedin={this.state.authenticated}/>} />
               <Route path="/preferences" render={ () => <UserPreferences isLogedin={this.state.authenticated}/>} />
               <Route path="/survey" render={ () => <Survey isLogedin={this.state.authenticated}/>} />
-              <Route path="/business/:post_id" render={ () => <Post isLogedin={this.state.authenticated}/>} />
+              <Route path="/business/:post_id" render={ (props) => <Post {...props} isLogedin={this.state.authenticated} />} />
             </Switch>
           </div>
         </BrowserRouter>
