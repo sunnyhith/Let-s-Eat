@@ -28,11 +28,13 @@ var signInWithGoogle = () => {
             (result)  => {
                 var isNewUser = result.additionalUserInfo.isNewUser;
                 if (isNewUser) {
-                window.alert('User has not yet regitsered.');
+                    storeUserIntoFirebase({
+                        uid: result.user.uid,
+                        name: result.user.displayName,
+                        email: result.user.email,
+                    });
                 }
-                else{
                 window.alert('Welcome back! ' + result.user.displayName);
-                }
             }
         )
         .catch(
@@ -79,7 +81,12 @@ function emailSignUp() {
                 {
                   displayName: firstName + ' ' + lastName
                 })
-                window.alert('Create account success!');
+                storeUserIntoFirebase({
+                    uid: result.user.uid,
+                    name: firstName + ' ' + lastName,
+                    email: result.user.email,
+                });
+                console.log('Create account success!');
                 window.alert('Welcome! ' + firstName + ' ' + lastName);
             }
         )
@@ -101,6 +108,21 @@ function sendPWResetEmail(emailAddress) {
         window.alert("password reset email sent.")
     }).catch(function(error) {
         window.alert('Failed to sent password reset email.\n' + error.message);
+    });
+}
+
+function storeUserIntoFirebase(userInfo) {
+    const db = firebase.firestore();
+    var docRef = db.collection("users").doc(userInfo.uid).set({
+        name: userInfo.name,
+        email: userInfo.email,
+        hasPreference: false,
+    })
+    .then(function() {
+        console.log("Document successfully written!");
+    })
+    .catch(function(error) {
+        console.error("Error writing document: ", error);
     });
 }
 

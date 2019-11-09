@@ -47,7 +47,6 @@ const SignedIn = () => {
       </ListItem>
       <ListItem className={classes.listItem}>
         <Button
-          component={ Link } to="/"
           color="transparent"
           className={classes.navLink}
           onClick={signOut}
