@@ -11,8 +11,11 @@ class Home extends React.Component {
   }
 
   render(){
-    if(!this.props.isLogedin){
+    if(!this.props.user){
       return (<Redirect to="/signIn"/>);
+    }
+    if(!this.props.user.hasPreference){
+      return (<Redirect to="/survey"/>);
     }
     return (
         <div>

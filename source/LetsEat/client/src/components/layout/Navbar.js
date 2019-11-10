@@ -19,7 +19,7 @@ class Navbar extends React.Component {
           fixed
           absolute
           rightLinks={
-            this.props.isLogedin ? <SignedIn /> : <SignedOut />
+            this.props.user ? <SignedIn /> : <SignedOut />
           }
           changeColorOnScroll={{
             height: 400,

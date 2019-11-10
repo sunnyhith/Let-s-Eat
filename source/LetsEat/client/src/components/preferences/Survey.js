@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import * as firebase from 'firebase';
+
 class Survey extends Component {
   state = {
     firstName: "",
@@ -15,6 +17,20 @@ class Survey extends Component {
       [e.target.id]: e.target.value
     });
   };
+
+  // updatePreference = (userInfo) => {
+  //   //TODO: store all preference into firebase
+  //   const db = firebase.firestore();
+  //   var docRef = db.collection("users").doc(userInfo.uid).update({
+  //       hasPreference: false,
+  //   })
+  //   .then(function() {
+  //       console.log("Document successfully written!");
+  //   })
+  //   .catch(function(error) {
+  //       console.error("Error writing document: ", error);
+  //   });
+  // }
 
   handleSubmit = e => {
     e.preventDefault();
