@@ -1,5 +1,9 @@
 import React from "react";
+import * as firebase from 'firebase';
+import firebaseApp from "components/firebaseInit/firebaseInit";
+
 import { BrowserRouter, Switch, Route } from "react-router-dom";
+
 import Navbar from "components/layout/Navbar";
 import Home from "./components/generic/Home";
 import CreateEvent from "./components/events/createEvent";
@@ -12,7 +16,8 @@ import Survey from "./components/preferences/Survey";
 
 import "assets/scss/material-kit-react.scss?v=1.8.0";
 
-import * as firebase from 'firebase/app';
+
+
 require('firebase/auth');
 
 class App extends React.Component {

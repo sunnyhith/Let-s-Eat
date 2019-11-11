@@ -1,10 +1,4 @@
-import * as firebase from 'firebase/app';
-import firebaseConfig from '../../config/firebaseConfig';
-
-//initial Firebase
-const firebaseApp = firebase.initializeApp(firebaseConfig);
-
-
+import * as firebase from 'firebase';
 var emailSignIn = () => {
     var email = document.getElementById("sign_in_email").value;
     var password = document.getElementById("sign_in_psw").value;
