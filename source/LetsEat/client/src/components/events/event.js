@@ -58,14 +58,14 @@ function createEvent(eventInfo){
 function readEvent(eventId){
     event.doc(eventId).get()
     .then(function(doc) {
-                if(doc.exists){
-                    return doc.data();
-                }
-                else{
-                    console.log("Event document does not exist!");
-                    return null;
-                }
+            if(doc.exists){
+                return doc.data();
             }
+            else{
+                console.log("Event document does not exist!");
+                return null;
+            }
+        }
     );
 }
 
