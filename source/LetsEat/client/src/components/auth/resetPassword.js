@@ -11,92 +11,98 @@ import CardBody from "components/Card/CardBody.js";
 import Button from "components/CustomButtons/Button.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
 
-import { sendPWResetEmail } from './authUtil.js';
+import { sendPWResetEmail } from "./authUtil.js";
 
 import { withStyles } from "@material-ui/core/styles";
 import styles from "assets/jss/layout/AuthStyle.js";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
+
+import firebaseConfig from "../../config/firebaseConfig";
+import { AuthContext } from "../../contexts/Auth";
 
 class ResetPassword extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-    };
-  }
+  static contextType = AuthContext;
 
-  handleSubmit = () => {
-    var email = document.getElementById("email").value;
+  resetPWD() {
+    var emailAddress = document.getElementById("email").value;
     //TODO: add email check
-    sendPWResetEmail(email);
+    firebaseConfig
+      .auth()
+      .sendPasswordResetEmail(emailAddress)
+      .then(function() {
+        window.alert("password reset email sent.");
+      })
+      .catch(function(error) {
+        window.alert("Failed to sent password reset email.\n" + error.message);
+      });
   }
 
   render() {
     //For styling
     const { classes } = this.props;
-    
-    if (this.props.isLogedin) {
+    console.log(this.context);
+
+    if (this.context.currentUser) {
+      return <Redirect to="/" />;
+    } else
       return (
-        <Redirect to="/"/>
+        <div>
+          <Parallax image={require("assets/img/bkg.jpg")}>
+            <div className={classes.container}>
+              <GridContainer justify="flex-start">
+                <GridItem xs={12} sm={12} md={4}>
+                  <Card>
+                    <form className={classes.form}>
+                      <p className={classes.divider}>Reset Password</p>
+                      <CardBody className={classes.cardBody}>
+                        <CustomInput
+                          labelText="Email"
+                          id="email"
+                          formControlProps={{
+                            fullWidth: true
+                          }}
+                          inputProps={{
+                            type: "email",
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <Icon className={classes.inputIconsColor}>
+                                  mail_outline
+                                </Icon>
+                              </InputAdornment>
+                            )
+                          }}
+                        />
+                        <Button
+                          round
+                          color="info"
+                          onClick={this.resetPWD}
+                          className={classes.inlineButton}
+                        >
+                          send reset email
+                        </Button>
+                        <Button
+                          simple
+                          size="sm"
+                          color="info"
+                          component={Link}
+                          to="/signIn"
+                        >
+                          Go back to Log in
+                        </Button>
+                      </CardBody>
+                    </form>
+                  </Card>
+                </GridItem>
+              </GridContainer>
+            </div>
+          </Parallax>
+        </div>
       );
-    }
-    else 
-    return (
-      <div>
-      <Parallax image={require("assets/img/bkg.jpg")} >
-      <div className={classes.container}>
-        <GridContainer justify="flex-start">
-          <GridItem xs={12} sm={12} md={4}>
-            <Card>
-              <form className={classes.form}>
-                <p className={classes.divider}>Reset Password</p>
-                <CardBody className={classes.cardBody}>
-                  <CustomInput
-                    labelText="Email"
-                    id="email"
-                    formControlProps={{
-                      fullWidth: true
-                    }}
-                    inputProps={{
-                      type: "email",
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <Icon className={classes.inputIconsColor}>
-                            mail_outline
-                          </Icon>
-                        </InputAdornment>
-                      )
-                    }}
-                  />
-                  <Button 
-                    round
-                    color="info" 
-                    onClick={this.handleSubmit}
-                    className={classes.inlineButton}
-                  >
-                    send reset email
-                  </Button>
-                  <Button 
-                    simple
-                    size="sm"
-                    color="info" 
-                    component={ Link } to="/signIn"
-                  >
-                    Go back to Log in
-                  </Button>
-                </CardBody>
-              </form>
-            </Card>
-          </GridItem>
-        </GridContainer>
-      </div>
-      </Parallax>
-      </div>
-    );
   }
 }
 
 ResetPassword.propTypes = {
-  classes: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(ResetPassword);

@@ -12,143 +12,203 @@ import CardFooter from "components/Card/CardFooter.js";
 import Button from "components/CustomButtons/Button.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
 
-import { emailSignUp, signInWithGoogle } from './authUtil.js';
+import { emailSignUp, signInWithGoogle } from "./authUtil.js";
 
 import { withStyles } from "@material-ui/core/styles";
 import styles from "assets/jss/layout/AuthStyle.js";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
+
+import * as firebase from "firebase/app";
+import firebaseConfig from "../../config/firebaseConfig";
+import { AuthContext } from "../../contexts/Auth";
 
 class SignUp extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-    };
+  static contextType = AuthContext;
+
+  storeUserIntoFirebase(userInfo) {
+    const db = firebase.firestore();
+    var docRef = db
+      .collection("users")
+      .doc(userInfo.uid)
+      .set({
+        name: userInfo.name,
+        email: userInfo.email,
+        hasPreferences: false
+      })
+      .then(function() {
+        console.log("Document successfully written!");
+      })
+      .catch(function(error) {
+        console.error("Error writing document: ", error);
+      });
+  }
+
+  emailSignUp() {
+    var email = document.getElementById("email").value;
+    var password = document.getElementById("password").value;
+    var firstName = document.getElementById("firstName").value;
+    var lastName = document.getElementById("lastName").value;
+
+    firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then(function(result) {
+        result.user.updateProfile({
+          displayName: firstName + " " + lastName
+        });
+        const db = firebase.firestore();
+        var docRef = db
+          .collection("users")
+          .doc(result.user.uid)
+          .set({
+            name: firstName + " " + lastName,
+            email: result.user.email,
+            hasPreferences: false
+          })
+          .then(function() {
+            console.log("Document successfully written!");
+            console.log("Create account success!");
+            window.alert("Welcome! " + firstName + " " + lastName);
+          })
+          .catch(function(error) {
+            console.error("Error writing document: ", error);
+          });
+      })
+      .catch(function(error) {
+        console.log(
+          "createUserWithEmailAndPassword failed. " +
+            "errorCode: " +
+            error.code +
+            " errorMessage: " +
+            error.message
+        );
+        window.alert("Fail to sign up using email.\n" + error.message);
+      });
   }
 
   render() {
     //For styling
     const { classes } = this.props;
 
-    if (this.props.isLogedin) {
-      return (
-        <Redirect to="/"/>
-      );
+    if (this.context.currentUser) {
+      return <Redirect to="/" />;
     } else {
       return (
         <div>
-        <Parallax image={require("assets/img/bkg.jpg")} >
-        <div className={classes.container}>
-          <GridContainer justify="flex-start">
-            <GridItem xs={12} sm={12} md={4}>
-              <Card>
-                <form className={classes.form}>
-                  <p className={classes.divider}>Sign Up with Email</p>
-                  <CardBody className={classes.cardBody}>
-                    <CustomInput
-                      labelText="First Name"
-                      id="firstName"
-                      formControlProps={{
-                        fullWidth: true
-                      }}
-                      inputProps={{
-                        type: "text",
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <Icon className={classes.inputIconsColor}>
-                              person_outline
-                            </Icon>
-                          </InputAdornment>
-                        )
-                      }}
-                    />
-                    <CustomInput
-                      labelText="Last Name"
-                      id="lastName"
-                      formControlProps={{
-                        fullWidth: true
-                      }}
-                      inputProps={{
-                        type: "text",
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <Icon className={classes.inputIconsColor}>
-                              person_outline
-                            </Icon>
-                          </InputAdornment>
-                        ),
-                        autoComplete: "off"
-                      }}
-                    />
-                    <CustomInput
-                      labelText="Email"
-                      id="email"
-                      formControlProps={{
-                        fullWidth: true
-                      }}
-                      inputProps={{
-                        type: "email",
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <Icon className={classes.inputIconsColor}>
-                              mail_outline
-                            </Icon>
-                          </InputAdornment>
-                        )
-                      }}
-                    />
-                    <CustomInput
-                      labelText="Password"
-                      id="password"
-                      formControlProps={{
-                        fullWidth: true
-                      }}
-                      inputProps={{
-                        type: "password",
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <Icon className={classes.inputIconsColor}>
-                              lock_outline
-                            </Icon>
-                          </InputAdornment>
-                        ),
-                        autoComplete: "off"
-                      }}
-                    />
-                    <Button 
-                      color="rose" 
-                      round
-                      className={classes.inlineButton}
-                      onClick={emailSignUp}
-                    >
-                      Sign Up
-                    </Button>
-                    <Button 
-                      simple
-                      color="info" 
-                      className={classes.inlineButton}
-                      component={ Link } to="/signin"
-                    >
-                      Already have account? &nbsp; Login
-                    </Button>
-                  </CardBody>
-                  <CardFooter className={classes.cardFooter}>
-                    <p>or</p>
-                    <Button 
-                      simple
-                      color="google" 
-                      round
-                      onClick={signInWithGoogle}
-                    >
-                      <i className={ "fab fa-google"} />
-                      &nbsp; Login with Google
-                    </Button>
-                  </CardFooter>
-                </form>
-              </Card>
-            </GridItem>
-          </GridContainer>
-        </div>
-        </Parallax>
+          <Parallax image={require("assets/img/bkg.jpg")}>
+            <div className={classes.container}>
+              <GridContainer justify="flex-start">
+                <GridItem xs={12} sm={12} md={4}>
+                  <Card>
+                    <form className={classes.form}>
+                      <p className={classes.divider}>Sign Up with Email</p>
+                      <CardBody className={classes.cardBody}>
+                        <CustomInput
+                          labelText="First Name"
+                          id="firstName"
+                          formControlProps={{
+                            fullWidth: true
+                          }}
+                          inputProps={{
+                            type: "text",
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <Icon className={classes.inputIconsColor}>
+                                  person_outline
+                                </Icon>
+                              </InputAdornment>
+                            )
+                          }}
+                        />
+                        <CustomInput
+                          labelText="Last Name"
+                          id="lastName"
+                          formControlProps={{
+                            fullWidth: true
+                          }}
+                          inputProps={{
+                            type: "text",
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <Icon className={classes.inputIconsColor}>
+                                  person_outline
+                                </Icon>
+                              </InputAdornment>
+                            ),
+                            autoComplete: "off"
+                          }}
+                        />
+                        <CustomInput
+                          labelText="Email"
+                          id="email"
+                          formControlProps={{
+                            fullWidth: true
+                          }}
+                          inputProps={{
+                            type: "email",
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <Icon className={classes.inputIconsColor}>
+                                  mail_outline
+                                </Icon>
+                              </InputAdornment>
+                            )
+                          }}
+                        />
+                        <CustomInput
+                          labelText="Password"
+                          id="password"
+                          formControlProps={{
+                            fullWidth: true
+                          }}
+                          inputProps={{
+                            type: "password",
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <Icon className={classes.inputIconsColor}>
+                                  lock_outline
+                                </Icon>
+                              </InputAdornment>
+                            ),
+                            autoComplete: "off"
+                          }}
+                        />
+                        <Button
+                          color="rose"
+                          round
+                          className={classes.inlineButton}
+                          onClick={this.emailSignUp}
+                        >
+                          Sign Up
+                        </Button>
+                        <Button
+                          simple
+                          color="info"
+                          className={classes.inlineButton}
+                          component={Link}
+                          to="/signin"
+                        >
+                          Already have account? &nbsp; Login
+                        </Button>
+                      </CardBody>
+                      <CardFooter className={classes.cardFooter}>
+                        <p>or</p>
+                        <Button
+                          simple
+                          color="google"
+                          round
+                          // onClick={signInWithGoogle}
+                        >
+                          <i className={"fab fa-google"} />
+                          &nbsp; Login with Google
+                        </Button>
+                      </CardFooter>
+                    </form>
+                  </Card>
+                </GridItem>
+              </GridContainer>
+            </div>
+          </Parallax>
         </div>
       );
     }
@@ -156,7 +216,7 @@ class SignUp extends React.Component {
 }
 
 SignUp.propTypes = {
-  classes: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(SignUp);
