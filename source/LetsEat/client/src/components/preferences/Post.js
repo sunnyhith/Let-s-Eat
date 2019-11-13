@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Parallax from "components/Parallax/Parallax.js";
 
 class Post extends Component {
   state = {
@@ -51,7 +52,13 @@ class Post extends Component {
     ) : (
       <div className="center">Loading Post Details...</div>
     );
-    return <div className="container">{postData}</div>;
+    return (
+    <Parallax image={require("assets/img/bg.jpg")}>
+      <h4>Restaurant Info : </h4>
+      <div className="container">
+        {postData}
+      </div>
+    </Parallax>);
   }
 }
 

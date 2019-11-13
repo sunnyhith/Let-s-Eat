@@ -6,6 +6,8 @@
 
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import Parallax from "components/Parallax/Parallax.js";
+import Card from "components/Card/Card.js";
 import "../components-css/userPreferences.css";
 
 class UserPreferences extends Component {
@@ -25,17 +27,20 @@ class UserPreferences extends Component {
     const postsList = posts.length ? (
       posts.map(post => {
         return (
-          <div className="center card container" key={post.id}>
-            <div className="card-content">
-              <Link to={"/business/" + post.id}>
-                <span className="card-title">{post.name}</span>
-              </Link>
-              <p>Price: {post.price}</p>
-              <p>Rating: {post.rating}</p>
-              <p>Review Count: {post.review_count}</p>
-              <p>Phone: {post.display_phone}</p>
-              <img className="imageStyle" src={post.image_url} alt="Food"></img>
+          <div>
+            <div className="center card container" key={post.id} >
+              <div className="card-content">
+                <Link to={"/business/" + post.id}>
+                  <span className="card-title">{post.name}</span>
+                </Link>
+                <p>Price: {post.price}</p>
+                <p>Rating: {post.rating}</p>
+                <p>Review Count: {post.review_count}</p>
+                <p>Phone: {post.display_phone}</p>
+                <img className="imageStyle" src={post.image_url} alt="Food"></img>
+              </div>
             </div>
+            <br/>
           </div>
         );
       })
@@ -43,9 +48,13 @@ class UserPreferences extends Component {
       <div className="center">Loading Restaurants...</div>
     );
     return (
-      <div className="container">
+      <div>
+      <Parallax image={require("assets/img/bg.jpg")}>
+      {/* <div className="container"> */}
         <h4>Below are the Preferences</h4>
         {postsList}
+      {/* </div> */}
+      </Parallax>
       </div>
     );
   }

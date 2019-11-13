@@ -19,7 +19,7 @@ router.get("/restaurants", async (request, response) => {
     //   limit: "10"
     // }
   };
-  const url = "https://api.yelp.com/v3/businesses/search?location=Irvine";
+  const url = "https://api.yelp.com/v3/businesses/search?location=Irvine&limit=5";
   const fetch_response = await fetch(url, config);
   const json = await fetch_response.json();
   response.json(json);
