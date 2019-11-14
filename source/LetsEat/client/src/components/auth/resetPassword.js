@@ -17,7 +17,7 @@ import firebaseConfig from "../../config/firebaseConfig";
 import { AuthContext } from "../../contexts/Auth";
 
 const ResetPassword = props => {
-  const { currentUser, loading } = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);
 
   const resetPWD = () => {
     var emailAddress = document.getElementById("email").value;

@@ -14,7 +14,7 @@ import CustomInput from "components/CustomInput/CustomInput.js";
 import { withStyles } from "@material-ui/core/styles";
 import styles from "assets/jss/layout/AuthStyle.js";
 import PropTypes from "prop-types";
-import * as firebase from "firebase/app";
+import firebase from "firebase";
 import firebaseConfig from "../../config/firebaseConfig";
 import { AuthContext } from "../../contexts/Auth";
 
@@ -29,7 +29,7 @@ const SignUp = props => {
       .set({
         name: userInfo.name,
         email: userInfo.email,
-        hasPreference: false
+        hasPreferences: false
       })
       .then(function() {
         console.log("Document successfully written!");

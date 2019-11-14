@@ -14,12 +14,12 @@ import CustomInput from "components/CustomInput/CustomInput.js";
 import { withStyles } from "@material-ui/core/styles";
 import styles from "assets/jss/layout/AuthStyle.js";
 import PropTypes from "prop-types";
-import * as firebase from "firebase/app";
+import firebase from "firebase/app";
 import firebaseConfig from "../../config/firebaseConfig";
 import { AuthContext } from "../../contexts/Auth";
 
 const SignIn = props => {
-  const { currentUser, loading } = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);
 
   const storeUserIntoFirebase = userInfo => {
     const db = firebaseConfig.firestore();
@@ -29,7 +29,7 @@ const SignIn = props => {
       .set({
         name: userInfo.name,
         email: userInfo.email,
-        hasPreference: false
+        hasPreferences: false
       })
       .then(function() {
         console.log("Document successfully written!");

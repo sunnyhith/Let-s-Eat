@@ -11,7 +11,6 @@ import Post from "./components/preferences/Post";
 import Survey from "./components/preferences/Survey";
 import "assets/scss/material-kit-react.scss?v=1.8.0";
 import { AuthProvider } from "./contexts/Auth";
-import Dashboard from "components/generic/Dashboard";
 
 const App = () => {
   return (
@@ -21,7 +20,6 @@ const App = () => {
         <div className="App">
           <Switch>
             <Route path="/" exact component={Home} />
-            <Route path="/dashboard" exact component={Dashboard} />
             <Route path="/signin" component={SignIn} />
             <Route path="/signup" component={SignUp} />
             <Route path="/password_reset" component={ResetPassword} />

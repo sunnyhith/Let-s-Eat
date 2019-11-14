@@ -5,7 +5,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [preference, setPreference] = useState(false);
+  const [preference, setPreference] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -13,10 +13,10 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (currentUser) {
+    if (typeof preference === "boolean") {
       setLoading(false);
     }
-  }, [currentUser]);
+  }, [preference]);
 
   useEffect(() => {
     if (currentUser) {
@@ -28,16 +28,12 @@ export const AuthProvider = ({ children }) => {
         .then(doc => {
           if (doc.exists) {
             if (doc.data().hasPreferences) {
-              console.log("preferencesssssssss ", currentUser);
-              console.log("docdata ", doc.data());
               setPreference(true);
-              // this.setState({ preference: true });
+            } else {
+              setPreference(false);
             }
-            //   return true; //doc.data().hasPreferences;
           } else {
-            // doc.data() will be undefined in this case
             console.log("No such document!");
-            //   return true;
           }
         })
         .catch(function(error) {
@@ -47,19 +43,12 @@ export const AuthProvider = ({ children }) => {
     }
   }, [currentUser]);
 
-  // Will call this method when the user successfully completes the survey
-  // and the preferences data is successfully stored in db
-  //   const updatePreference = () => {
-  //     setPreference(true);
-  //   };
-
   return (
     <AuthContext.Provider
       value={{
         currentUser,
         preference,
         loading
-        // updatePreference
       }}
     >
       {children}
