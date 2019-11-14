@@ -9,10 +9,19 @@ import { AuthContext } from "../../contexts/Auth";
 class Navbar extends React.Component {
   static contextType = AuthContext;
 
-  render() {
-    console.log("from navbar");
-    console.log(this.context);
+  state = {
+    loading: true
+  };
 
+  componentDidMount() {
+    if (this.context.currentUser && this.state.loading) {
+      this.setState({
+        loading: false
+      });
+    }
+  }
+
+  render() {
     return (
       <div>
         <Header

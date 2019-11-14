@@ -1,8 +1,11 @@
 import React, { Component } from "react";
+import { Redirect } from "react-router-dom";
+import { AuthContext } from "../../contexts/Auth";
 
-import * as firebase from 'firebase';
+import * as firebase from "firebase";
 
 class Survey extends Component {
+  static contextType = AuthContext;
   state = {
     firstName: "",
     lastName: "",
@@ -38,6 +41,9 @@ class Survey extends Component {
   };
 
   render() {
+    if (!this.context.currentUser) {
+      return <Redirect to="/signin" />;
+    }
     return (
       <div className="container">
         <form onSubmit={this.handleSubmit} className="white">

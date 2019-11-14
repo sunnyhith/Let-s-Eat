@@ -252,29 +252,27 @@ import "assets/scss/material-kit-react.scss?v=1.8.0";
 import { AuthProvider } from "./contexts/Auth";
 import Dashboard from "components/generic/Dashboard";
 
-class App extends React.Component {
-  render() {
-    return (
-      <AuthProvider>
-        <BrowserRouter>
-          <Navbar />
-          <div className="App">
-            <Switch>
-              <Route path="/" exact component={Home} />
-              <Route path="/dashboard" exact component={Dashboard} />
-              <Route path="/signin" component={SignIn} />
-              <Route path="/signup" component={SignUp} />
-              <Route path="/password_reset" component={ResetPassword} />
-              <Route path="/create" component={CreateEvent} />
-              <Route path="/preferences" component={UserPreferences} />
-              <Route path="/survey" component={Survey} />
-              <Route path="/business/:post_id" component={Post} />
-            </Switch>
-          </div>
-        </BrowserRouter>
-      </AuthProvider>
-    );
-  }
-}
+const App = () => {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Navbar />
+        <div className="App">
+          <Switch>
+            <Route path="/" exact component={Home} />
+            <Route path="/dashboard" exact component={Dashboard} />
+            <Route path="/signin" component={SignIn} />
+            <Route path="/signup" component={SignUp} />
+            <Route path="/password_reset" component={ResetPassword} />
+            <Route path="/create" component={CreateEvent} />
+            <Route path="/preferences" component={UserPreferences} />
+            <Route path="/survey" component={Survey} />
+            <Route path="/business/:post_id" component={Post} />
+          </Switch>
+        </div>
+      </BrowserRouter>
+    </AuthProvider>
+  );
+};
 
 export default App;
