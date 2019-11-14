@@ -19,7 +19,6 @@ export const AuthProvider = ({ children }) => {
   }, [currentUser]);
 
   useEffect(() => {
-    // const uid = currentUser.uid;
     if (currentUser) {
       const { uid } = currentUser;
       const db = firebase.firestore();

@@ -33,32 +33,4 @@ const Home = () => {
   }
 };
 
-// const content =
-//   this.context.currentUser &&
-//   !this.hasPreferences(this.context.currentUser.uid) ? (
-//     <div>Loading Content...</div>
-//   ) : (
-//     <div>
-//       <Parallax image={require("assets/img/bkg.jpg")}></Parallax>
-//       <div>
-//         <h1>This is the Home Page</h1>
-//       </div>
-//     </div>
-//   ); //<Redirect to="/signIn" />;
-
-// return <div>{content}</div>;
-
-// if (user && this.hasPreference(user.uid)) {
-//   return (
-//     <div>
-//       <Parallax image={require("assets/img/bkg.jpg")}></Parallax>
-//       <div>
-//         <h1>This is the Home Page</h1>
-//       </div>
-//     </div>
-//   );
-// } else {
-//   return <Redirect to="/survey" />;
-// }
-
 export default Home;

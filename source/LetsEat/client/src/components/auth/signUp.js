@@ -11,13 +11,9 @@ import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
 import Button from "components/CustomButtons/Button.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
-
-// import { emailSignUp, signInWithGoogle } from "./authUtil.js";
-
 import { withStyles } from "@material-ui/core/styles";
 import styles from "assets/jss/layout/AuthStyle.js";
 import PropTypes from "prop-types";
-
 import * as firebase from "firebase/app";
 import firebaseConfig from "../../config/firebaseConfig";
 import { AuthContext } from "../../contexts/Auth";
