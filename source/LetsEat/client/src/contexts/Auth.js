@@ -4,44 +4,50 @@ import firebase from "firebase";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [preference, setPreference] = useState(null);
+  const [currentUser, setCurrentUser] = useState(undefined);
+  const [preference, setPreference] = useState(undefined);
+  const [authStatusReported, setAuthStatusReported] = useState(false);
+  const [prefereneReported, setPrefereneReported] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    firebase.auth().onAuthStateChanged(setCurrentUser);
+    firebase.auth().onAuthStateChanged(user => {
+      setCurrentUser(user);
+      setAuthStatusReported(true);
+    });
   }, []);
 
   useEffect(() => {
-    if (typeof preference === "boolean") {
+    if (authStatusReported && prefereneReported) {
       setLoading(false);
     }
-  }, [preference]);
+  }, [authStatusReported, prefereneReported]);
 
   useEffect(() => {
-    if (currentUser) {
+    if (authStatusReported && currentUser) {
       const { uid } = currentUser;
       const db = firebase.firestore();
       db.collection("users")
         .doc(`${uid}`)
         .get()
         .then(doc => {
-          if (doc.exists) {
-            if (doc.data().hasPreferences) {
+          if (doc.exists && doc.data().hasPreferences) {
+              //TODO: read all preferences from firebase
               setPreference(true);
-            } else {
-              setPreference(false);
-            }
+              setPrefereneReported(true);
           } else {
-            console.log("No such document!");
+            setPreference(false);
+            setPrefereneReported(true);
           }
         })
         .catch(function(error) {
-          console.log("Error getting document:", error);
-          return true;
+          console.log("Error getting preferences:", error);
         });
+    } else if (authStatusReported) {
+      setPreference(false);
+      setPrefereneReported(true);
     }
-  }, [currentUser]);
+  }, [authStatusReported]);
 
   return (
     <AuthContext.Provider

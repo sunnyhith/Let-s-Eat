@@ -1,6 +1,7 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Redirect, Link } from "react-router-dom";
 // core components
+import Loading from "components/generic/Loading";
 import Parallax from "components/Parallax/Parallax.js";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Icon from "@material-ui/core/Icon";
@@ -10,14 +11,18 @@ import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 import Button from "components/CustomButtons/Button.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
-import { withStyles } from "@material-ui/core/styles";
+//Firebase
+import firebaseConfig from "config/firebaseConfig";
+import { AuthContext } from "contexts/Auth";
+//Styling
 import styles from "assets/jss/layout/AuthStyle.js";
-import PropTypes from "prop-types";
-import firebaseConfig from "../../config/firebaseConfig";
-import { AuthContext } from "../../contexts/Auth";
+import { makeStyles } from "@material-ui/core/styles";
+const usestyles = makeStyles(styles);
 
 const ResetPassword = props => {
-  const { currentUser } = useContext(AuthContext);
+  const classes = usestyles();
+  const { currentUser, loading } = useContext(AuthContext);
+  const [ redirect, setRedirect ] = useState(false);
 
   const resetPWD = () => {
     var emailAddress = document.getElementById("email").value;
@@ -25,19 +30,21 @@ const ResetPassword = props => {
     firebaseConfig
       .auth()
       .sendPasswordResetEmail(emailAddress)
-      .then(function() {
+      .then(() => {
         window.alert("password reset email sent.");
+        setRedirect(true);
       })
       .catch(function(error) {
         window.alert("Failed to sent password reset email.\n" + error.message);
       });
   };
 
-  //For styling
-  const { classes } = props;
-
-  if (currentUser) {
+  if (loading) {
+    return <Loading/>;
+  } else if (currentUser) {
     return <Redirect to="/" />;
+  } else if (redirect) {
+    return <Redirect to="/signIn" />;
   } else
     return (
       <div>
@@ -94,8 +101,4 @@ const ResetPassword = props => {
     );
 };
 
-ResetPassword.propTypes = {
-  classes: PropTypes.object.isRequired
-};
-
-export default withStyles(styles)(ResetPassword);
+export default ResetPassword;

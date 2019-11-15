@@ -1,19 +1,18 @@
 import React, { useContext } from "react";
+import Loading from "components/generic/Loading";
 import Parallax from "components/Parallax/Parallax.js";
 import { Redirect } from "react-router-dom";
-import { AuthContext } from "../../contexts/Auth";
+import { AuthContext } from "contexts/Auth";
 
 const Home = () => {
   const { currentUser, preference, loading } = useContext(AuthContext);
 
-  if (currentUser && loading) {
-    return <h1>Loading...</h1>;
-  }
-  if (!loading && !currentUser) {
+  if (loading) {
+    return <Loading/>;
+  } else if (!currentUser) {
     return <Redirect to="/signin" />;
-  }
-  if (!preference) {
-    return <Redirect to="/survey" />;
+  } else if (!preference) {
+      return <Redirect to="/survey" />;
   } else {
     return (
       <div>

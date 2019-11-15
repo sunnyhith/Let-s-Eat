@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { Redirect, Link } from "react-router-dom";
 // core components
+import Loading from "components/generic/Loading";
 import Parallax from "components/Parallax/Parallax.js";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Icon from "@material-ui/core/Icon";
@@ -11,14 +12,17 @@ import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
 import Button from "components/CustomButtons/Button.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
-import { withStyles } from "@material-ui/core/styles";
-import styles from "assets/jss/layout/AuthStyle.js";
-import PropTypes from "prop-types";
+//Firebase
 import firebase from "firebase";
-import firebaseConfig from "../../config/firebaseConfig";
-import { AuthContext } from "../../contexts/Auth";
+import firebaseConfig from "config/firebaseConfig";
+import { AuthContext } from "contexts/Auth";
+//Styling
+import styles from "assets/jss/layout/AuthStyle.js";
+import { makeStyles } from "@material-ui/core/styles";
+const usestyles = makeStyles(styles);
 
 const SignUp = props => {
+  const classes = usestyles();
   const { currentUser, loading } = useContext(AuthContext);
 
   const storeUserIntoFirebase = userInfo => {
@@ -48,29 +52,17 @@ const SignUp = props => {
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
-      .then(function(result) {
+      .then((result) => {
         result.user.updateProfile({
           displayName: firstName + " " + lastName
         });
-        const db = firebase.firestore();
-        var docRef = db
-          .collection("users")
-          .doc(result.user.uid)
-          .set({
-            name: firstName + " " + lastName,
-            email: result.user.email,
-            hasPreferences: false
-          })
-          .then(function() {
-            console.log("Document successfully written!");
-            console.log("Create account success!");
-            window.alert("Welcome! " + firstName + " " + lastName);
-          })
-          .catch(function(error) {
-            console.error("Error writing document: ", error);
-          });
+        storeUserIntoFirebase({
+          uid: result.user.uid,
+          name: firstName + " " + lastName,
+          email: result.user.email
+        });
       })
-      .catch(function(error) {
+      .catch((error) => {
         console.log(
           "createUserWithEmailAndPassword failed. " +
             "errorCode: " +
@@ -104,10 +96,9 @@ const SignUp = props => {
       });
   };
 
-  //For styling
-  const { classes } = props;
-
-  if (currentUser) {
+  if (loading) {
+    return <Loading/>;
+  } else if (currentUser) {
     return <Redirect to="/" />;
   } else {
     return (
@@ -231,8 +222,4 @@ const SignUp = props => {
   }
 };
 
-SignUp.propTypes = {
-  classes: PropTypes.object.isRequired
-};
-
-export default withStyles(styles)(SignUp);
+export default SignUp;

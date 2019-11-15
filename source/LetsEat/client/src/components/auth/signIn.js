@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { Redirect, Link } from "react-router-dom";
 // core components
+import Loading from "components/generic/Loading";
 import Parallax from "components/Parallax/Parallax.js";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Icon from "@material-ui/core/Icon";
@@ -11,15 +12,18 @@ import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
 import Button from "components/CustomButtons/Button.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
-import { withStyles } from "@material-ui/core/styles";
+//Firebase
+import firebase from "firebase";
+import firebaseConfig from "config/firebaseConfig";
+import { AuthContext } from "contexts/Auth";
+//Styling
 import styles from "assets/jss/layout/AuthStyle.js";
-import PropTypes from "prop-types";
-import firebase from "firebase/app";
-import firebaseConfig from "../../config/firebaseConfig";
-import { AuthContext } from "../../contexts/Auth";
+import { makeStyles } from "@material-ui/core/styles";
+const usestyles = makeStyles(styles);
 
 const SignIn = props => {
-  const { currentUser } = useContext(AuthContext);
+  const classes = usestyles();
+  const { currentUser, loading } = useContext(AuthContext);
 
   const storeUserIntoFirebase = userInfo => {
     const db = firebaseConfig.firestore();
@@ -45,10 +49,8 @@ const SignIn = props => {
     firebaseConfig
       .auth()
       .signInWithEmailAndPassword(email, password)
-      .then(user => {
-        console.log(user);
-
-        window.alert("Welcome back! " + user.displayName);
+      .then(result => {
+        window.alert("Welcome back! " + result.user.displayName);
       })
       .catch(error => {
         console.log(
@@ -87,10 +89,9 @@ const SignIn = props => {
       });
   };
 
-  //For styling
-  const { classes } = props;
-
-  if (currentUser) {
+  if (loading) {
+    return <Loading/>;
+  } else if (currentUser) {
     return <Redirect to="/" />;
   } else {
     return (
@@ -188,8 +189,4 @@ const SignIn = props => {
   }
 };
 
-SignIn.propTypes = {
-  classes: PropTypes.object.isRequired
-};
-
-export default withStyles(styles)(SignIn);
+export default SignIn;

@@ -1,14 +1,14 @@
 import React from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Navbar from "components/layout/Navbar";
-import Home from "./components/generic/Home";
-import CreateEvent from "./components/events/createEvent";
-import UserPreferences from "./components/preferences/userPreferences";
-import SignIn from "./components/auth/signIn";
-import SignUp from "./components/auth/signUp";
-import ResetPassword from "./components/auth/resetPassword";
-import Post from "./components/preferences/Post";
-import Survey from "./components/preferences/Survey";
+import Home from "components/generic/Home";
+import CreateEvent from "components/events/createEvent";
+import UserPreferences from "components/preferences/userPreferences";
+import SignIn from "components/auth/signIn";
+import SignUp from "components/auth/signUp";
+import ResetPassword from "components/auth/resetPassword";
+import Post from "components/preferences/Post";
+import Survey from "components/preferences/Survey";
 import "assets/scss/material-kit-react.scss?v=1.8.0";
 import { AuthProvider } from "./contexts/Auth";
 
