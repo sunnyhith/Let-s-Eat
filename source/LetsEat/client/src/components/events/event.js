@@ -1,58 +1,33 @@
 import * as firebase from 'firebase';
+import { userInfo } from 'os';
 
 var db = firebase.firestore();
 var event = db.collection("event");
+var user_db = db.collection("users");
 
-
-/*
-    For event data....
-    can we also save dietery restriction, and mutual food preferences?
-
-    For deleting.....
-    // How are we going to delete restaurants and person? 
-    // How to retireve the id of the person or restaurants
-    // Need to handle no host
-*/
-// var attendee = {
-//     name: "",
-//     uid: "",
-//     email: "",
-//     status: attending, declined, tentative, invited
-// };
-
-// var restaurant = {
-//     business_id: "",
-//     votes: 0
-// }
-
-// var eventInfo = {
-//     host: {
-//          attendee
-//     },
-//     location: "",
-//     event_time: "",
-//     deadline: "",
-//     message: "",
-//     restaurant: {
-//          restaurant1, restaurant2,... 
-//     },
-//     guest: {
-//
-//     },
-//     final_restaurant: restaurant
-// }
+function create_event_info(eventInfo){
+    eventInfo["host"] = firebase.auth().currentUser.email;
+    let deadline = new Date(eventInfo["start_time"]);
+    deadline.setDate(deadline.getDate()-2);
+    eventInfo["deadline"] = firebase.firestore.Timestamp.fromDate(deadline); 
+    return eventInfo;
+}
 
 function createEvent(eventInfo){
-    event.add(eventInfo).then(function(docRef) {
+    var emails = eventInfo["guests"];
+    delete eventInfo.guests;
+    var wrapped_info = create_event_info(eventInfo);
+
+    event.add(wrapped_info).then(function(docRef) {
+        inviteGuests(docRef.id, emails);
         console.log("Created event ", docRef.id);
+        console.log(typeof(docRef.id));
         return docRef.id;
-        }
-    )
+    })
     .catch(function(error) {
         console.error("Error creating the event.", error);
         return null;
-        }
-    );
+    });
 }
 
 function readEvent(eventId){
@@ -69,10 +44,14 @@ function readEvent(eventId){
     );
 }
 
-function updateEvent(eventId, updateInfo){
-    event.doc(eventId).update(updateInfo)
+function updateEvent(eventId, eventInfo){
+    var emails = eventInfo["guests"];
+    delete eventInfo.guests;
+    var wrapped_info = create_event_info(eventInfo);
+
+    event.doc(eventId).update(wrapped_info)
     .then(function() {
-            console.log("successfully updated the event ", eventId, "with ", updateInfo);
+            console.log("successfully updated the event ", eventId);
     }).catch(function(error)
         {
             console.error("Fail to update the event", error);
@@ -89,75 +68,89 @@ function deleteEvent(eventId){
     );
 }
 
-function updateKey(eventId, key, val){
-    var field_keys = ["time", "location", "message"];
-    if(field_keys.includes(key)){
-        var updateInfo = {key: val};
-        updateEvent(eventId, updateInfo);
-    }
-    else{
-        console.error(key, " is not modifiable.");
-    }
+function updateGuest(guest, updateInfo){
+    guest.update(updateInfo)
+    .then(function() {
+            console.log("successfully updated guest information: ", updateInfo);
+    }).catch(function(error)
+        {
+            console.error("Fail to guest information", error);
+        }
+    );
 }
 
-function addSubField(eventId, key, val){
-    var subcollection = ["guests", "hosts", "restaurants"];
-    if(subcollection.includes(key)){
-        event.doc(eventId).collection(key).add(val)
-        .then( (doc) => {
-            return doc.id;
-        })
-        .catch( (error) => {
-            console.error("Fail to add the subcollection to", key);
-        })
-    }
-    else{
-        console.error(key, " is not a subcollection field.");
-    }
+function addGuestTo(eventId, email, status){
+    var guest = event.doc(eventId).collection(status);
+    guest.doc(email).set({})
+    .catch(function(error) {
+        console.log("Failed to store invitee guest information for email ", email);
+        console.log(error);
+    });
+}
+
+function inviteGuests(eventId, emails){
+    emails.forEach(email => {
+            addGuestTo(eventId, email, "invited");
+        });
 };
 
-function delSubField(eventId, key, keyId){
-    // How are we going to delete restaurants and person? 
-    // How to retireve the id of the person or restaurants
-    // Need to handle no host
-    var subcollection = ["guests", "hosts", "restaurants"];
-    if(subcollection.includes(key)){
-        event.doc(eventId).collection(key).doc(keyId).delete()
-        .catch( (error) => {
-            console.error("Fail to delete ", keyId, " from subcollection ", key);
-        })
-    }
-    else{
-        console.error(key, " is not a subcollection field.");
-    }
+function delGuestFrom(eventId, email, status){
+    event.doc(eventId).collection(status).doc(email).delete()
+    .catch(error=>{
+        console.error("Unable to delete guest ", email, " from ", status);
+        console.errot(error);
+    })    
 };
 
-function delPerson(eventId, key, delId){
-    var person_field = ["guests", "hosts"];
+function update_event_in_user_db(eventId, email, updateInfo){
+    user_db.doc(email).update(updateInfo).catch(
+        error => {
+            console.error("Unable to update status of ", eventId, " for ", email);
+        }
+    )
+}
 
-    if(!person_field.includes(key)){
-        console.error(key, " does not store person's information.");
+function changeGuestStatus(eventId, status){
+    var valid_status = ["tentative", "declined", "attending"];
+    if(!valid_status.includes(status)){
+        console.warn("Invalid request for changing guest status");
         return;
     }
-    event.doc(eventId).collection(key).where("email", "==", delId).get()
-    .then((snapshot)=>{ snapshot.docs.forEach(doc =>{
-            doc.ref.delete().catch(error =>{
-                console.error("Fail to delete ", key, " from subcollection ", key);
-            });
-        })
-    })
-};
 
+    var email = firebase.auth().currentUser.email;
+    user_db.doc(email).get().then(
+        doc => {
+            if (!(eventId in doc.data().guest_events)){
+                console.log("Current user is not in the event: ", eventId);
+                return;
+            }
+            var usr_data = doc.data();
+            var prev_status = usr_data.guest_events[eventId];
+            delGuestFrom(eventId, email, prev_status);
+            addGuestTo(eventId, email, status);
+            usr_data["guest_events"][eventId] = status;
+            update_event_in_user_db(eventId, email, usr_data);
+        }
+    ).catch(function(error) {
+        console.log("Failed to change guest information:", error);
+    })
+}
 
 function testEvent(){
-    var eventId = "Y7ertqUYNUCjsm7AKzu7";
-    var person = {email: "tom@gmail.com", uid: "sasduhlef", name: "Tom", status: "invited"};
-    
-    //var personId = addSubField(eventId, "guests", person);
-
-    
-    //delSubField(eventId, "guests", personId);
-    delPerson(eventId, "guests", "tom@gmail.com");
+    var eventId = "3K7eHuuOm4w1woJlsQ16";
+    var emails = ["tzuyuc@uci.edu", "zoechaozoe@gmail.com"];
+    var eventInfo = {
+        event_name: "Tom's birthday",
+        location: "Irvine",
+        message: "Hey Lets celebrate for Tom",
+        guests: emails,
+        start_time: new Date('2019-12-01T03:24:00')
+    };
+    //var created_id = createEvent(eventInfo);
+    eventInfo.location = "Tustin";
+    updateEvent(eventId, eventInfo);
+    // inviteGuests(eventId, emails);
+    //changeGuestStatus(eventId, "tentative");
 };
 
 export {testEvent};
