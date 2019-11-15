@@ -12,7 +12,7 @@
 //		   }, 
 //     name: "",
 //     host_events: {eventId1, eventId2}
-//     guest_events :{eventId1}
+//     guest_events :{eventId1: attending_status} //attending_status can be "attending", "declined", "tentative", "invited"
 //     
 // };
 
