@@ -91,7 +91,12 @@ function addGuestTo(eventId, email, status){
 function inviteGuests(eventId, emails){
     emails.forEach(email => {
             addGuestTo(eventId, email, "invited");
-        });
+            /*user_db.doc(email).get().then(doc => {
+                var usr_data = doc.data();
+                usr_data["host_events"][eventId] = status;
+                update_event_in_user_db(eventId, email, updateInfo);
+        })*/
+    });
 };
 
 function delGuestFrom(eventId, email, status){
@@ -137,7 +142,7 @@ function changeGuestStatus(eventId, status){
 }
 
 function testEvent(){
-    var eventId = "3K7eHuuOm4w1woJlsQ16";
+    var eventId = "a3jKD2xBcYHY95Ht6DYf";
     var emails = ["tzuyuc@uci.edu", "zoechaozoe@gmail.com"];
     var eventInfo = {
         event_name: "Tom's birthday",
@@ -149,7 +154,7 @@ function testEvent(){
     //var created_id = createEvent(eventInfo);
     eventInfo.location = "Tustin";
     updateEvent(eventId, eventInfo);
-    // inviteGuests(eventId, emails);
+    //inviteGuests(eventId, emails);
     //changeGuestStatus(eventId, "tentative");
 };
 
