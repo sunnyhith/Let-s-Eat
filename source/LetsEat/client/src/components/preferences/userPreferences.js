@@ -5,10 +5,12 @@
 //    2. When the user is creating an event. We should also ask the current location of the user
 
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import "../components-css/userPreferences.css";
+import { AuthContext } from "../../contexts/Auth";
 
 class UserPreferences extends Component {
+  static contextType = AuthContext;
   state = {
     posts: []
   };
@@ -21,6 +23,9 @@ class UserPreferences extends Component {
   }
 
   render() {
+    if (!this.context.currentUser) {
+      return <Redirect to="/signin" />;
+    }
     const { posts } = this.state;
     const postsList = posts.length ? (
       posts.map(post => {

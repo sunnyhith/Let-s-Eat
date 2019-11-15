@@ -1,6 +1,11 @@
 import React, { Component } from "react";
+import { Redirect } from "react-router-dom";
+import { AuthContext } from "../../contexts/Auth";
+
+import * as firebase from "firebase";
 
 class Survey extends Component {
+  static contextType = AuthContext;
   state = {
     firstName: "",
     lastName: "",
@@ -16,12 +21,29 @@ class Survey extends Component {
     });
   };
 
+  // updatePreference = (userInfo) => {
+  //   //TODO: store all preference into firebase
+  //   const db = firebase.firestore();
+  //   var docRef = db.collection("users").doc(userInfo.uid).update({
+  //       hasPreference: false,
+  //   })
+  //   .then(function() {
+  //       console.log("Document successfully written!");
+  //   })
+  //   .catch(function(error) {
+  //       console.error("Error writing document: ", error);
+  //   });
+  // }
+
   handleSubmit = e => {
     e.preventDefault();
     console.log(this.state);
   };
 
   render() {
+    if (!this.context.currentUser) {
+      return <Redirect to="/signin" />;
+    }
     return (
       <div className="container">
         <form onSubmit={this.handleSubmit} className="white">

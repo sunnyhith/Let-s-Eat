@@ -1,30 +1,29 @@
-import React from "react";
+import React, { useContext } from "react";
+import Loading from "components/generic/Loading";
 import Parallax from "components/Parallax/Parallax.js";
 import { Redirect } from "react-router-dom";
+import { AuthContext } from "contexts/Auth";
 
+const Home = () => {
+  const { currentUser, preference, loading } = useContext(AuthContext);
 
-class Home extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-    }
-  }
-
-  render(){
-    if(!this.props.isLogedin){
-      return (<Redirect to="/signIn"/>);
-    }
+  if (loading) {
+    return <Loading/>;
+  } else if (!currentUser) {
+    return <Redirect to="/signin" />;
+  } else if (!preference) {
+      return <Redirect to="/survey" />;
+  } else {
     return (
-        <div>
-          <Parallax image={require("assets/img/bkg.jpg")}>
-          </Parallax>
+      <div>
+        <Parallax image={require("assets/img/bkg.jpg")}>
           <div>
             <h1>This is the Home Page</h1>
           </div>
-        </div>
+        </Parallax>
+      </div>
     );
   }
-}
-
+};
 
 export default Home;

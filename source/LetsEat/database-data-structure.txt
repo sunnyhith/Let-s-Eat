@@ -1,0 +1,42 @@
+// user respond to event:
+// {
+	email: "",
+	event_id: "",
+	responses: ""
+}
+
+// var user = { //key email
+//     preference: {
+//                      dietery_restriction:{ .....}.
+//                      cusine: {......} 
+//		   }, 
+//     name: "",
+//     host_events: {eventId1, eventId2}
+//     guest_events :{eventId1: attending_status} //attending_status can be "attending", "declined", "tentative", "invited"
+//     
+// };
+
+// var event_info = {
+//     ############## obtain from create event page #############
+//     event_name: str,
+//     host: one host's email, //check login user email id matches host id
+//     message: "",
+//     location: "",
+//     start_time: "", (time stamp)
+
+
+//     guest: { // user email for each category
+//              //invited: {email1, email2}
+//     ############## end create event page ############# 
+//         //attending: {email1, email2}
+//         //declined: {email1},
+//         //tentative: {},
+//     },
+//      
+//     // auto generated
+//     deadline: event start time - 2 days, (time stamp) schedule email
+//     restaurant: {
+//          restaurant1, restaurant2,... 
+//     },
+//     final_restaurant: restaurant
+// }
