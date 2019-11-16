@@ -22,7 +22,7 @@ const usestyles = makeStyles(styles);
 const ResetPassword = props => {
   const classes = usestyles();
   const { currentUser, loading } = useContext(AuthContext);
-  const [ redirect, setRedirect ] = useState(false);
+  const [redirect, setRedirect] = useState(false);
 
   const resetPWD = () => {
     var emailAddress = document.getElementById("email").value;
@@ -40,7 +40,7 @@ const ResetPassword = props => {
   };
 
   if (loading) {
-    return <Loading/>;
+    return <Loading />;
   } else if (currentUser) {
     return <Redirect to="/" />;
   } else if (redirect) {

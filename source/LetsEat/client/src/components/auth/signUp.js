@@ -29,10 +29,9 @@ const SignUp = props => {
     const db = firebaseConfig.firestore();
     var docRef = db
       .collection("users")
-      .doc(userInfo.uid)
+      .doc(userInfo.email)
       .set({
         name: userInfo.name,
-        email: userInfo.email,
         hasPreferences: false
       })
       .then(function() {
@@ -52,17 +51,16 @@ const SignUp = props => {
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
-      .then((result) => {
+      .then(result => {
         result.user.updateProfile({
           displayName: firstName + " " + lastName
         });
         storeUserIntoFirebase({
-          uid: result.user.uid,
           name: firstName + " " + lastName,
           email: result.user.email
         });
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(
           "createUserWithEmailAndPassword failed. " +
             "errorCode: " +
@@ -84,7 +82,6 @@ const SignUp = props => {
         var isNewUser = result.additionalUserInfo.isNewUser;
         if (isNewUser) {
           storeUserIntoFirebase({
-            uid: result.user.uid,
             name: result.user.displayName,
             email: result.user.email
           });
@@ -97,7 +94,7 @@ const SignUp = props => {
   };
 
   if (loading) {
-    return <Loading/>;
+    return <Loading />;
   } else if (currentUser) {
     return <Redirect to="/" />;
   } else {

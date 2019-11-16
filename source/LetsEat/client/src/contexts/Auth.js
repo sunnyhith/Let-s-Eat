@@ -25,16 +25,16 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (authStatusReported && currentUser) {
-      const { uid } = currentUser;
+      const { email } = currentUser;
       const db = firebase.firestore();
       db.collection("users")
-        .doc(`${uid}`)
+        .doc(`${email}`)
         .get()
         .then(doc => {
           if (doc.exists && doc.data().hasPreferences) {
-              //TODO: read all preferences from firebase
-              setPreference(true);
-              setPrefereneReported(true);
+            //TODO: read all preferences from firebase
+            setPreference(true);
+            setPrefereneReported(true);
           } else {
             setPreference(false);
             setPrefereneReported(true);
