@@ -2,8 +2,18 @@ import * as firebase from 'firebase';
 import { userInfo } from 'os';
 
 var db = firebase.firestore();
-var event = db.collection("event");
+var event_db = db.collection("event");
 var user_db = db.collection("users");
+
+function set_event_in_user_db(eventId, email, event_type, status){
+    var event = user_db.doc(email).collection(event_type);
+    event.doc(eventId).set({status: status})
+    .catch(
+        error => {
+            console.error("Unable to set status of ", eventId, " for ", email);
+        }
+    )
+}
 
 function create_event_info(eventInfo){
     eventInfo["host"] = firebase.auth().currentUser.email;
@@ -13,35 +23,69 @@ function create_event_info(eventInfo){
     return eventInfo;
 }
 
-function createEvent(eventInfo){
+async function createEvent(eventInfo){
     var emails = eventInfo["guests"];
     delete eventInfo.guests;
     var wrapped_info = create_event_info(eventInfo);
 
-    event.add(wrapped_info).then(function(docRef) {
-        inviteGuests(docRef.id, emails);
-        console.log("Created event ", docRef.id);
-        console.log(typeof(docRef.id));
-        return docRef.id;
-    })
-    .catch(function(error) {
+    try{
+        var event = await event_db.add(wrapped_info);
+        inviteGuests(event.id, emails);
+        set_event_in_user_db(event.id, eventInfo["host"], "host_event", "attending");
+        return event.id;
+    }
+    catch(error) {
         console.error("Error creating the event.", error);
         return null;
-    });
+    };
 }
 
-function readEvent(eventId){
-    event.doc(eventId).get()
-    .then(function(doc) {
-            if(doc.exists){
-                return doc.data();
+function get_status_guest(eventId, status){
+    return new Promise((resolve, reject) => {        
+        event_db.doc(eventId).collection(status).get().then(snapshot => {
+            let guests = [];
+            var docs = snapshot.docs;
+            if(docs){
+                docs.forEach(async (doc) => {
+                    guests.push(doc.id);
+                })
+                resolve(guests);
             }
             else{
-                console.log("Event document does not exist!");
-                return null;
+                console.log(status, " not defined");
+                reject("The status ", status, " is empty");
             }
+            
+        }).catch(error => {
+            console.warn("Fail to get guest infromation from ", status, "collection");
+            console.warn(error);
+            reject("The status ", status, " does not exist"); 
+        })
+    });    
+}
+
+async function readEvent(eventId){
+    try{
+        var event = await event_db.doc(eventId).get();
+        if(event.exists){
+            var event_info = event.data();
+
+            var statuses = ["invited", "attending", "tentative", "declined"];
+            statuses.forEach((status) => {
+                get_status_guest(eventId, status).then(guests =>{
+                    event_info[status] = guests;
+                })
+            })
+            return event_info;
         }
-    );
+        else{
+            console.log("Attempted to read an event that does not exist!");
+        }
+    }
+    catch(error){
+        console.log("Failed to read an event from database. ", error);
+    }
+    return null;
 }
 
 function updateEvent(eventId, eventInfo){
@@ -49,7 +93,7 @@ function updateEvent(eventId, eventInfo){
     delete eventInfo.guests;
     var wrapped_info = create_event_info(eventInfo);
 
-    event.doc(eventId).update(wrapped_info)
+    event_db.doc(eventId).update(wrapped_info)
     .then(function() {
             console.log("successfully updated the event ", eventId);
     }).catch(function(error)
@@ -60,12 +104,25 @@ function updateEvent(eventId, eventInfo){
 }
 
 function deleteEvent(eventId){
-    event.doc(eventId).delete()
+    // need to delete all user associate to the eventId...........
+    event_db.doc(eventId).delete()
     .catch(function(error)
         {
             console.error("Fail to delete the event", error);
         }
     );
+
+}
+
+async function get_event_in_user_db(eventId, email){
+    try{
+        var user_event_info = await user_db.doc(email).collection("guest_event").doc(eventId).get();
+        return user_event_info.data();
+    }
+    catch(error){
+        console.error("Unable to set status of ", eventId, " for ", email);
+        return;
+    }
 }
 
 function updateGuest(guest, updateInfo){
@@ -80,7 +137,7 @@ function updateGuest(guest, updateInfo){
 }
 
 function addGuestTo(eventId, email, status){
-    var guest = event.doc(eventId).collection(status);
+    var guest = event_db.doc(eventId).collection(status);
     guest.doc(email).set({})
     .catch(function(error) {
         console.log("Failed to store invitee guest information for email ", email);
@@ -91,31 +148,19 @@ function addGuestTo(eventId, email, status){
 function inviteGuests(eventId, emails){
     emails.forEach(email => {
             addGuestTo(eventId, email, "invited");
-            /*user_db.doc(email).get().then(doc => {
-                var usr_data = doc.data();
-                usr_data["host_events"][eventId] = status;
-                update_event_in_user_db(eventId, email, updateInfo);
-        })*/
+            set_event_in_user_db(eventId, email, "guest_event", "invited");
     });
 };
 
 function delGuestFrom(eventId, email, status){
-    event.doc(eventId).collection(status).doc(email).delete()
+    event_db.doc(eventId).collection(status).doc(email).delete()
     .catch(error=>{
         console.error("Unable to delete guest ", email, " from ", status);
         console.errot(error);
     })    
 };
 
-function update_event_in_user_db(eventId, email, updateInfo){
-    user_db.doc(email).update(updateInfo).catch(
-        error => {
-            console.error("Unable to update status of ", eventId, " for ", email);
-        }
-    )
-}
-
-function changeGuestStatus(eventId, status){
+async function changeGuestStatus(eventId, status){
     var valid_status = ["tentative", "declined", "attending"];
     if(!valid_status.includes(status)){
         console.warn("Invalid request for changing guest status");
@@ -123,27 +168,20 @@ function changeGuestStatus(eventId, status){
     }
 
     var email = firebase.auth().currentUser.email;
-    user_db.doc(email).get().then(
-        doc => {
-            if (!(eventId in doc.data().guest_events)){
-                console.log("Current user is not in the event: ", eventId);
-                return;
-            }
-            var usr_data = doc.data();
-            var prev_status = usr_data.guest_events[eventId];
-            delGuestFrom(eventId, email, prev_status);
-            addGuestTo(eventId, email, status);
-            usr_data["guest_events"][eventId] = status;
-            update_event_in_user_db(eventId, email, usr_data);
-        }
-    ).catch(function(error) {
-        console.log("Failed to change guest information:", error);
-    })
+    var usr_event = await get_event_in_user_db(eventId, email);
+    if (!usr_event){
+        console.log("Current user is not in the event: ", eventId);
+        return;
+    }
+    var prev_status = usr_event.status;
+    delGuestFrom(eventId, email, prev_status);
+    addGuestTo(eventId, email, status);
+    set_event_in_user_db(eventId, email, "guest_event", status);
 }
 
-function testEvent(){
-    var eventId = "a3jKD2xBcYHY95Ht6DYf";
-    var emails = ["tzuyuc@uci.edu", "zoechaozoe@gmail.com"];
+async function testEvent(){
+    var eventId = "EQ2JMw2kjUKVylma4DdH";
+    var emails = ["tzuyuc@uci.edu", "zoechaozoe@gmail.com", "aso@yahoo.com"];
     var eventInfo = {
         event_name: "Tom's birthday",
         location: "Irvine",
@@ -151,11 +189,16 @@ function testEvent(){
         guests: emails,
         start_time: new Date('2019-12-01T03:24:00')
     };
-    //var created_id = createEvent(eventInfo);
-    eventInfo.location = "Tustin";
-    updateEvent(eventId, eventInfo);
-    //inviteGuests(eventId, emails);
-    //changeGuestStatus(eventId, "tentative");
+
+    var created_id = await createEvent(eventInfo);
+    /*eventInfo.location = "Tustin";
+
+    updateEvent(created_id, eventInfo);
+
+    changeGuestStatus(eventId, "attending");
+
+    var event_info = await readEvent(eventId);
+    console.log("In test fcn, ", event_info);*/
 };
 
 export {testEvent};

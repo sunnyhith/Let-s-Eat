@@ -11,8 +11,8 @@
 //                      cusine: {......} 
 //		   }, 
 //     name: "",
-//     host_events: {eventId1, eventId2}
-//     guest_events :{eventId1: attending_status} //attending_status can be "attending", "declined", "tentative", "invited"
+//     host_events: {eventId1: attending_status, eventId2: attending_status} //this is a collection
+//     guest_events :{eventId1: attending_status} //attending_status can be "attending", "declined", "tentative", "invited" //this is a collection
 //     
 // };
 
