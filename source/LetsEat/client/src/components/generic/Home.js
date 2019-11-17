@@ -8,11 +8,11 @@ const Home = () => {
   const { currentUser, preference, loading } = useContext(AuthContext);
 
   if (loading) {
-    return <Loading/>;
+    return <Loading />;
   } else if (!currentUser) {
     return <Redirect to="/signin" />;
   } else if (!preference) {
-      return <Redirect to="/survey" />;
+    return <Redirect to="/survey" />;
   } else {
     return (
       <div>

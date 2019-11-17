@@ -1,2 +1,3 @@
 source/LetsEat/node_modules
 source/LetsEat/.gcloudignore 
+.vscode
