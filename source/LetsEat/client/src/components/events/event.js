@@ -5,6 +5,16 @@ var db = firebase.firestore();
 var event_db = db.collection("event");
 var user_db = db.collection("users");
 
+function set_event_in_user_db(eventId, email, event_type, status){
+    var event = user_db.doc(email).collection(event_type);
+    event.doc(eventId).set({status: status})
+    .catch(
+        error => {
+            console.error("Unable to set status of ", eventId, " for ", email);
+        }
+    )
+}
+
 function create_event_info(eventInfo){
     eventInfo["host"] = firebase.auth().currentUser.email;
     let deadline = new Date(eventInfo["start_time"]);
@@ -21,6 +31,7 @@ async function createEvent(eventInfo){
     try{
         var event = await event_db.add(wrapped_info);
         inviteGuests(event.id, emails);
+        set_event_in_user_db(event.id, eventInfo["host"], "host_event", "attending");
         return event.id;
     }
     catch(error) {
@@ -28,41 +39,29 @@ async function createEvent(eventInfo){
         return null;
     };
 }
-async function get_status_guest(eventId, status){
-    try{
-        console.log("status: ", status);
-        var guests = [];
-        var snapshot = await event_db.doc(eventId).collection(status).get();
-        var docs = snapshot.docs;
-        if(docs){
-            docs.forEach(async (doc) => {
-                guests.push(doc.id);
-                console.log("doc.id: ", doc.id);
-            })
-            return guests;
-        }
-        else{
-            console.log(status, " not defined");
-        }
-    }
-    catch(error){
-        console.warn("Fail to get guest infromation from ", status, "collection");
-        console.warn(error);
-    } 
-    return;
-}
 
-async function get_guest_list(eventId){
-    var guest_list;
-    var statuses = ["invited", "attending", "tentative", "declined"];
-
-    statuses.forEach(async (status) => {
-        var guests = await get_status_guest(eventId, status);
-        if(!(guests === undefined)){
-            guest_list[status] = guests;
-        }
-    })
-    return guest_list;
+function get_status_guest(eventId, status){
+    return new Promise((resolve, reject) => {        
+        event_db.doc(eventId).collection(status).get().then(snapshot => {
+            let guests = [];
+            var docs = snapshot.docs;
+            if(docs){
+                docs.forEach(async (doc) => {
+                    guests.push(doc.id);
+                })
+                resolve(guests);
+            }
+            else{
+                console.log(status, " not defined");
+                reject("The status ", status, " is empty");
+            }
+            
+        }).catch(error => {
+            console.warn("Fail to get guest infromation from ", status, "collection");
+            console.warn(error);
+            reject("The status ", status, " does not exist"); 
+        })
+    });    
 }
 
 async function readEvent(eventId){
@@ -70,9 +69,13 @@ async function readEvent(eventId){
         var event = await event_db.doc(eventId).get();
         if(event.exists){
             var event_info = event.data();
-            var guest_list = await get_guest_list(eventId);
-            console.log("guest_list is ", guest_list);
-            var event_info = {event_info, guest_list};
+
+            var statuses = ["invited", "attending", "tentative", "declined"];
+            statuses.forEach((status) => {
+                get_status_guest(eventId, status).then(guests =>{
+                    event_info[status] = guests;
+                })
+            })
             return event_info;
         }
         else{
@@ -111,16 +114,6 @@ function deleteEvent(eventId){
 
 }
 
-function set_event_in_user_db(eventId, email, status){
-    var guest_event = user_db.doc(email).collection("guest_event");
-    guest_event.doc(eventId).set({status: status})
-    .catch(
-        error => {
-            console.error("Unable to set status of ", eventId, " for ", email);
-        }
-    )
-}
-
 async function get_event_in_user_db(eventId, email){
     try{
         var user_event_info = await user_db.doc(email).collection("guest_event").doc(eventId).get();
@@ -131,8 +124,6 @@ async function get_event_in_user_db(eventId, email){
         return;
     }
 }
-
-
 
 function updateGuest(guest, updateInfo){
     guest.update(updateInfo)
@@ -157,7 +148,7 @@ function addGuestTo(eventId, email, status){
 function inviteGuests(eventId, emails){
     emails.forEach(email => {
             addGuestTo(eventId, email, "invited");
-            set_event_in_user_db(eventId, email, "invited");
+            set_event_in_user_db(eventId, email, "guest_event", "invited");
     });
 };
 
@@ -182,11 +173,10 @@ async function changeGuestStatus(eventId, status){
         console.log("Current user is not in the event: ", eventId);
         return;
     }
-
     var prev_status = usr_event.status;
     delGuestFrom(eventId, email, prev_status);
     addGuestTo(eventId, email, status);
-    set_event_in_user_db(eventId, email, status);
+    set_event_in_user_db(eventId, email, "guest_event", status);
 }
 
 async function testEvent(){
@@ -200,15 +190,15 @@ async function testEvent(){
         start_time: new Date('2019-12-01T03:24:00')
     };
 
-    /*var created_id = await createEvent(eventInfo);
-    eventInfo.location = "Tustin";
+    var created_id = await createEvent(eventInfo);
+    /*eventInfo.location = "Tustin";
 
     updateEvent(created_id, eventInfo);
 
-    changeGuestStatus(eventId, "attending");*/
+    changeGuestStatus(eventId, "attending");
 
     var event_info = await readEvent(eventId);
-    console.log("In test fcn, ", event_info);
+    console.log("In test fcn, ", event_info);*/
 };
 
 export {testEvent};
