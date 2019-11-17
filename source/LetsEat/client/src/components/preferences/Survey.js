@@ -60,8 +60,7 @@ const Survey = () => {
       <SnackbarContent
         message={
           <span>
-            <b>SUCCESS ALERT:</b> You've got some friends nearby, stop looking
-            at your phone and find them...
+            <b>SUCCESS ALERT:</b> Awesome! Your preferences have been saved!
           </span>
         }
         close
