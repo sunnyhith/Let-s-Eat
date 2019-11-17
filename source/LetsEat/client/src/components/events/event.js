@@ -1,204 +1,253 @@
-import * as firebase from 'firebase';
-import { userInfo } from 'os';
+import React, { useContext, useState, useEffect } from "react";
+import { Redirect } from "react-router-dom";
+import { AuthContext } from "../../contexts/Auth";
+import { createEvent } from "components/events/eventUtil.js";
+import Datetime from "react-datetime";
+import {validateEmail} from "util/validator.js";
+// nodejs library that concatenates classes
+import classNames from "classnames";
+// @material-ui/core components
+import InputAdornment from "@material-ui/core/InputAdornment";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
+// core components
+import EmailList from "components/events/emailList";
+import Loading from "components/generic/Loading";
+import Parallax from "components/Parallax/Parallax.js";
+import GridContainer from "components/Grid/GridContainer.js";
+import GridItem from "components/Grid/GridItem.js";
+import Button from "components/CustomButtons/Button.js";
+import CustomInput from "components/CustomInput/CustomInput.js";
+//Styling
+import styles from "assets/jss/layout/CreateEventStyle.js";
+import { makeStyles } from "@material-ui/core/styles";
+const usestyles = makeStyles(styles);
 
-var db = firebase.firestore();
-var event_db = db.collection("event");
-var user_db = db.collection("users");
+const Event = (props) => {
+  const classes = usestyles();
+  const { currentUser, preference, loading } = useContext(AuthContext);
 
-function set_event_in_user_db(eventId, email, event_type, status){
-    var event = user_db.doc(email).collection(event_type);
-    event.doc(eventId).set({status: status})
-    .catch(
-        error => {
-            console.error("Unable to set status of ", eventId, " for ", email);
-        }
-    )
-}
+  const [ eventInfo, setEventInfo ] = useState({
+    event_name: '',
+    location: '',
+    message: '',
+    start_time: null,
+  });
+  const [ emails, setEmails ] = useState([]);
+  const [ errors, setErrors ] = useState({
+    event_name: " - Invalid",
+    location: " - Invalid",
+    start_time: " - Please select a time",
+    message: " - Invalid",
+  });
+  const [ isValid, setIsValid ] = useState({
+    event_name: true,
+    location: true,
+    start_time: true,
+    message: true,
+  });
 
-function create_event_info(eventInfo){
-    eventInfo["host"] = firebase.auth().currentUser.email;
-    let deadline = new Date(eventInfo["start_time"]);
-    deadline.setDate(deadline.getDate()-2);
-    eventInfo["deadline"] = firebase.firestore.Timestamp.fromDate(deadline); 
-    return eventInfo;
-}
-
-async function createEvent(eventInfo){
-    var emails = eventInfo["guests"];
-    delete eventInfo.guests;
-    var wrapped_info = create_event_info(eventInfo);
-
-    try{
-        var event = await event_db.add(wrapped_info);
-        inviteGuests(event.id, emails);
-        set_event_in_user_db(event.id, eventInfo["host"], "host_event", "attending");
-        return event.id;
+  const handleInput = (event) => {
+    let id = event.target.id.toString();
+    if (event.target.value === '') {
+      setIsValid({
+        ...isValid,
+        [id]: false,
+      });
+    } else if (!isValid[id]) {
+      setIsValid({
+        ...isValid,
+        [id]: true,
+      });
     }
-    catch(error) {
-        console.error("Error creating the event.", error);
-        return null;
-    };
-}
+    eventInfo[id] = event.target.value;
+  };
 
-function get_status_guest(eventId, status){
-    return new Promise((resolve, reject) => {        
-        event_db.doc(eventId).collection(status).get().then(snapshot => {
-            let guests = [];
-            var docs = snapshot.docs;
-            if(docs){
-                docs.forEach(async (doc) => {
-                    guests.push(doc.id);
-                })
-                resolve(guests);
-            }
-            else{
-                console.log(status, " not defined");
-                reject("The status ", status, " is empty");
-            }
-            
-        }).catch(error => {
-            console.warn("Fail to get guest infromation from ", status, "collection");
-            console.warn(error);
-            reject("The status ", status, " does not exist"); 
-        })
-    });    
-}
+  const handleEmailInput = (event) => {
+    let newEmail = event.target.value.replace(/\s+/g, '');
+    if (event.key === ' ' || event.key === 'Enter') {     
+      if (!validateEmail(newEmail)) {
+        setErrors({
+          ...errors,
+          email_input: "  - Input valid email address"
+        });
+      } else {
+        setEmails(emails.concat(newEmail));
+        delete errors.email_input;
+      }
+      event.target.value = "";
+      if(event.preventDefault) event.preventDefault(); 
+    }    
+  }
 
-async function readEvent(eventId){
-    try{
-        var event = await event_db.doc(eventId).get();
-        if(event.exists){
-            var event_info = event.data();
+  const handleSubmit = async () => {
+    var isReady = true;
+    var validate = {};
 
-            var statuses = ["invited", "attending", "tentative", "declined"];
-            statuses.forEach((status) => {
-                get_status_guest(eventId, status).then(guests =>{
-                    event_info[status] = guests;
-                })
-            })
-            return event_info;
-        }
-        else{
-            console.log("Attempted to read an event that does not exist!");
-        }
-    }
-    catch(error){
-        console.log("Failed to read an event from database. ", error);
-    }
-    return null;
-}
-
-function updateEvent(eventId, eventInfo){
-    var emails = eventInfo["guests"];
-    delete eventInfo.guests;
-    var wrapped_info = create_event_info(eventInfo);
-
-    event_db.doc(eventId).update(wrapped_info)
-    .then(function() {
-            console.log("successfully updated the event ", eventId);
-    }).catch(function(error)
-        {
-            console.error("Fail to update the event", error);
-        }
-    );
-}
-
-function deleteEvent(eventId){
-    // need to delete all user associate to the eventId...........
-    event_db.doc(eventId).delete()
-    .catch(function(error)
-        {
-            console.error("Fail to delete the event", error);
-        }
-    );
-
-}
-
-async function get_event_in_user_db(eventId, email){
-    try{
-        var user_event_info = await user_db.doc(email).collection("guest_event").doc(eventId).get();
-        return user_event_info.data();
-    }
-    catch(error){
-        console.error("Unable to set status of ", eventId, " for ", email);
-        return;
-    }
-}
-
-function updateGuest(guest, updateInfo){
-    guest.update(updateInfo)
-    .then(function() {
-            console.log("successfully updated guest information: ", updateInfo);
-    }).catch(function(error)
-        {
-            console.error("Fail to guest information", error);
-        }
-    );
-}
-
-function addGuestTo(eventId, email, status){
-    var guest = event_db.doc(eventId).collection(status);
-    guest.doc(email).set({})
-    .catch(function(error) {
-        console.log("Failed to store invitee guest information for email ", email);
-        console.log(error);
-    });
-}
-
-function inviteGuests(eventId, emails){
-    emails.forEach(email => {
-            addGuestTo(eventId, email, "invited");
-            set_event_in_user_db(eventId, email, "guest_event", "invited");
-    });
-};
-
-function delGuestFrom(eventId, email, status){
-    event_db.doc(eventId).collection(status).doc(email).delete()
-    .catch(error=>{
-        console.error("Unable to delete guest ", email, " from ", status);
-        console.errot(error);
-    })    
-};
-
-async function changeGuestStatus(eventId, status){
-    var valid_status = ["tentative", "declined", "attending"];
-    if(!valid_status.includes(status)){
-        console.warn("Invalid request for changing guest status");
-        return;
+    for (var key in isValid) {
+      if (!isValid[key]) {
+        isReady = false;
+      } else if (!eventInfo[key]) {
+        isReady = false;
+        validate = {
+          ...validate,
+          [key]: false,
+        };
+      } 
     }
 
-    var email = firebase.auth().currentUser.email;
-    var usr_event = await get_event_in_user_db(eventId, email);
-    if (!usr_event){
-        console.log("Current user is not in the event: ", eventId);
-        return;
-    }
-    var prev_status = usr_event.status;
-    delGuestFrom(eventId, email, prev_status);
-    addGuestTo(eventId, email, status);
-    set_event_in_user_db(eventId, email, "guest_event", status);
-}
-
-async function testEvent(){
-    var eventId = "EQ2JMw2kjUKVylma4DdH";
-    var emails = ["tzuyuc@uci.edu", "zoechaozoe@gmail.com", "aso@yahoo.com"];
-    var eventInfo = {
-        event_name: "Tom's birthday",
-        location: "Irvine",
-        message: "Hey Lets celebrate for Tom",
+    if (!isReady) {
+      setIsValid({
+        ...isValid,
+        ...validate,
+      });
+    } else {
+      console.log("ready to submit");
+      console.log(eventInfo);
+      console.log(emails);
+      //send message,
+      var result = await createEvent({
+        ...eventInfo,
         guests: emails,
-        start_time: new Date('2019-12-01T03:24:00')
-    };
+      });
+      console.log(result);
+    }
+  }
 
-    var created_id = await createEvent(eventInfo);
-    /*eventInfo.location = "Tustin";
+  const handleTimeInput = (event) => {
+    eventInfo.start_time = event.toDate();
+    if (!isValid["start_time"]) {
+      setIsValid({
+        ...isValid,
+        start_time: true,
+      });
+    }
+  }
 
-    updateEvent(created_id, eventInfo);
+  if (loading) {
+    return <Loading/>;
+  } else if (!currentUser) {
+    return <Redirect to="/signin" />;
+  } else {
+    return (
+      <div>
+        <Parallax image={require("assets/img/bkg.jpg")}>
+        </Parallax> 
+        <div className={classNames(classes.main, classes.mainRaised)}>
+          <div className={classes.sections}>
+            <div className={classes.container}>
+              <div className={classes.sectionTitle}>
+                  <h2>Event {props.match.params.event_id}</h2>
+              </div>
+              <div id="form">
+                <GridContainer>
+                  <GridItem xs={12} sm={12} md={12} lg={12}>
+                      <CustomInput
+                        id="event_name"
+                        error={!isValid['event_name']}
+                        labelText={"Event Name".concat(isValid['event_name'] ? '' : errors.event_name)}
+                        formControlProps={{
+                          fullWidth: true,
+                          required: true
+                        }}
+                        inputProps={{
+                          onChange: handleInput,
+                        }}
+                      />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={6} lg={6}>
+                    <CustomInput
+                      id="location"
+                      error={!isValid['location']}
+                      labelText={"Location".concat(isValid['location'] ? '' : errors.location)}
+                      formControlProps={{
+                        fullWidth: true,
+                        required: true
+                      }}
+                      inputProps={{
+                        onChange: handleInput,
+                      }}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={6} lg={6}>
+                    <InputLabel 
+                      className={classes.label} 
+                      error={!isValid['start_time']}
+                    >
+                      {isValid['start_time'] ? '' : errors.start_time}
+                    </InputLabel>
+                    <br/>
+                    <FormControl fullWidth className={classes.placeholderText}>
+                      <Datetime
+                        onChange={handleTimeInput}
+                        inputProps={{ placeholder: "Start Time", readOnly:true}}
+                        isValidDate={(selectedDate, currentDate) => {return selectedDate.isAfter( Datetime.moment().add( 1, 'day' ) )}}
+                      />
+                    </FormControl>
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={12} lg={12}>
+                    <CustomInput
+                      id="message"
+                      error={!isValid['message']}
+                      labelText={"Event Description".concat(isValid['message'] ? '' : errors.message)}
+                      inputProps={{
+                        onChange: handleInput,
+                        multiline: true,
+                        rows: "2"
+                      }}
+                      formControlProps={{
+                        fullWidth: true,
+                        required: true
+                      }}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={3} lg={2}>
+                    <p className={classes.subtitle}> Guest List: </p>
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={9} lg={10}>
+                    <GridItem xs={12} sm={12} md={12} lg={12}>
+                      <CustomInput
+                        id="email_input"
+                        error={errors.hasOwnProperty('email_input')}
+                        labelText={("Input Email to Invite Friends!").concat(errors.email_input || '')}
+                        inputProps={{
+                          type: "email",
+                          onKeyDown: handleEmailInput
+                        }}
+                        formControlProps={{
+                          fullWidth: true,
+                        }}
+                      />
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={12} lg={12}>
+                      <EmailList
+                        emails={emails}
+                        setEmails={setEmails}
+                      />
+                    </GridItem>
+                  </GridItem>
 
-    changeGuestStatus(eventId, "attending");
-
-    var event_info = await readEvent(eventId);
-    console.log("In test fcn, ", event_info);*/
+                  
+                  
+                </GridContainer>
+                  <div 
+                      className={classes.submitButton}>
+                    <Button
+                      round
+                      color="info"
+                      onClick={handleSubmit}
+                    >
+                      Submit
+                    </Button>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 };
 
-export {testEvent};
+export default Event;

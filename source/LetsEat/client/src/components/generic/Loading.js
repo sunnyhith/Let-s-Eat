@@ -9,7 +9,7 @@ const Loading = () => {
 
     return (
         <div style={divStyle}>
-            <h2><i class="fa fa-spinner fa-pulse fa-fw"></i> Loading...</h2>
+            <h2><i className="fa fa-spinner fa-pulse fa-fw"></i> Loading...</h2>
         </div>
     );
 
