@@ -29,10 +29,9 @@ const SignIn = props => {
     const db = firebaseConfig.firestore();
     var docRef = db
       .collection("users")
-      .doc(userInfo.uid)
+      .doc(userInfo.email)
       .set({
         name: userInfo.name,
-        email: userInfo.email,
         hasPreferences: false
       })
       .then(function() {
@@ -44,6 +43,7 @@ const SignIn = props => {
   };
 
   const emailSignIn = () => {
+    // should validate email
     var email = document.getElementById("sign_in_email").value;
     var password = document.getElementById("sign_in_psw").value;
     firebaseConfig
@@ -77,7 +77,6 @@ const SignIn = props => {
         var isNewUser = result.additionalUserInfo.isNewUser;
         if (isNewUser) {
           storeUserIntoFirebase({
-            uid: result.user.uid,
             name: result.user.displayName,
             email: result.user.email
           });
@@ -90,7 +89,7 @@ const SignIn = props => {
   };
 
   if (loading) {
-    return <Loading/>;
+    return <Loading />;
   } else if (currentUser) {
     return <Redirect to="/" />;
   } else {

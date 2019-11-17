@@ -37,12 +37,12 @@ const SignedIn = () => {
     } else {
       window.alert("User is not signed in.");
     }
-  }
+  };
 
   return (
     <div>
       <List className={classes.list}>
-        <ListItem className={classes.listItem}>
+        {/* <ListItem className={classes.listItem}>
           <Button
             component={Link}
             to="/survey"
@@ -51,7 +51,7 @@ const SignedIn = () => {
           >
             Survey
           </Button>
-        </ListItem>
+        </ListItem> */}
         <ListItem className={classes.listItem}>
           <Button
             component={Link}
@@ -84,7 +84,6 @@ const SignedIn = () => {
       </List>
     </div>
   );
-}
-
+};
 
 export default SignedIn;

@@ -4,50 +4,58 @@ import firebase from "firebase";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(undefined);
-  const [preference, setPreference] = useState(undefined);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [preference, setPreference] = useState(null);
   const [authStatusReported, setAuthStatusReported] = useState(false);
   const [prefereneReported, setPrefereneReported] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const updatePreference = useCallback(
-    (preference) => {
-      console.log(preference);
-      setPreference(preference);
-    }, []
-  );
+  const updatePreference = useCallback(preference => {
+    console.log(preference);
+    setPreference(preference);
+  }, []);
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged(user => {
-      console.log("AuthStateChange");
-      setCurrentUser(user);
       if (user) {
-        const { uid } = user;
-        const db = firebase.firestore();
-        db.collection("users")
-          .doc(`${uid}`)
-          .get()
-          .then(doc => {
-            if (doc.exists && doc.data().hasPreferences) {
-                //TODO: read all preferences from firebase
-                setPreference(true);
-                setLoading(false);
-            } else {
-              setPreference(false);
-              setLoading(false);
-            }
-          })
-          .catch(function(error) {
-            console.log("Error getting preferences:", error);
-          });
-      } else if (authStatusReported) {
-        setPreference(false);
+        setCurrentUser(user);
+        console.log("logged in");
+      } else {
+        setCurrentUser(null);
         setLoading(false);
+        console.log("logged out");
       }
-      setLoading(false);
     });
-  }, []);
+  });
 
+  useEffect(() => {
+    if (currentUser) {
+      const { email } = currentUser;
+      const db = firebase.firestore();
+      db.collection("users")
+        .doc(`${email}`)
+        .get()
+        .then(doc => {
+          if (doc.exists && doc.data().hasPreferences) {
+            //TODO: read all preferences from firebase
+            setPreference(true);
+          } else {
+            setPreference(false);
+          }
+        })
+        .catch(function(error) {
+          console.log("Error getting preferences:", error);
+        });
+    } else if (authStatusReported) {
+      setPreference(false);
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (typeof preference === "boolean") {
+      setLoading(false);
+    }
+  }, [preference]);
 
   // useEffect(() => {
   //   firebase.auth().onAuthStateChanged(user => {
