@@ -166,7 +166,6 @@ async function changeGuestStatus(eventId, status){
         console.warn("Invalid request for changing guest status");
         return;
     }
-
     var email = firebase.auth().currentUser.email;
     var usr_event = await get_event_in_user_db(eventId, email);
     if (!usr_event){
@@ -179,8 +178,46 @@ async function changeGuestStatus(eventId, status){
     set_event_in_user_db(eventId, email, "guest_event", status);
 }
 
-async function testEvent(){
-    var eventId = "EQ2JMw2kjUKVylma4DdH";
+function getUserEveryEvents(){
+    return new Promise(async (resolve, reject) => {
+        var email = firebase.auth().currentUser.email;
+        var allEvents = {};
+
+        ["guest_event", "host_event"].forEach(event_type => {
+            user_db.doc(email).collection(event_type).get().then(async snapshot =>{
+                let events_list = {};
+                var docs = snapshot.docs;
+                if(docs){
+                    docs.forEach(async (doc) => {
+                        var eventId = doc.id;
+                        event_db.doc(eventId).get().then( event =>{
+                            if(event.exists){
+                                var eventInfo = event.data();
+                                var eventSummary = {};
+                                eventSummary['event_name'] = eventInfo.event_name;
+                                eventSummary['location'] = eventInfo.location;
+                                eventSummary["status"] = event_type === "guest_event"? doc.data().status: "attending";
+                                
+                                var statuses = ["invited", "attending", "tentative", "declined"];
+                                statuses.forEach((status) => {
+                                    get_status_guest(eventId, status).then(guests =>{
+                                        eventSummary[status + "_cnt"] = guests.length;
+                                    })
+                                })
+                                events_list[eventId] = eventSummary;
+                            }
+                        });
+                    })
+                    allEvents[event_type] = events_list;
+                }
+            })
+        })
+        resolve(allEvents);
+    })
+}
+
+/*function testEvent(){
+    var eventId = "C5jYNt7VRcgBGPBRPtS1";
     var emails = ["tzuyuc@uci.edu", "zoechaozoe@gmail.com", "aso@yahoo.com"];
     var eventInfo = {
         event_name: "Tom's birthday",
@@ -191,14 +228,19 @@ async function testEvent(){
     };
 
     var created_id = await createEvent(eventInfo);
-    /*eventInfo.location = "Tustin";
+    eventInfo.location = "Tustin";
 
     updateEvent(created_id, eventInfo);
 
-    changeGuestStatus(eventId, "attending");
-
     var event_info = await readEvent(eventId);
-    console.log("In test fcn, ", event_info);*/
-};
+    console.log("In test fcn, ", event_info);
+    //var email = firebase.auth().currentUser.email;
+    //var usr_event = await get_event_in_user_db(eventId, email);
+    console.log("I am in testEvent");
+    getUserEveryEvents().then(list_events =>{
+        console.log(list_events);
+    }).catch(error=>{console.log(error)})
+    //changeGuestStatus(eventId, "attending");
+};*/
 
-export {createEvent, updateEvent, readEvent, changeGuestStatus};
+export {createEvent, updateEvent, readEvent, changeGuestStatus, getUserEveryEvents};
