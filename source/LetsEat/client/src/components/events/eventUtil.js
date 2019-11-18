@@ -40,28 +40,51 @@ async function createEvent(eventInfo){
     };
 }
 
-function get_status_guest(eventId, status){
-    return new Promise((resolve, reject) => {        
-        event_db.doc(eventId).collection(status).get().then(snapshot => {
-            let guests = [];
-            var docs = snapshot.docs;
-            if(docs){
-                docs.forEach(async (doc) => {
-                    guests.push(doc.id);
-                })
-                resolve(guests);
-            }
-            else{
-                console.log(status, " not defined");
-                reject("The status ", status, " is empty");
-            }
+// function get_status_guest(eventId, status){
+//     return new Promise((resolve, reject) => {        
+//         event_db.doc(eventId).collection(status).get().then(snapshot => {
+//             var guests = [];
+//             var docs = snapshot.docs;
+//             if(docs){
+//                 docs.forEach(async (doc) => {
+//                     guests.push(doc.id);
+//                 })
+//                 resolve(guests);
+//             }
+//             else{
+//                 console.log(status, " not defined");
+//                 reject("The status ", status, " is empty");
+//             }
             
-        }).catch(error => {
-            console.warn("Fail to get guest infromation from ", status, "collection");
-            console.warn(error);
-            reject("The status ", status, " does not exist"); 
-        })
-    });    
+//         }).catch(error => {
+//             console.warn("Fail to get guest infromation from ", status, "collection");
+//             console.warn(error);
+//             reject("The status ", status, " does not exist"); 
+//         })
+//     });    
+// }
+
+async function get_status_guest(eventId, status){
+    try { 
+        var snapshot = await event_db.doc(eventId).collection(status).get();
+        var guests = [];
+        var docs = snapshot.docs;
+        if(docs){
+            docs.forEach(async (doc) => {
+                guests.push(doc.id);
+            })
+            return guests;
+        }
+        else{
+            console.log(status, " not defined");
+            // reject("The status ", status, " is empty");
+        }
+    }
+    catch(error) {
+        console.warn("Fail to get guest infromation from ", status, "collection");
+        console.warn(error);
+        // reject("The status ", status, " does not exist"); 
+    }
 }
 
 async function readEvent(eventId){
@@ -71,11 +94,11 @@ async function readEvent(eventId){
             var event_info = event.data();
 
             var statuses = ["invited", "attending", "tentative", "declined"];
-            statuses.forEach((status) => {
-                get_status_guest(eventId, status).then(guests =>{
-                    event_info[status] = guests;
-                })
+            await statuses.forEach(async (status) => {
+
+                event_info[status] = await get_status_guest(eventId, status);
             })
+            console.log(event_info.invited);
             return event_info;
         }
         else{
