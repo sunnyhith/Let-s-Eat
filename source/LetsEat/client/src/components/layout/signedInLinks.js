@@ -1,14 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import firebaseConfig from "config/firebaseConfig";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import Button from "components/CustomButtons/Button";
-
-// @material-ui/core components
-import Tooltip from "@material-ui/core/Tooltip";
-
-import firebaseConfig from "config/firebaseConfig";
-
+//Styling
 import styles from "assets/jss/material-kit-react/components/headerLinksStyle.js";
 import { makeStyles } from "@material-ui/core/styles";
 const usestyles = makeStyles(styles);
@@ -42,16 +38,6 @@ const SignedIn = () => {
   return (
     <div>
       <List className={classes.list}>
-        {/* <ListItem className={classes.listItem}>
-          <Button
-            component={Link}
-            to="/survey"
-            color="transparent"
-            className={classes.navLink}
-          >
-            Survey
-          </Button>
-        </ListItem> */}
         <ListItem className={classes.listItem}>
           <Button
             component={Link}

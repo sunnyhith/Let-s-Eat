@@ -1,6 +1,7 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
 const fetch = require("node-fetch");
+const sgMail = require("@sendgrid/mail");
 
 // create a GET route
 router.get("/express_backend", (req, res) => {
@@ -45,5 +46,24 @@ router.get("/restaurants/:id", async (request, response) => {
   response.json(json);
 });
 
+router.post("/event/send-invites/:id", async (request, response) => {
+  const eventId = request.params.id;
+  const sendgrid_api_key =
+    "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";
+  sgMail.setApiKey(sendgrid_api_key);
+  const { host, eventInfo, emails } = request.body;
+  const msg = {
+    to: emails,
+    from: host.email,
+    subject: `Let's Eat! Event Invitation - ${eventInfo.event_name}`,
+    text: `${host.displayName} has invited you to the event - ${eventInfo.event_name}\n
+          Location - ${eventInfo.location}\n
+          Event Description - ${eventInfo.message}\n
+          Date and Time - ${eventInfo.start_time}`
+  };
+  sgMail.send(msg).then(() => {
+    response.end("working");
+  });
+});
 
 module.exports = router;
