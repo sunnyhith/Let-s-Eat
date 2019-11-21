@@ -31,6 +31,16 @@ const componentsStyle = theme => ({
         maxWidth: "500px",
         margin: "35px 0 0"
     },
+    listTitle: {
+        fontSize: "1.313rem",
+        maxWidth: "500px",
+        margin: "20px 0 20px"
+    },
+    listSubtitle: {
+        fontSize: "1.1rem",
+        maxWidth: "500px",
+        margin: "10px 0 0 5px"
+    },
     main: {
         background: "#FFFFFF",
         position: "relative",
@@ -38,6 +48,7 @@ const componentsStyle = theme => ({
     },
     mainRaised: {
         borderRadius: "6px",
+        minHeight: "500px",
         boxShadow:
             "0 16px 24px 2px rgba(0, 0, 0, 0.14), 0 6px 30px 5px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2)",
         [theme.breakpoints.down('xs')]: {
@@ -79,8 +90,26 @@ const componentsStyle = theme => ({
             opacity: 1 /* Firefox */
         }
     },
-    submitButton:{
+    rightOperation: {
+        textAlign: "right",
+    },
+    submitButton: {
         marginTop: "50px",
+    },
+    editButton: {
+        margin: "15px 0 15px",
+    },
+    titleEditButton: {
+        margin: "0 0 0 20px"
+    },
+    dropdownLink: {
+        "&,&:hover,&:focus": {
+          color: "inherit",
+          textDecoration: "none",
+          display: "block",
+          padding: "10px 20px",
+          margin: "0"
+        }
     }
 });
 

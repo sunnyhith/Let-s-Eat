@@ -5,6 +5,12 @@ var db = firebase.firestore();
 var event_db = db.collection("event");
 var user_db = db.collection("users");
 
+async function asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+      await callback(array[index], index, array);
+    }
+  }
+
 function set_event_in_user_db(eventId, email, event_type, status){
     user_db.doc(email).get().then(doc=>{
         if (!doc.exists){
@@ -73,11 +79,9 @@ async function readEvent(eventId){
             var event_info = event.data();
 
             var statuses = ["invited", "attending", "tentative", "declined"];
-            await statuses.forEach(async (status) => {
-
-                event_info[status] = await get_status_guest(eventId, status);
-            })
-            console.log(event_info.invited);
+            for (let i=0; i<statuses.length; i++) {
+                event_info[statuses[i]] = await get_status_guest(eventId, statuses[i]);
+            }
             return event_info;
         }
         else{
@@ -161,58 +165,65 @@ function delGuestFrom(eventId, email, status){
     })    
 };
 
-async function changeGuestStatus(eventId, status){
+async function getUserStatus(email, eventId) {
+    var usr_event = await get_event_in_user_db(eventId, email);
+    if (!usr_event){
+        console.log("Current user is not in the event: ", eventId);
+        return null;
+    }
+    return usr_event.status;
+}
+
+async function changeGuestStatus(email, eventId, status){
     var valid_status = ["tentative", "declined", "attending"];
     if(!valid_status.includes(status)){
         console.warn("Invalid request for changing guest status");
         return;
     }
-    var email = firebase.auth().currentUser.email;
-    var usr_event = await get_event_in_user_db(eventId, email);
-    if (!usr_event){
-        console.log("Current user is not in the event: ", eventId);
-        return;
-    }
-    var prev_status = usr_event.status;
+    
+    var prev_status = await getUserStatus(email, eventId);
     delGuestFrom(eventId, email, prev_status);
     addGuestTo(eventId, email, status);
     set_event_in_user_db(eventId, email, "guest_event", status);
 }
 
-function getUserEveryEvents(){
+function getUserEveryEvents(email){
     return new Promise(async (resolve, reject) => {
-        var email = firebase.auth().currentUser.email;
         var allEvents = {};
-
-        ["guest_event", "host_event"].forEach(event_type => {
-            user_db.doc(email).collection(event_type).get().then(async snapshot =>{
-                let events_list = {};
-                var docs = snapshot.docs;
-                if(docs){
-                    docs.forEach(async (doc) => {
-                        var eventId = doc.id;
-                        event_db.doc(eventId).get().then( event =>{
-                            if(event.exists){
-                                var eventInfo = event.data();
-                                var eventSummary = {};
-                                eventSummary['event_name'] = eventInfo.event_name;
-                                eventSummary['location'] = eventInfo.location;
-                                eventSummary["status"] = event_type === "guest_event"? doc.data().status: "attending";
-                                
-                                var statuses = ["invited", "attending", "tentative", "declined"];
-                                statuses.forEach((status) => {
-                                    get_status_guest(eventId, status).then(guests =>{
-                                        eventSummary[status + "_cnt"] = guests.length;
-                                    })
-                                })
-                                events_list[eventId] = eventSummary;
-                            }
-                        });
-                    })
-                    allEvents[event_type] = events_list;
+        var all_event_type = ["guest_event", "host_event"];
+        for (let i=0; i < all_event_type.length; i++) {
+            var event_type = all_event_type[i];
+            var snapshot = await user_db.doc(email).collection(event_type).get();
+            console.log(event_type, snapshot);
+            let events_list = [];
+            var docs = snapshot.docs;
+            for (let j=0; j<docs.length; j++) {
+                var doc = docs[j];
+                var eventId = doc.id;
+                console.log('?', eventId);
+                var event = await event_db.doc(eventId).get();
+                if(event.exists){
+                    console.log('?', event);
+                    var eventInfo = event.data();
+                    var eventSummary = {};
+                    eventSummary['event_id'] = eventId;
+                    eventSummary['event_name'] = eventInfo.event_name;
+                    eventSummary['location'] = eventInfo.location;
+                    eventSummary['message'] = eventInfo.message;
+                    eventSummary["status"] = event_type === "guest_event"? doc.data().status: "attending";
+                    
+                    var statuses = ["invited", "attending", "tentative", "declined"];
+                    for (let z=0; z < statuses.length; z++) {
+                        var status = statuses[z];
+                        await get_status_guest(eventId, status).then( async guests =>{
+                            eventSummary[status + "_cnt"] = guests.length;
+                        })
+                    }
+                    events_list.push(eventSummary);
                 }
-            })
-        })
+                allEvents[event_type] = events_list;
+            }
+        }
         resolve(allEvents);
     })
 }
@@ -244,4 +255,4 @@ function getUserEveryEvents(){
     //changeGuestStatus(eventId, "attending");
 };*/
 
-export {createEvent, updateEvent, readEvent, changeGuestStatus, getUserEveryEvents};
+export {createEvent, updateEvent, readEvent, changeGuestStatus, getUserEveryEvents, inviteGuests, getUserStatus};

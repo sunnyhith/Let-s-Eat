@@ -140,8 +140,16 @@ const CreateEvent = () => {
     }
   };
 
+<<<<<<< HEAD
   const handleTimeInput = event => {
     eventInfo.start_time = event.toDate();
+=======
+  const handleTimeInput = (event) => {
+    setEventInfo({
+      ...eventInfo,
+      start_time: event.toDate()
+    });
+>>>>>>> Finish event page and dashboard in home page.
     if (!isValid["start_time"]) {
       setIsValid({
         ...isValid,
@@ -207,7 +215,11 @@ const CreateEvent = () => {
                       className={classes.label}
                       error={!isValid["start_time"]}
                     >
+<<<<<<< HEAD
                       {isValid["start_time"] ? "" : errors.start_time}
+=======
+                      {eventInfo['start_time'] ? (isValid['start_time'] ? 'Start Time' : errors.start_time) : ''}
+>>>>>>> Finish event page and dashboard in home page.
                     </InputLabel>
                     <br />
                     <FormControl fullWidth className={classes.placeholderText}>

@@ -2,6 +2,15 @@ const modalStyle = {
   modal: {
     borderRadius: "6px"
   },
+  invitationModal: {
+    borderRadius: "6px",
+    width: "500px"
+  },
+  editModal: {
+    borderRadius: "6px",
+    width: "500px",
+    height: "700px"
+  },
   modalHeader: {
     borderBottom: "none",
     paddingTop: "24px",
@@ -49,7 +58,17 @@ const modalStyle = {
   modalFooterCenter: {
     marginLeft: "auto",
     marginRight: "auto"
-  }
+  },
+  label: {
+      color: "error",
+      display: "inline-flex",
+      fontSize: "11px",
+      transition: "0.3s ease all",
+      lineHeight: "1.428571429",
+      fontWeight: "400",
+      paddingLeft: "0",
+      letterSpacing: "normal"
+  },
 };
 
 export default modalStyle;

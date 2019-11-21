@@ -24,22 +24,28 @@ export default function EmailList(props) {
   
     return (
       <div className={classes.root}>
-        <Chip
-            key={0}
-            icon={<TagFacesIcon />}
-            label={"Me"}
-            className={classes.chip}
-        />
-        {props.emails.map((data,index) => {  
-          return (
-            <Chip
-                key={index+1}
-                label={data}
-                onDelete={handleDelete(data)}
-                className={classes.chip}
-            />
-          );
-        })}
+        {
+            props.self ? 
+                <Chip
+                    key={0}
+                    icon={<TagFacesIcon />}
+                    label={"Me"}
+                    className={classes.chip}
+                />
+            : ''
+        }
+        {
+            props.emails ? props.emails.map((data,index) => {  
+                return (
+                    <Chip
+                        key={index+1}
+                        label={data}
+                        onDelete={props.setEmails ? handleDelete(data) : undefined}
+                        className={classes.chip}
+                    />
+                );
+                }) : ''
+        }
       </div>
     );
   }
