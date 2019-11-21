@@ -7,9 +7,10 @@ async function readPreference(email){
     try{
         var user = await user_db.doc(email).get();
         if(user.exists){
-            var preference = {  // convert from list to maps
-                                "dietery_restriction": Object.keys(user.data().dietery_restriction),
-                                "cusine": Object.keys(user.data().cusine)
+            var preference = { 
+                                "dietaryRestrictions": Object.keys(user.data().dietaryRestrictions),
+                                "favCuisines": Object.keys(user.data().favCuisines),
+                                "pricePreference": Object.keys(user.data().pricePreference),
                              }
             return preference;
         }
@@ -23,40 +24,43 @@ async function readPreference(email){
     return null;
 }
 
-function updatePreference(email, preference){
-    // convert to a list
-    var cusine_map = preference.cusine.reduce((a,b)=> (a[b]='',a),{});
-    var dietery_map = preference.dietery_restriction.reduce((a,b)=> (a[b]='',a),{});
-    var pref_map = {
-        cusine: cusine_map,
-        dietery_restriction: dietery_map
-    }
-    user_db.doc(email).get().then(user => {
-        // if not registered, in the future create the user with email and save name and location
-        if(!user.exists){
-            console.error("user ", email, " does not exist in the databse.\
-                Please create the user in user database first");
-            return
-        }
-    })
-    user_db.doc(email).update(pref_map)
-    .then(function() {
-            console.log("successfully updated the user preference for ", email);
-    }).catch(function(error)
-        {
-            console.error("Fail to update the user preference for ", email);
-            console.log(error);
-        }
-    );
-}
+// function updatePreference(email, preference){
+//     console.log("preference in util is:", preference);
+//     // convert to a list
+//     var cusine_map = preference.favCuisines.reduce((a,cusine)=> (a[cusine.label]='', a), {});
+//     var dietery_map = {}; //preference.dietaryRestrictions.reduce((a,b)=> (a[b.label]='', a),{});
+//     var price_map = {};//preference.pricePreference.reduce();
+
+//     var pref_map = {
+//         hasPreferences: true,
+//         name: preference.firstName + " " + preference.lastName,
+//         currentLocation: preference.currentLocation,
+//         favCuisines: cusine_map,
+//         dietaryRestrictions: dietery_map,
+//         pricePreference: price_map
+//     }
+//     user_db.doc(email).get().then(user => {
+//         // if not registered, in the future create the user with email and save name and location
+//         if(!user.exists){
+//             console.error("user ", email, " does not exist in the databse.\
+//                 Please create the user in user database first");
+//             return
+//         }
+//     })
+
+//     user_db.doc(email).update(pref_map)
+//     .then(function() {
+//             console.log("successfully updated the user preference for ", email);
+//     })
+// }
 
 async function testPreference(){
     var preference = {
-                        "cusine": ["Mexican", "Indian"],
-                        "dietery_restriction": []
+                        "favCuisines": ["Mexican", "Indian"],
+                        "dietaryRestrictions": []
                     }
-    updatePreference("tzuyudc@uci.edu", preference);
-    // var pref = await readPreference("tzuyuc@uci.edu");    
-    // console.log(pref.dietery_restriction);
+    // updatePreference("tzuyudc@uci.edu", preference);
+    var pref = await readPreference("tzuyuc@uci.edu");    
+    console.log(pref.favCuisines);
 }
-export {readPreference, updatePreference, testPreference};
+export {readPreference, testPreference};
