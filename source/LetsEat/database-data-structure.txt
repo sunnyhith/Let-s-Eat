@@ -6,10 +6,8 @@
 }
 
 // var user = { //key email
-//     preference: {
-//                      dietery_restriction:{ .....}.
-//                      cusine: {......} 
-//		   }, 
+//     dietery_restriction:{ .....}
+//     cusine: {......} 
 //     name: "",
 //     host_events: {eventId1: attending_status, eventId2: attending_status} //this is a collection
 //     guest_events :{eventId1: attending_status} //attending_status can be "attending", "declined", "tentative", "invited" //this is a collection

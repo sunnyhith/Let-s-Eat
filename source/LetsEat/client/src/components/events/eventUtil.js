@@ -6,6 +6,11 @@ var event_db = db.collection("event");
 var user_db = db.collection("users");
 
 function set_event_in_user_db(eventId, email, event_type, status){
+    user_db.doc(email).get().then(doc=>{
+        if (!doc.exists){
+            user_db.doc(email).set({"hasPreferences": false})
+        }
+    })
     var event = user_db.doc(email).collection(event_type);
     event.doc(eventId).set({status: status})
     .catch(
@@ -40,30 +45,6 @@ async function createEvent(eventInfo){
     };
 }
 
-// function get_status_guest(eventId, status){
-//     return new Promise((resolve, reject) => {        
-//         event_db.doc(eventId).collection(status).get().then(snapshot => {
-//             var guests = [];
-//             var docs = snapshot.docs;
-//             if(docs){
-//                 docs.forEach(async (doc) => {
-//                     guests.push(doc.id);
-//                 })
-//                 resolve(guests);
-//             }
-//             else{
-//                 console.log(status, " not defined");
-//                 reject("The status ", status, " is empty");
-//             }
-            
-//         }).catch(error => {
-//             console.warn("Fail to get guest infromation from ", status, "collection");
-//             console.warn(error);
-//             reject("The status ", status, " does not exist"); 
-//         })
-//     });    
-// }
-
 async function get_status_guest(eventId, status){
     try { 
         var snapshot = await event_db.doc(eventId).collection(status).get();
@@ -77,13 +58,11 @@ async function get_status_guest(eventId, status){
         }
         else{
             console.log(status, " not defined");
-            // reject("The status ", status, " is empty");
         }
     }
     catch(error) {
         console.warn("Fail to get guest infromation from ", status, "collection");
         console.warn(error);
-        // reject("The status ", status, " does not exist"); 
     }
 }
 
@@ -134,7 +113,6 @@ function deleteEvent(eventId){
             console.error("Fail to delete the event", error);
         }
     );
-
 }
 
 async function get_event_in_user_db(eventId, email){

@@ -7,6 +7,7 @@ import {
   DietaryRestrictions,
   PriceRange
 } from "components/preferences/PreferenceOptions";
+// import {testPreference} from "components/preferences/preferenceUtil";
 import { AuthContext } from "../../contexts/Auth";
 import firebase from "firebase";
 // nodejs library that concatenates classes
@@ -68,7 +69,6 @@ const Survey = () => {
   };
 
   const updatePreference = userInfo => {
-    //TODO: store all preference into firebase
     const db = firebase.firestore();
     var docRef = db
       .collection("users")
@@ -77,9 +77,9 @@ const Survey = () => {
         hasPreferences: true,
         name: inputFields.firstName + " " + inputFields.lastName,
         currentLocation: inputFields.currentLocation,
-        dietaryRestrictions: inputFields.dietaryRestrictions,
-        pricePreference: inputFields.pricePreference,
-        favCuisines: inputFields.favCuisines
+        dietaryRestrictions: inputFields.dietaryRestrictions.reduce((a,cusine)=> (a[cusine.label]='', a), {}),
+        pricePreference: inputFields.pricePreference.reduce((a,cusine)=> (a[cusine.label]='', a), {}),
+        favCuisines: inputFields.favCuisines.reduce((a,cusine)=> (a[cusine.label]='', a), {})
       })
       .then(() => {
         console.log("Document successfully written!");
@@ -101,7 +101,6 @@ const Survey = () => {
     event.preventDefault();
     setActiveStep(prevActiveStep => prevActiveStep + 1);
     updatePreference(currentUser);
-    console.log(inputFields);
   };
 
   const getStepContent = stepIndex => {

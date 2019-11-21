@@ -8,14 +8,28 @@ const animatedComponents = makeAnimated();
 
 const cuisine = [
   { value: "american", label: "American" },
-  { value: "chinese", label: "Chinese" },
-  { value: "indian", label: "Indian" }
+  { value: "Chinese", label: "Chinese" },
+  { value: "indian", label: "Indian" },
+  { value: "italian", label: "Italian" },
+  { value: "japanese", label: "Japanese" },
+  { value: "mexican", label: "Mexican" },
+  { value: "Mediterranean", label: "Mediterranean" },
+  { value: "Middle Eastern", label: "Middle Eastern" },
+  { value: "Korean", label: "Korean" },
+  { value: "Vietnamese", label: "Vietnamese" },
+  { value: "German", label: "German" },
+  { value: "French", label: "French" },
+  { value: "Coffee and Tea", label: "Coffee and Tea" },
+  { value: "Dessert", label: "Dessert" },
+  { value: "African", label: "African" },
+  { value: "Latin American", label: "Latin American" }
 ];
 
 const diet = [
   { value: "veg", label: "Vegeterian" },
   { value: "nonveg", label: "Non-Vegeterian" },
-  { value: "vegan", label: "Vegan" }
+  { value: "vegan", label: "Vegan" },
+  { value: "hala", label: "Hala" }
 ];
 
 const price = [
