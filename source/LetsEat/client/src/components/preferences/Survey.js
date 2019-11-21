@@ -74,7 +74,7 @@ const Survey = () => {
       .collection("users")
       .doc(userInfo.email)
       .update({
-        // hasPreferences: true,
+        hasPreferences: true,
         name: inputFields.firstName + " " + inputFields.lastName,
         currentLocation: inputFields.currentLocation,
         dietaryRestrictions: inputFields.dietaryRestrictions,
@@ -87,9 +87,9 @@ const Survey = () => {
 
         setWriteDone(true);
         setOpen(true);
-        // setTimeout(() => {
-        //   window.location.reload();
-        // }, 3500);
+        setTimeout(() => {
+          window.location.reload();
+        }, 3500);
       })
       .catch(function(error) {
         console.error("Error writing document: ", error);
