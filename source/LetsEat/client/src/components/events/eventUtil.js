@@ -194,16 +194,13 @@ function getUserEveryEvents(email){
         for (let i=0; i < all_event_type.length; i++) {
             var event_type = all_event_type[i];
             var snapshot = await user_db.doc(email).collection(event_type).get();
-            console.log(event_type, snapshot);
             let events_list = [];
             var docs = snapshot.docs;
             for (let j=0; j<docs.length; j++) {
                 var doc = docs[j];
                 var eventId = doc.id;
-                console.log('?', eventId);
                 var event = await event_db.doc(eventId).get();
                 if(event.exists){
-                    console.log('?', event);
                     var eventInfo = event.data();
                     var eventSummary = {};
                     eventSummary['event_id'] = eventId;
