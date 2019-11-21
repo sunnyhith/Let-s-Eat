@@ -62,7 +62,7 @@ const Home = () => {
           : ""
         }
         {
-          eventResult ? (eventLists.host_event).map((event) => {
+          (eventResult && eventLists.host_event) ? (eventLists.host_event).map((event) => {
               return (
               <EventCard 
                 eventInfo={event}
@@ -77,7 +77,7 @@ const Home = () => {
           : ""
         }
         {
-          eventResult ? (eventLists.guest_event).map((event) => {
+          (eventResult && eventLists.guest_event) ? (eventLists.guest_event).map((event) => {
               return (
               <EventCard 
                 eventInfo={event}
