@@ -154,6 +154,8 @@ const CreateEvent = () => {
     return <Loading />;
   } else if (!currentUser) {
     return <Redirect to="/signin" />;
+  } else if (!preference) {
+    return <Redirect to="/survey" />;
   } else if (eventResult) {
     return <Redirect to={`/event/${eventResult}`} />;
   } else {

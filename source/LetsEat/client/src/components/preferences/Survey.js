@@ -1,8 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link, Redirect } from "react-router-dom";
 import Loading from "components/generic/Loading";
-import SnackbarContent from "components/Snackbar/SnackbarContent";
-// import Check from "@material-ui/icons/Check";
+import {
+  CurrentLocation,
+  CuisineType,
+  DietaryRestrictions,
+  PriceRange
+} from "components/preferences/PreferenceOptions";
 import { AuthContext } from "../../contexts/Auth";
 import firebase from "firebase";
 // nodejs library that concatenates classes
@@ -17,23 +21,16 @@ import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import Typography from "@material-ui/core/Typography";
-
+//Snackbar
+import Snackbar from "@material-ui/core/Snackbar";
+import SnackbarContent from "components/Snackbar/SnackbarContent";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import ErrorIcon from "@material-ui/icons/Error";
 import PropTypes from "prop-types";
 import clsx from "clsx";
-// import Button from "@material-ui/core/Button";
 import CloseIcon from "@material-ui/icons/Close";
-import WarningIcon from "@material-ui/icons/Warning";
-import InfoIcon from "@material-ui/icons/Info";
 import IconButton from "@material-ui/core/IconButton";
-import Snackbar from "@material-ui/core/Snackbar";
 import { amber, green } from "@material-ui/core/colors";
-//Price Preference Imports
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
 //Styling
 import styles from "assets/jss/layout/CreateEventStyle.js";
 import { makeStyles } from "@material-ui/core/styles";
@@ -42,16 +39,15 @@ const usestyles = makeStyles(styles);
 const Survey = () => {
   const classes = usestyles();
   const { currentUser, preference, loading } = useContext(AuthContext);
-  const [writeDone, setWriteDone] = useState(false);
+  const [writeDone, setWriteDone] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
   const [inputFields, setInputFields] = useState({
     firstName: "",
     lastName: "",
     currentLocation: "",
-    foodPreferences: "",
-    dietaryRestrictions: "",
-    pricePreference: "",
-    favCuisines: ""
+    dietaryRestrictions: [],
+    pricePreference: [],
+    favCuisines: []
   });
   const steps = [
     "About You",
@@ -71,13 +67,6 @@ const Survey = () => {
     });
   };
 
-  const handleSelectChange = name => event => {
-    setInputFields({
-      ...inputFields,
-      [name]: event.target.value
-    });
-  };
-
   const updatePreference = userInfo => {
     //TODO: store all preference into firebase
     const db = firebase.firestore();
@@ -85,24 +74,26 @@ const Survey = () => {
       .collection("users")
       .doc(userInfo.email)
       .update({
-        hasPreferences: true,
+        // hasPreferences: true,
         name: inputFields.firstName + " " + inputFields.lastName,
         currentLocation: inputFields.currentLocation,
-        foodPreferences: inputFields.foodPreferences,
         dietaryRestrictions: inputFields.dietaryRestrictions,
         pricePreference: inputFields.pricePreference,
         favCuisines: inputFields.favCuisines
       })
       .then(() => {
         console.log("Document successfully written!");
+        console.log(currentUser);
+
         setWriteDone(true);
         setOpen(true);
-        setTimeout(() => {
-          window.location.reload();
-        }, 3500);
+        // setTimeout(() => {
+        //   window.location.reload();
+        // }, 3500);
       })
       .catch(function(error) {
         console.error("Error writing document: ", error);
+        setWriteDone(false);
       });
   };
 
@@ -148,17 +139,9 @@ const Survey = () => {
                 />
               </GridItem>
               <GridItem xs={12} sm={12} md={6} lg={6}>
-                <CustomInput
+                <CurrentLocation
                   id="currentLocation"
-                  labelText={"Current Location"}
-                  formControlProps={{
-                    fullWidth: true,
-                    required: true
-                  }}
-                  inputProps={{
-                    onChange: handleChange,
-                    value: inputFields.currentLocation
-                  }}
+                  handleSelectChange={handleChange}
                 />
               </GridItem>
             </GridContainer>
@@ -169,35 +152,10 @@ const Survey = () => {
           <div id="form">
             <GridContainer>
               <GridItem xs={12} sm={12} md={6} lg={6}>
-                <CustomInput
-                  id="foodPreferences"
-                  labelText={"Food Preferences"}
-                  formControlProps={{
-                    fullWidth: true,
-                    required: true
-                  }}
-                  inputProps={{
-                    onChange: handleChange,
-                    value: inputFields.foodPreferences
-                  }}
+                <PriceRange
+                  id="pricePreference"
+                  handleSelectChange={handleChange}
                 />
-              </GridItem>
-              <GridItem xs={12} sm={12} md={6} lg={6}>
-                <FormControl required className={classes.formControl}>
-                  <InputLabel>Price</InputLabel>
-                  <Select
-                    id="pricePreference"
-                    value={inputFields.pricePreference}
-                    onChange={handleSelectChange("pricePreference")}
-                    autoWidth={true}
-                  >
-                    <MenuItem value="Any">Any</MenuItem>
-                    <MenuItem value="$">$</MenuItem>
-                    <MenuItem value="$$">$$</MenuItem>
-                    <MenuItem value="$$$">$$$</MenuItem>
-                    <MenuItem value="$$$$">$$$$</MenuItem>
-                  </Select>
-                </FormControl>
               </GridItem>
             </GridContainer>
           </div>
@@ -207,17 +165,9 @@ const Survey = () => {
           <div id="form">
             <GridContainer>
               <GridItem xs={12} sm={12} md={6} lg={6}>
-                <CustomInput
+                <DietaryRestrictions
                   id="dietaryRestrictions"
-                  labelText={"Dietary Restrictions"}
-                  formControlProps={{
-                    fullWidth: true,
-                    required: true
-                  }}
-                  inputProps={{
-                    onChange: handleChange,
-                    value: inputFields.dietaryRestrictions
-                  }}
+                  handleSelectChange={handleChange}
                 />
               </GridItem>
             </GridContainer>
@@ -228,17 +178,9 @@ const Survey = () => {
           <div id="form">
             <GridContainer>
               <GridItem xs={12} sm={12} md={6} lg={6}>
-                <CustomInput
+                <CuisineType
                   id="favCuisines"
-                  labelText={"Favourite Cuisines"}
-                  formControlProps={{
-                    fullWidth: true,
-                    required: true
-                  }}
-                  inputProps={{
-                    onChange: handleChange,
-                    value: inputFields.favCuisines
-                  }}
+                  handleSelectChange={handleChange}
                 />
               </GridItem>
             </GridContainer>
@@ -324,7 +266,9 @@ const Survey = () => {
     return <Loading />;
   } else if (!currentUser) {
     return <Redirect to="/signin" />;
-  } else if (!preference) {
+  } else if (preference) {
+    return <Redirect to="/" />;
+  } else {
     return (
       <div className={classes.root}>
         <Parallax image={require("assets/img/bkg.jpg")}></Parallax>
@@ -341,12 +285,6 @@ const Survey = () => {
               <div>
                 {activeStep === steps.length ? (
                   <div>
-                    {/* <Typography
-                      component={"div"}
-                      className={classes.instructions}
-                    >
-                      Survey completed! Redirecting to your Dashboard...
-                    </Typography> */}
                     <div>
                       <Button round simple color="info" onClick={handleReset}>
                         Reset
@@ -360,6 +298,12 @@ const Survey = () => {
                       >
                         Dashboard
                       </Button>
+                      {activeStep === steps.length && writeDone === true && (
+                        <p>SUCCESS: Preferences Saved</p>
+                      )}
+                      {activeStep === steps.length && writeDone === false && (
+                        <p>ERROR: Preferences Not Saved</p>
+                      )}
                     </div>
                     <div>
                       <Snackbar
@@ -377,7 +321,7 @@ const Survey = () => {
                           message={
                             writeDone
                               ? "Awesome! Survey is now complete, redirecting to Dashboard."
-                              : "Error saving your responses, please try again."
+                              : `Error saving your responses. Please "Reset" and try again`
                           }
                         />
                       </Snackbar>
@@ -417,8 +361,6 @@ const Survey = () => {
         </div>
       </div>
     );
-  } else {
-    return <Redirect to="/" />;
   }
 };
 
