@@ -154,7 +154,46 @@ const Event = (props) => {
                       : ""
                     }
                   </h2>
-                  {(typeof status === 'undefined' || isHost)? '' :
+                  {(typeof status === 'undefined' || isHost || status !== 'invited') ? '' :
+                    <div>
+                      <p className={classes.respondText}>
+                        Respond Now:
+                      </p>
+                      <Button 
+                          simple
+                          size="sm"
+                          color="info"
+                          id="attending"
+                          className={classes.respondButton}
+                          onClick={handleStatusChange}
+                      > 
+                        Going
+                      </Button>
+                      |
+                      <Button 
+                          simple
+                          size="sm"
+                          color="info"
+                          id="tentative"
+                          className={classes.respondButton}
+                          onClick={handleStatusChange}
+                      > 
+                        Maybe
+                      </Button>
+                      |
+                      <Button 
+                          simple
+                          size="sm"
+                          color="info"
+                          id="declined"
+                          className={classes.respondButton}
+                          onClick={handleStatusChange}
+                      > 
+                        Can't Go
+                      </Button>
+                    </div>
+                  }
+                  {(typeof status === 'undefined' || isHost || status === 'invited') ? '' :
                     <CustomDropdown
                       noLiPadding
                       hoverColor="info"

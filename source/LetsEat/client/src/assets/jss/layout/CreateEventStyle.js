@@ -102,6 +102,20 @@ const componentsStyle = theme => ({
     titleEditButton: {
         margin: "0 0 0 20px"
     },
+    respondText: {
+        fontSize: "0.5rem",
+        display: "inline-block",
+        marginRight: "10px"
+    },
+    respondButton: {
+        margin: "0 0",
+        [theme.breakpoints.up('xs')]: {
+            padding: "10px 5px 10px 5px",
+        },
+        [theme.breakpoints.up('md')]: {
+            padding: "10px 20px 10px 20px",
+        },
+    },
     dropdownLink: {
         "&,&:hover,&:focus": {
           color: "inherit",
