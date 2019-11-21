@@ -7,8 +7,10 @@
     "material-kit-react": "^1.8.0",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
+    "react-geosuggest": "^2.12.1",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
+    "react-select": "^3.0.8",
     "react-with-firebase-auth": "^1.1.0"
   },
   "scripts": {
