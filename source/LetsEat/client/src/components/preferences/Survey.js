@@ -77,14 +77,21 @@ const Survey = () => {
         hasPreferences: true,
         name: inputFields.firstName + " " + inputFields.lastName,
         currentLocation: inputFields.currentLocation,
-        dietaryRestrictions: inputFields.dietaryRestrictions.reduce((a,cusine)=> (a[cusine.label]='', a), {}),
-        pricePreference: inputFields.pricePreference.reduce((a,cusine)=> (a[cusine.label]='', a), {}),
-        favCuisines: inputFields.favCuisines.reduce((a,cusine)=> (a[cusine.label]='', a), {})
+        dietaryRestrictions: inputFields.dietaryRestrictions.reduce(
+          (a, cusine) => ((a[cusine.label] = ""), a),
+          {}
+        ),
+        pricePreference: inputFields.pricePreference.reduce(
+          (a, cusine) => ((a[cusine.label] = ""), a),
+          {}
+        ),
+        favCuisines: inputFields.favCuisines.reduce(
+          (a, cusine) => ((a[cusine.label] = ""), a),
+          {}
+        )
       })
       .then(() => {
         console.log("Document successfully written!");
-        console.log(currentUser);
-
         setWriteDone(true);
         setOpen(true);
         setTimeout(() => {
@@ -106,6 +113,12 @@ const Survey = () => {
   const getStepContent = stepIndex => {
     switch (stepIndex) {
       case 0:
+        const fullName = currentUser.displayName.split(" ");
+        let fName, lName;
+        if (fullName.length === 2) {
+          fName = fullName[0];
+          lName = fullName[1];
+        }
         return (
           <div id="form">
             <GridContainer>
@@ -119,7 +132,8 @@ const Survey = () => {
                   }}
                   inputProps={{
                     onChange: handleChange,
-                    value: inputFields.firstName
+                    value: fName ? fName : inputFields.firstName,
+                    disabled: fName ? true : false
                   }}
                 />
               </GridItem>
@@ -133,7 +147,8 @@ const Survey = () => {
                   }}
                   inputProps={{
                     onChange: handleChange,
-                    value: inputFields.lastName
+                    value: lName ? lName : inputFields.lastName,
+                    disabled: lName ? true : false
                   }}
                 />
               </GridItem>
