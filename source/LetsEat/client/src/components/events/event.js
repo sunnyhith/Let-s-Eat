@@ -87,13 +87,13 @@ const Event = (props) => {
     setOpenEditModal(false);
 }
 
-  const handleStatusChange = (event) => {
+  const handleStatusChange = (id) => {
     changeGuestStatus(
       currentUser.email,
       eventId,
-      event.target.id,
+      id,
     );
-    setStatus(event.target.id);
+    setStatus(id);
     setEventResult(false);
   }
 
@@ -165,7 +165,7 @@ const Event = (props) => {
                           color="info"
                           id="attending"
                           className={classes.respondButton}
-                          onClick={handleStatusChange}
+                          onClick={() => {handleStatusChange("attending")}}
                       > 
                         Going
                       </Button>
@@ -176,7 +176,7 @@ const Event = (props) => {
                           color="info"
                           id="tentative"
                           className={classes.respondButton}
-                          onClick={handleStatusChange}
+                          onClick={() => {handleStatusChange("tentative")}}
                       > 
                         Maybe
                       </Button>
@@ -187,7 +187,7 @@ const Event = (props) => {
                           color="info"
                           id="declined"
                           className={classes.respondButton}
-                          onClick={handleStatusChange}
+                          onClick={() => {handleStatusChange("declined")}}
                       > 
                         Can't Go
                       </Button>
