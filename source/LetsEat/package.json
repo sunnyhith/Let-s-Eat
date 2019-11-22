@@ -9,6 +9,7 @@
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "dependencies": {
+    "@sendgrid/mail": "^6.4.0",
     "concurrently": "^5.0.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
