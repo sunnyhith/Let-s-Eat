@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Redirect, Link } from "react-router-dom";
 // core components
 import Loading from "components/generic/Loading";
@@ -24,6 +24,7 @@ const usestyles = makeStyles(styles);
 const SignUp = props => {
   const classes = usestyles();
   const { currentUser, loading } = useContext(AuthContext);
+  const [ isSignedUp, setIsSignedUp ] = useState(false);
 
   const storeUserIntoFirebase = userInfo => {
     const db = firebaseConfig.firestore();
@@ -35,7 +36,8 @@ const SignUp = props => {
         hasPreferences: false
       })
       .then(function() {
-        console.log("Document successfully written!");
+        setIsSignedUp(true);
+        console.log("Signed Up user info successfully written!");
       })
       .catch(function(error) {
         console.error("Error writing document: ", error);
@@ -51,14 +53,16 @@ const SignUp = props => {
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
-      .then(result => {
-        result.user.updateProfile({
+      .then(async result => {
+        await result.user.updateProfile({
           displayName: firstName + " " + lastName
-        });
-        storeUserIntoFirebase({
-          name: firstName + " " + lastName,
-          email: result.user.email
-        });
+        }).then( ()=>{
+          storeUserIntoFirebase({
+            name: firstName + " " + lastName,
+            email: result.user.email
+          });
+        })
+        
       })
       .catch(error => {
         console.log(
@@ -95,7 +99,7 @@ const SignUp = props => {
 
   if (loading) {
     return <Loading />;
-  } else if (currentUser) {
+  } else if (currentUser && isSignedUp) {
     return <Redirect to="/" />;
   } else {
     return (

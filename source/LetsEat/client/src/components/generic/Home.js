@@ -22,7 +22,6 @@ const Home = () => {
   useEffect(() => {
     if (!eventResult && currentUser) {
       getUserEveryEvents(currentUser.email).then(list_events =>{
-        console.log("??", list_events.guest_event);
         setEventLists(list_events);
         setEventResult(true);
       }).catch(error=>{console.log(error)})

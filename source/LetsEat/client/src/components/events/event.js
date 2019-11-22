@@ -206,17 +206,17 @@ const Event = (props) => {
                         <p 
                           id="attending"
                           className={classes.dropdownLink}
-                          onClick={handleStatusChange}
+                          onClick={() => {handleStatusChange("attending")}}
                         >Going</p>,
                         <p
                           id="tentative"
                           className={classes.dropdownLink}
-                          onClick={handleStatusChange}
+                          onClick={() => {handleStatusChange("tentative")}}
                         >Maybe</p>,
                         <p
                           id="declined"
                           className={classes.dropdownLink}
-                          onClick={handleStatusChange}
+                          onClick={() => {handleStatusChange("declined")}}
                         >Can't Go</p>,
                       ]}
                     />

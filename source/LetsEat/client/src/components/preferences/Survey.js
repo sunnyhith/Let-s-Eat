@@ -57,6 +57,17 @@ const Survey = () => {
     "Favourite Cuisines"
   ];
 
+  useEffect(() => {
+    if (currentUser && !inputFields.firstName && !inputFields.lastName) {
+      setInputFields({
+        ...inputFields,
+        firstName: currentUser.displayName.split(' ')[0],
+        lastName: currentUser.displayName.split(' ')[1],
+      });
+    }
+    
+  },[currentUser]);
+
   const handleNext = () => setActiveStep(prevActiveStep => prevActiveStep + 1);
   const handleBack = () => setActiveStep(prevActiveStep => prevActiveStep - 1);
   const handleReset = () => setActiveStep(0);
