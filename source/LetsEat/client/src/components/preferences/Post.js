@@ -58,5 +58,19 @@ const Post = props => {
     </React.Fragment>
   );
 };
+{/* ======= */}
+    {/* ) : (
+      <div className="center">Loading Post Details...</div>
+    );
+    return (
+    <Parallax image={require("assets/img/bg.jpg")}>
+      <h4>Restaurant Info : </h4>
+      <div className="container">
+        {postData}
+      </div>
+    </Parallax>);
+  }
+} */}
+{/* >>>>>>> 95c5a6cbf47520b81c49b19e4cff890354a8e45f */}
 
 export default Post;
