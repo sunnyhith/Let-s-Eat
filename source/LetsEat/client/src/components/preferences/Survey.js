@@ -7,6 +7,7 @@ import {
   DietaryRestrictions,
   PriceRange
 } from "components/preferences/PreferenceOptions";
+import InstructionsModal from "components/generic/InstructionsModal";
 // import {testPreference} from "components/preferences/preferenceUtil";
 import { AuthContext } from "../../contexts/Auth";
 import firebase from "firebase";
@@ -61,12 +62,11 @@ const Survey = () => {
     if (currentUser && !inputFields.firstName && !inputFields.lastName) {
       setInputFields({
         ...inputFields,
-        firstName: currentUser.displayName.split(' ')[0],
-        lastName: currentUser.displayName.split(' ')[1],
+        firstName: currentUser.displayName.split(" ")[0],
+        lastName: currentUser.displayName.split(" ")[1]
       });
     }
-    
-  },[currentUser]);
+  }, [currentUser]);
 
   const handleNext = () => setActiveStep(prevActiveStep => prevActiveStep + 1);
   const handleBack = () => setActiveStep(prevActiveStep => prevActiveStep - 1);
@@ -170,11 +170,16 @@ const Survey = () => {
                 />
               </GridItem>
             </GridContainer>
+            <br />
           </div>
         );
       case 1:
         return (
           <div id="form">
+            <h3>
+              What would be your price preferences, {inputFields.firstName}?
+            </h3>
+            <br />
             <GridContainer>
               <GridItem xs={12} sm={12} md={6} lg={6}>
                 <PriceRange
@@ -183,11 +188,17 @@ const Survey = () => {
                 />
               </GridItem>
             </GridContainer>
+            <br />
           </div>
         );
       case 2:
         return (
           <div id="form">
+            <h3>
+              And also {inputFields.firstName}, can you also share your Dietary
+              Restrictions if any?
+            </h3>
+            <br />
             <GridContainer>
               <GridItem xs={12} sm={12} md={6} lg={6}>
                 <DietaryRestrictions
@@ -196,11 +207,14 @@ const Survey = () => {
                 />
               </GridItem>
             </GridContainer>
+            <br />
           </div>
         );
       case 3:
         return (
           <div id="form">
+            <h3>And lastly, what type of food do you usually eat?</h3>
+            <br />
             <GridContainer>
               <GridItem xs={12} sm={12} md={6} lg={6}>
                 <CuisineType
@@ -209,6 +223,7 @@ const Survey = () => {
                 />
               </GridItem>
             </GridContainer>
+            <br />
           </div>
         );
       default:
@@ -381,6 +396,8 @@ const Survey = () => {
                   </div>
                 )}
               </div>
+              <InstructionsModal />
+              {/* {setInstructionsModal(true)} */}
             </div>
           </div>
         </div>
