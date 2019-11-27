@@ -87,13 +87,13 @@ const Event = (props) => {
     setOpenEditModal(false);
 }
 
-  const handleStatusChange = (id) => {
+  const handleStatusChange = (status) => {
     changeGuestStatus(
       currentUser.email,
       eventId,
-      id,
+      status,
     );
-    setStatus(id);
+    setStatus(status);
     setEventResult(false);
   }
 

@@ -23,21 +23,24 @@ const styles = theme => ({
     margin: "0 5px 0 10px",
   },
   card: {
-    width: "60vw",
     boxShadow:
         "0 16px 24px 2px rgba(0, 0, 0, 0.14), 0 6px 30px 5px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2)",
     [theme.breakpoints.down('xs')]: {
-        minWidth: "300px",
+      width: "80vw",
+      minWidth: "340px",
     },
     [theme.breakpoints.down('sm')]: {
-        minWidth: "300px",
+      width: "60vw",
+      minWidth: "340px",
     },
     [theme.breakpoints.up('md')]: {
-        minWidth: "500px",
-        marginBottom: "60px",
+      width: "50vw",
+      minWidth: "500px",
+      marginBottom: "60px",
     },
     [theme.breakpoints.up('lg')]: {
-        minWidth: "800px",
+      width: "40vw",
+      minWidth: "800px",
     },
   },
 });
