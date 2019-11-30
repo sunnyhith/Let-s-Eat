@@ -19,7 +19,13 @@ const UserPreferences = () => {
   // Todo: Pass the preferences and location as parameters
   useEffect(() => {
     async function getData() {
-      const response = await fetch("/api/restaurants");
+      const config = {
+        headers: {
+          Authorization:
+            "Bearer ZMhxydcy94rtsyrk-H0GvHXN6h6kLIDOyW20fJjcX5C4k8FYFhEhq0X1HNwj18701MRZZ_cEoI4jTFFyhRIwVmvGSWTaxaFXvgyYmh3I2RuocFVEZSb5kTMVf7qwXXYx"
+        }
+      };
+      const response = await fetch("/api/restaurants", config);
       const json = await response.json();
       setPosts(json.businesses);
     }

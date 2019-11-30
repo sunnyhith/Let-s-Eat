@@ -2,49 +2,46 @@ var express = require("express");
 var router = express.Router();
 const fetch = require("node-fetch");
 const sgMail = require("@sendgrid/mail");
+const yelp = require('yelp-fusion');
 
 // create a GET route
 router.get("/express_backend", (req, res) => {
   res.send({ express: "YOUR EXPREssSS BACKEND IS CONNECTED TO REACT" });
 });
 
-router.get("/restaurants", async (request, response) => {
-  const config = {
-    headers: {
-      Authorization:
-        "Bearer ZMhxydcy94rtsyrk-H0GvHXN6h6kLIDOyW20fJjcX5C4k8FYFhEhq0X1HNwj18701MRZZ_cEoI4jTFFyhRIwVmvGSWTaxaFXvgyYmh3I2RuocFVEZSb5kTMVf7qwXXYx"
-    }
-    // params: {
-    //   term: "tacos",
-    //   location: "Irvine",
-    //   limit: "10"
-    // }
-  };
-  const url = "https://api.yelp.com/v3/businesses/search?location=Irvine&limit=5";
-  const fetch_response = await fetch(url, config);
-  const json = await fetch_response.json();
-  response.json(json);
-});
 
-router.get("/restaurants/:id", async (request, response) => {
-  const businessId = request.params.id;
+router.post("/suggestion", async (req, res) => { 
+  const apiKey = 'ZMhxydcy94rtsyrk-H0GvHXN6h6kLIDOyW20fJjcX5C4k8FYFhEhq0X1HNwj18701MRZZ_cEoI4jTFFyhRIwVmvGSWTaxaFXvgyYmh3I2RuocFVEZSb5kTMVf7qwXXYx';
+  const searchRequest = req.body;
+  const client = yelp.client(apiKey);
+  try{
+    var response = await client.search(searchRequest)
+    const restaurants = response.jsonBody.businesses;
+    var restaurant_ids = [];
+    for(const restaurant of restaurants){
+      restaurant_ids.push(restaurant);
+    }
+    console.log("restaurant_ids: ", restaurant_ids);
+    res.json(restaurant_ids);
+  }
+  catch(e){
+    console.log(e);
+  }
+})
+
+router.post("/get_restaurant", async (request, response) => { 
+  const businessId = request.body.business_id;
   const config = {
     headers: {
       Authorization:
         "Bearer ZMhxydcy94rtsyrk-H0GvHXN6h6kLIDOyW20fJjcX5C4k8FYFhEhq0X1HNwj18701MRZZ_cEoI4jTFFyhRIwVmvGSWTaxaFXvgyYmh3I2RuocFVEZSb5kTMVf7qwXXYx"
-    },
-    params: {
-      term: "tacos",
-      location: "Irvine",
-      limit: "10"
     }
   };
-  // const url = "https://api.yelp.com/v3/businesses/search?location=Irvine";
   const url = `https://api.yelp.com/v3/businesses/${businessId}`;
   const fetch_response = await fetch(url, config);
   const json = await fetch_response.json();
   response.json(json);
-});
+})
 
 router.post("/event/send-invites/:id", async (request, response) => {
   const eventId = request.params.id;

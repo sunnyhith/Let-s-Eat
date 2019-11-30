@@ -89,7 +89,7 @@ const Survey = () => {
         name: inputFields.firstName + " " + inputFields.lastName,
         currentLocation: inputFields.currentLocation,
         dietaryRestrictions: inputFields.dietaryRestrictions.reduce(
-          (a, cusine) => ((a[cusine.label] = ""), a),
+          (a, cusine) => ((a[cusine.value] = ""), a),
           {}
         ),
         pricePreference: inputFields.pricePreference.reduce(
