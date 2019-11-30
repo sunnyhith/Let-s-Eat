@@ -8,8 +8,10 @@ import classNames from "classnames";
 // core components
 import EditModal from "components/events/editModal";
 import InvitationModal from "components/events/invitationModal";
-import EmailList from "components/events/emailList";
+import RestaurantList from "components/events/restaurantList";
+import GuestLists from "components/events/guestLists";
 import Loading from "components/generic/Loading";
+import NavPills from "components/NavPills/NavPills.js";
 import Parallax from "components/Parallax/Parallax.js";
 import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
@@ -26,7 +28,6 @@ const Event = (props) => {
   const { currentUser, preference, loading } = useContext(AuthContext);
   
   const eventId = props.match.params.event_id;
-  const guestList = ["invited", "attending", "tentative", "declined"];
   const [eventResult, setEventResult] = useState(false);
   const [eventInfo, setEventInfo] = useState({});
   const [openInvitationModal, setOpenInvitationModal] = useState(false);
@@ -98,6 +99,7 @@ const Event = (props) => {
   }
 
   console.log(eventInfo);
+  console.log("restaurants", eventInfo.restaurants);
 
   if (loading) {
     return <Loading/>;
@@ -153,162 +155,124 @@ const Event = (props) => {
                         </Button>
                       : ""
                     }
+                    
+                    {(typeof status === 'undefined' || isHost || status === 'invited') ? '' :
+                    <div 
+                      className={classes.statusDropdown}>
+                        <CustomDropdown
+                          className={classes.statusDropdown}
+                          noLiPadding
+                          hoverColor="info"
+                          buttonText={statusList[status]}
+                          buttonProps={{
+                            size: "sm",
+                            color: "info"
+                          }}
+                          dropdownList={[
+                            <p 
+                              id="attending"
+                              className={classes.dropdownLink}
+                              onClick={() => {handleStatusChange("attending")}}
+                            >Going</p>,
+                            <p
+                              id="tentative"
+                              className={classes.dropdownLink}
+                              onClick={() => {handleStatusChange("tentative")}}
+                            >Maybe</p>,
+                            <p
+                              id="declined"
+                              className={classes.dropdownLink}
+                              onClick={() => {handleStatusChange("declined")}}
+                            >Can't Go</p>,
+                          ]}
+                        />
+                      </div>
+                    }
                   </h2>
-                  {(typeof status === 'undefined' || isHost || status !== 'invited') ? '' :
-                    <div>
-                      <p className={classes.respondText}>
-                        Respond Now:
-                      </p>
-                      <Button 
-                          simple
-                          size="sm"
-                          color="info"
-                          id="attending"
-                          className={classes.respondButton}
-                          onClick={() => {handleStatusChange("attending")}}
-                      > 
-                        Going
-                      </Button>
-                      |
-                      <Button 
-                          simple
-                          size="sm"
-                          color="info"
-                          id="tentative"
-                          className={classes.respondButton}
-                          onClick={() => {handleStatusChange("tentative")}}
-                      > 
-                        Maybe
-                      </Button>
-                      |
-                      <Button 
-                          simple
-                          size="sm"
-                          color="info"
-                          id="declined"
-                          className={classes.respondButton}
-                          onClick={() => {handleStatusChange("declined")}}
-                      > 
-                        Can't Go
-                      </Button>
-                    </div>
-                  }
-                  {(typeof status === 'undefined' || isHost || status === 'invited') ? '' :
-                    <CustomDropdown
-                      noLiPadding
-                      hoverColor="info"
-                      buttonText={statusList[status]}
-                      buttonProps={{
-                        size: "sm",
-                        color: "info"
-                      }}
-                      dropdownList={[
-                        <p 
-                          id="attending"
-                          className={classes.dropdownLink}
-                          onClick={() => {handleStatusChange("attending")}}
-                        >Going</p>,
-                        <p
-                          id="tentative"
-                          className={classes.dropdownLink}
-                          onClick={() => {handleStatusChange("tentative")}}
-                        >Maybe</p>,
-                        <p
-                          id="declined"
-                          className={classes.dropdownLink}
-                          onClick={() => {handleStatusChange("declined")}}
-                        >Can't Go</p>,
-                      ]}
-                    />
-                  }
               </div>
-              <div id="form">
-                <GridContainer>
-                  <GridItem xs={12} sm={12} md={6} lg={6}>
-                    <CustomInput
-                      id="location"
-                      labelText={"Location"}
-                      formControlProps={{
-                        fullWidth: true,
-                      }}
-                      inputProps={{
-                        value: eventInfo.location,
-                        disabled: true,
-                      }}
-                    />
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={6} lg={6}>
-                    <CustomInput
-                      id="start_time"
-                      labelText={"Start Time"}
-                      formControlProps={{
-                        fullWidth: true,
-                      }}
-                      inputProps={{
-                        value: moment.unix(eventInfo.start_time.seconds).format('LLLL'),
-                        disabled: true,
-                      }}
-                    />
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={12} lg={12}>
-                    <CustomInput
-                      id="message"
-                      labelText={"Event Description"}
-                      inputProps={{
-                        multiline: true,
-                        value: eventInfo.message,
-                      }}
-                      formControlProps={{
-                        fullWidth: true,
-                        disabled: true,
-                      }}
-                    />
-                  </GridItem>
-                  <GridItem xs={6} sm={6} md={6} lg={6}>
-                    <p className={classes.listTitle}> Guest List: </p>
-                  </GridItem>
-                  <GridItem xs={6} sm={6} md={6} lg={6} className={classes.rightOperation}>
-                  {isHost ? 
-                      <Button 
-                          className={classes.editButton}
-                          size="sm"
-                          round
-                          simple
-                          color="info"
-                          onClick={() => {setOpenInvitationModal(true)}}
-                      > 
-                          <i className="far fa-edit"></i>
-                          Invite More
-                      </Button>
-                  : ""
-                  }
-                  </GridItem>
-
-
-                  {
-                    guestList.map(guest => {  
-                        if (eventInfo[guest] && eventInfo[guest].length > 0) {
-                            return (
-                                <>
-                                    <GridItem xs={12} sm={12} md={3} lg={2}>
-                                        <p className={classes.listSubtitle}> {guest} : </p>
-                                    </GridItem>
-                                    <GridItem xs={12} sm={12} md={8} lg={9}>
-                                        <GridItem xs={12} sm={12} md={12} lg={12}>
-                                            <EmailList
-                                                emails={eventInfo[guest]}
-                                                self={false}
-                                            />
-                                        </GridItem>
-                                    </GridItem>
-                                </>
-                            );
-                        }
-                    })
-                  }
-
-                </GridContainer>
+              <div className={classes.sectionBody}>
+              {
+                (typeof status === 'undefined' || isHost || status !== 'invited') ? '' :
+                  <div>
+                    <p className={classes.respondText}>
+                      You are invited to this event, Respond Now:
+                    </p>
+                    <Button 
+                        simple
+                        size="sm"
+                        color="info"
+                        id="attending"
+                        className={classes.respondButton}
+                        onClick={() => {handleStatusChange("attending")}}
+                    > 
+                      Going
+                    </Button>
+                    |
+                    <Button 
+                        simple
+                        size="sm"
+                        color="info"
+                        id="tentative"
+                        className={classes.respondButton}
+                        onClick={() => {handleStatusChange("tentative")}}
+                    > 
+                      Maybe
+                    </Button>
+                    |
+                    <Button 
+                        simple
+                        size="sm"
+                        color="info"
+                        id="declined"
+                        className={classes.respondButton}
+                        onClick={() => {handleStatusChange("declined")}}
+                    > 
+                      Can't Go
+                    </Button>
+                  </div>
+              }
+                <p className={classes.infoText}>
+                  <span className={classes.infoPart}>
+                    <i className={classNames("fas fa-map-pin", classes.infoIcon)}></i> {eventInfo.location}
+                  </span>
+                    <i className={classNames("far fa-clock", classes.infoIcon)}></i> {moment(eventInfo.start_time.toDate()).format('LLLL')}
+                </p>
+                <p className={classes.infoText}>
+                  <i className={classNames("fas fa-info-circle", classes.infoIcon)}></i>
+                  {eventInfo.message}
+                </p>
               </div>
+
+              <GridContainer>
+                <GridItem xs={12} sm={12} md={12} lg={12}>
+                <NavPills
+                  color="info"
+                  tabs={[
+                    {
+                      tabButton: "Restaurants",
+                      // tabIcon: Dashboard,
+                      tabContent: (
+                        <RestaurantList
+                          restaurants={eventInfo.restaurants}
+                        />
+                      )
+                    },
+                    {
+                      tabButton: "Guest List",
+                      // tabIcon: Schedule,
+                      tabContent: (
+                        <GuestLists
+                          eventInfo={eventInfo}
+                          isHost={isHost}
+                          setOpenInvitationModal={setOpenInvitationModal}
+                        />
+                      )
+                    },
+                  ]}
+                />
+                </GridItem>
+
+              </GridContainer>
             </div>
           </div>
         </div>

@@ -27,6 +27,7 @@ export default function EmailList(props) {
         {
             props.self ? 
                 <Chip
+                    size={'small'}
                     key={0}
                     icon={<TagFacesIcon />}
                     label={"Me"}
@@ -38,6 +39,7 @@ export default function EmailList(props) {
             props.emails ? props.emails.map((data,index) => {  
                 return (
                     <Chip
+                        size={'small'}
                         key={index+1}
                         label={data}
                         onDelete={props.setEmails ? handleDelete(data) : undefined}
