@@ -27,9 +27,10 @@ const cuisine = [
 
 const diet = [
   { value: "veg", label: "Vegeterian" },
-  { value: "nonveg", label: "Non-Vegeterian" },
+  { value: "none", label: "None" },
   { value: "vegan", label: "Vegan" },
-  { value: "hala", label: "Hala" }
+  { value: "halal", label: "Halal" },
+  { value: "gluten_free", label: "gluten_free"}
 ];
 
 const price = [

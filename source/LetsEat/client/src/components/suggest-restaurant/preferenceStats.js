@@ -5,12 +5,8 @@ var db = firebase.firestore();
 var event_db = db.collection("event");
 var user_db = db.collection("users");
 
-async function getAttendees(eventId){
-    const event = await event_db.doc(eventId).get();
-    if(!event.exists){
-        console.warn("Cannot get attendees, because event does not exist.");
-    }
-    var attendees = [event.data().host];
+async function getAttendees(eventId, event){
+    var attendees = [event.host];
     const snapshot = await event_db.doc(eventId).collection("attending").get();
     var emails = snapshot.docs;
     if(emails){
@@ -18,12 +14,11 @@ async function getAttendees(eventId){
             attendees.push(email.id);
         })
     }
-    console.log("finish processing attendess in getAttendees");
     return attendees;
 }
 
-async function getPrefStats(eventId){
-    const attendees = await getAttendees(eventId);
+async function getPrefStats(eventId, event){
+    const attendees = await getAttendees(eventId, event);
     var all_attend_pref = [];
     var all_attend_restri = {};
 
@@ -32,7 +27,6 @@ async function getPrefStats(eventId){
         if(attendeeInfo.exists){
             var cuisine = attendeeInfo.data().favCuisines;
             var restriction = attendeeInfo.data().dietaryRestrictions;
-
             if(cuisine){
                 all_attend_pref = [...all_attend_pref, ...Object.keys(cuisine)]
             }
@@ -41,81 +35,80 @@ async function getPrefStats(eventId){
             }            
         }
     }
+    
     return {favCuisines: all_attend_pref,
             dietaryRestrictions: all_attend_restri
     };
 }
 
 
-
-
-// async function selectRestaurant(cuisine, restrictions, location, cnt){ // include time later
-//     const config = {
-//         headers: {
-//         Authorization:
-//             "Bearer ZMhxydcy94rtsyrk-H0GvHXN6h6kLIDOyW20fJjcX5C4k8FYFhEhq0X1HNwj18701MRZZ_cEoI4jTFFyhRIwVmvGSWTaxaFXvgyYmh3I2RuocFVEZSb5kTMVf7qwXXYx"
-//         },
-//         params: {
-//             term: "Indian",
-//             location: "Irvine",
-//             limit: cnt
-//         }
-//     };
-//     const id = props.match.params.post_id;
-//     const url = `/api/restaurants/${id}`;
-//     const response = await fetch("/api/restaurants${id}", config);
-//     const json = await response.json();
-//     return json.businesses;
-// }
-
-// async function selectRestaurant(cuisine, restrictions, location, cnt){
-//     const yelp = require('yelp-fusion');
-//     const apiKey = "ZMhxydcy94rtsyrk-H0GvHXN6h6kLIDOyW20fJjcX5C4k8FYFhEhq0X1HNwj18701MRZZ_cEoI4jTFFyhRIwVmvGSWTaxaFXvgyYmh3I2RuocFVEZSb5kTMVf7qwXXYx";
-//     const searchRequest = {
-//         term: cuisine,
-//         location: location,
-//         limit: cnt
-//     };
-
-//     const client = yelp.client(apiKey);
-//     var response = await client.search(searchRequest);
-//     client.search(searchRequest).then(response => {
-//         const firstResult = response.jsonBody.businesses[0];
-//         const prettyJson = JSON.stringify(firstResult, null, 4);
-//         console.log(prettyJson);
-//         console.log("response is :", prettyJson);
-//         return prettyJson;
-//     }).catch(e => {
-//         console.log(e);
-//     });
-//     return
-//     // .then(response => {
-//     //     const firstResult = response.jsonBody.businesses[0];
-//     //     const prettyJson = JSON.stringify(firstResult, null, 4);
-//     //     console.log(prettyJson);
-//     // }).catch(e => {
-//     // console.log(e);
-//     // });
-// }
-
-// async function selectRestaurants(eventId, cnt = 5){
-//     var event = await event_db.doc(eventId).get();
-//     var location = event.data().location;
-//     var preference = await getPrefStats(eventId);
-//     var cusines = preference.favCuisines;
-//     var restrictions = preference.dietaryRestrictions;
-//     console.log("cusines[0] is", cusines[0]);
-//     var restaurants = await selectRestaurant(cusines[0], restrictions, location, cnt);
-//     return restaurants;
-// }
-
-async function testSuggest(){
-    console.log("Entering test fcn");
-    var eventId = "SW3vtMVhLzFkpJjQmFJd";
-    var pref = getPrefStats(eventId);
-    console.log("pref is", pref);
-    // var restaurants = await selectRestaurants(eventId);
-    // console.log("The returned restaurants is", restaurants);
+async function selectRestaurant(cuisine, restrictions, location, cnt = 1){ // include time later
+    try{
+        var suggestion = await fetch('/api/suggestion', {
+            method: "post",
+            headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                term: cuisine,
+                location: location,
+                categories: restrictions,
+                limit: cnt
+            })
+        })
+        var parse_suggestion = await suggestion.json();
+        return parse_suggestion;
+    }
+    catch(error){
+        console.error(error);
+    }
 }
 
-export {testSuggest};
+function process_restriction(restrictions){
+    var filt_restriction = [];
+    for(var restriction in restrictions){
+        if(restriction !== "None"){
+            filt_restriction.push(restriction);
+        }
+    }
+    return filt_restriction.join().toLowerCase();
+}
+
+async function createSuggestions(eventId, num_suggestions = 5){
+    const event_doc = await event_db.doc(eventId).get();
+    if(!event_doc.exists){
+        console.warn("Cannot get attendees, because event does not exist.");
+        return;
+    }
+
+    var suggestions = [];
+    const event = event_doc.data();
+    const location = event.location;
+    const time = event.time;
+    const pref = await getPrefStats(eventId, event);
+    var cuisines = pref["favCuisines"];
+    var restrictions = process_restriction(pref["dietaryRestrictions"]);
+    var isEnoughCusine = cuisines.length >= num_suggestions;
+
+    var cuisine_counter = {};
+    for(var cnt = 0; cnt < num_suggestions; cnt++){
+        // select cusine without duplicate only if the cuisines list is long enough for selection
+        var cuisine_ind = Math.floor(Math.random()*cuisines.length);
+        var cuisine = cuisines[cuisine_ind];
+        if(isEnoughCusine){
+            [cuisines[cuisines.length-1], cuisines[cuisine_ind]] = [cuisines[cuisine_ind], cuisines[cuisines.length-1]];
+            cuisines.pop();
+        }
+        cuisine_counter[cuisine] = cuisine_counter[cuisine]? cuisine_counter[cuisine]+ 1: 1;
+    }
+
+    for(var cuisine in cuisine_counter){
+        var cnt = cuisine_counter[cuisine];
+        const suggestion = await selectRestaurant(cuisine, restrictions, location, cnt);
+        suggestions.push(...suggestion);
+    }
+    return suggestions;
+}
+
+export {createSuggestions};

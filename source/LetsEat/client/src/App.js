@@ -10,6 +10,7 @@ import SignUp from "components/auth/signUp";
 import ResetPassword from "components/auth/resetPassword";
 import Post from "components/preferences/Post";
 import Survey from "components/preferences/Survey";
+import suggest from "components/suggest-restaurant/suggestRestaurant";
 import "assets/scss/material-kit-react.scss?v=1.8.0";
 import { AuthProvider } from "./contexts/Auth";
 
@@ -29,6 +30,7 @@ const App = () => {
             <Route path="/preferences" component={UserPreferences} />
             <Route path="/survey" component={Survey} />
             <Route path="/business/:post_id" component={Post} />
+            <Route path="/suggest_restaurant" component={suggest} />
           </Switch>
         </div>
       </BrowserRouter>

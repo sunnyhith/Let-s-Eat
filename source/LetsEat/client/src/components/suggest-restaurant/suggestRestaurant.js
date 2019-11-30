@@ -3,7 +3,7 @@ import { Redirect } from "react-router-dom";
 import { AuthContext } from "../../contexts/Auth";
 
 import Button from "components/CustomButtons/Button.js";
-import {testSuggest} from "components/suggest-restaurant/preferenceStats"
+import {testSuggest} from "components/suggest-restaurant/suggestionDb"
 
 const suggest = () =>{
     console.log("Enter click");
