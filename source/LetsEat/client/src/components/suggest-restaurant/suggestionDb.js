@@ -12,9 +12,31 @@ function merge_category(categories){
     return category_list;
 }
 
+async function get_restaurnt_from_yelp(business_id){ // include time later
+    try{
+        var restaurant = await fetch('/api/get_restaurant', {
+            method: "post",
+            headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                business_id: business_id
+            })
+        })
+        var parse_restaurant = await restaurant.json();
+        return parse_restaurant;
+    }
+    catch(error){
+        console.error(error);
+    }
+}
+
 async function cleanup_restaurants_data(restaurants){
     var cleanup_restaurants = [];
     for(var restaurant of restaurants){
+        var more_restaurant_info = await get_restaurnt_from_yelp(restaurant.id);
+
         var cleanup_restaurant = {
             id: restaurant.id,
             name: restaurant.name? restaurant.name: "NA",
@@ -24,7 +46,9 @@ async function cleanup_restaurants_data(restaurants){
             review_count: restaurant.review_count? restaurant.review_count: 0,
             url: restaurant.url,
             phone: restaurant.display_phone?restaurant.display_phone:"NA",
-            address: restaurant.location.display_address
+            address: restaurant.location.display_address,
+            image_url: restaurant.image_url,
+            photos: more_restaurant_info.photos? more_restaurant_info.photos: []
         }
         cleanup_restaurants.push(cleanup_restaurant);
     }

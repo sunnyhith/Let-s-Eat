@@ -7,12 +7,12 @@ import "assets/css/geosuggest.css";
 const animatedComponents = makeAnimated();
 
 const cuisine = [
-  { value: "american", label: "American" },
+  { value: "American", label: "American" },
   { value: "Chinese", label: "Chinese" },
-  { value: "indian", label: "Indian" },
-  { value: "italian", label: "Italian" },
-  { value: "japanese", label: "Japanese" },
-  { value: "mexican", label: "Mexican" },
+  { value: "Indian", label: "Indian" },
+  { value: "Italian", label: "Italian" },
+  { value: "Japanese", label: "Japanese" },
+  { value: "Mexican", label: "Mexican" },
   { value: "Mediterranean", label: "Mediterranean" },
   { value: "Middle Eastern", label: "Middle Eastern" },
   { value: "Korean", label: "Korean" },
@@ -26,11 +26,11 @@ const cuisine = [
 ];
 
 const diet = [
-  { value: "veg", label: "Vegeterian" },
-  { value: "none", label: "None" },
+  { value: "vegeterian", label: "Vegeterian" },
+  { value: "none", label: "No dierary restriction" },
   { value: "vegan", label: "Vegan" },
   { value: "halal", label: "Halal" },
-  { value: "gluten_free", label: "gluten_free"}
+  { value: "gluten_free", label: "Gluten Free"}
 ];
 
 const price = [

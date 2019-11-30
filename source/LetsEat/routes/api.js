@@ -29,6 +29,20 @@ router.post("/suggestion", async (req, res) => {
   }
 })
 
+router.post("/get_restaurant", async (request, response) => { 
+  const businessId = request.body.business_id;
+  const config = {
+    headers: {
+      Authorization:
+        "Bearer ZMhxydcy94rtsyrk-H0GvHXN6h6kLIDOyW20fJjcX5C4k8FYFhEhq0X1HNwj18701MRZZ_cEoI4jTFFyhRIwVmvGSWTaxaFXvgyYmh3I2RuocFVEZSb5kTMVf7qwXXYx"
+    }
+  };
+  const url = `https://api.yelp.com/v3/businesses/${businessId}`;
+  const fetch_response = await fetch(url, config);
+  const json = await fetch_response.json();
+  response.json(json);
+})
+
 router.post("/event/send-invites/:id", async (request, response) => {
   const eventId = request.params.id;
   const sendgrid_api_key =

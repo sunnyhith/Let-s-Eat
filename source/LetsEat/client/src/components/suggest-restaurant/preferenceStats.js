@@ -35,14 +35,13 @@ async function getPrefStats(eventId, event){
             }            
         }
     }
-    
     return {favCuisines: all_attend_pref,
             dietaryRestrictions: all_attend_restri
     };
 }
 
 
-async function selectRestaurant(cuisine, restrictions, location, cnt = 1){ // include time later
+async function selectRestaurant(cuisine, restrictions, location){ // include time later
     try{
         var suggestion = await fetch('/api/suggestion', {
             method: "post",
@@ -53,8 +52,7 @@ async function selectRestaurant(cuisine, restrictions, location, cnt = 1){ // in
             body: JSON.stringify({
                 term: cuisine,
                 location: location,
-                categories: restrictions,
-                limit: cnt
+                categories: restrictions
             })
         })
         var parse_suggestion = await suggestion.json();
@@ -82,7 +80,7 @@ async function getSuggestions(eventId, num_suggestions = 5){
         return;
     }
 
-    var suggestions = [];
+    var suggestions = {};
     const event = event_doc.data();
     const location = event.location;
     const time = event.time;
@@ -104,11 +102,25 @@ async function getSuggestions(eventId, num_suggestions = 5){
     }
 
     for(var cuisine in cuisine_counter){
-        var cnt = cuisine_counter[cuisine];
-        const suggestion = await selectRestaurant(cuisine, restrictions, location, cnt);
-        suggestions.push(...suggestion);
+        var req_cnt = cuisine_counter[cuisine];
+        var yelp_results = await selectRestaurant(cuisine, restrictions, location);
+        if(yelp_results === undefined){
+            console.warn(`cannot get yelp result from this combination ${cuisine}, ${restrictions}, ${location}`)
+        }
+
+        var cnt = 0;
+        for(var yelp_res of yelp_results){
+            var business_id = yelp_res.id;
+            if(!(business_id in suggestions)){
+                suggestions[business_id] = yelp_res;
+                cnt += 1;
+                if(cnt >= req_cnt){
+                    break;
+                }
+            }            
+        }
     }
-    return suggestions;
+    return Object.values(suggestions);
 }
 
 export {getSuggestions};
