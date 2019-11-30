@@ -75,7 +75,7 @@ function process_restriction(restrictions){
     return filt_restriction.join().toLowerCase();
 }
 
-async function createSuggestions(eventId, num_suggestions = 5){
+async function getSuggestions(eventId, num_suggestions = 5){
     const event_doc = await event_db.doc(eventId).get();
     if(!event_doc.exists){
         console.warn("Cannot get attendees, because event does not exist.");
@@ -111,4 +111,4 @@ async function createSuggestions(eventId, num_suggestions = 5){
     return suggestions;
 }
 
-export {createSuggestions};
+export {getSuggestions};
