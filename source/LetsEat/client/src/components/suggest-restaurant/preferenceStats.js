@@ -73,7 +73,7 @@ function process_restriction(restrictions){
     return filt_restriction.join().toLowerCase();
 }
 
-async function getSuggestions(eventId, num_suggestions = 5){
+async function getSuggestions(eventId, num_suggestions = 6){
     const event_doc = await event_db.doc(eventId).get();
     if(!event_doc.exists){
         console.warn("Cannot get attendees, because event does not exist.");
@@ -107,7 +107,7 @@ async function getSuggestions(eventId, num_suggestions = 5){
         if(yelp_results === undefined){
             console.warn(`cannot get yelp result from this combination ${cuisine}, ${restrictions}, ${location}`)
         }
-
+        
         var cnt = 0;
         for(var yelp_res of yelp_results){
             var business_id = yelp_res.id;
