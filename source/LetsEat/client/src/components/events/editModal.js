@@ -35,7 +35,7 @@ export default function EditModal(props) {
     edit_event_name: props.eventInfo.event_name,
     edit_location: props.eventInfo.location,
     edit_message: props.eventInfo.message,
-    edit_start_time: Date(props.eventInfo.start_time * 1000),
+    edit_start_time: props.eventInfo.start_time.toDate(),
   });
   const [ errors, setErrors ] = useState({
     edit_event_name: " - Invalid",
@@ -71,11 +71,14 @@ export default function EditModal(props) {
   };
 
   const handleTimeInput = (event) => {
-    eventInfo.start_time = event.toDate();
+    setEventInfo({
+      ...eventInfo,
+      edit_start_time: event.toDate()
+    });
     if (!isValid["start_time"]) {
       setIsValid({
         ...isValid,
-        start_time: true,
+        edit_start_time: true,
       });
     }
   }

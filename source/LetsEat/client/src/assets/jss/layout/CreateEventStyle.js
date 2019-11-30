@@ -3,17 +3,24 @@ import { title, container } from "assets/jss/material-kit-react.js";
 const componentsStyle = theme => ({
     sections: {
         [theme.breakpoints.down('xs')]: {
-            padding: "50px 12px"
+            padding: "20px 12px 30px"
         },
         [theme.breakpoints.up('sm')]: {
-            padding: "50px 20px"
+            padding: "20px 20px 30px"
         },
     },
     container,
     sectionTitle: {
         ...title,
-        marginTop: "30px",
+        marginTop: "20px",
         minHeight: "32px",
+        textDecoration: "none"
+    },
+    sectionBody: {
+        ...title,
+        marginTop: "0",
+        minHeight: "32px",
+        padding: "0 5px",
         textDecoration: "none"
     },
     brand: {
@@ -52,17 +59,17 @@ const componentsStyle = theme => ({
         boxShadow:
             "0 16px 24px 2px rgba(0, 0, 0, 0.14), 0 6px 30px 5px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2)",
         [theme.breakpoints.down('xs')]: {
-            margin: "-85vh 30px 0px",
+            margin: "-85vh 30px 200px",
         },
         [theme.breakpoints.down('sm')]: {
-            margin: "-85vh 30px 0px",
+            margin: "-85vh 30px 200px",
         },
         [theme.breakpoints.up('md')]: {
-            margin: "-85vh 150px 0px",
+            margin: "-85vh 150px 200px",
         },
         [theme.breakpoints.up('lg')]: {
             minWidth: "900px",
-            margin: "-85vh 300px 0px",
+            margin: "-85vh 300px 200px",
         },
     },
     link: {
@@ -103,7 +110,8 @@ const componentsStyle = theme => ({
         margin: "0 0 0 20px"
     },
     respondText: {
-        fontSize: "0.5rem",
+        fontSize: "16px",
+        fontWeight: "500",
         display: "inline-block",
         marginRight: "10px"
     },
@@ -116,6 +124,10 @@ const componentsStyle = theme => ({
             padding: "10px 20px 10px 20px",
         },
     },
+    statusDropdown: {
+        display: "inline-block",
+        marginLeft: "20px",
+    },
     dropdownLink: {
         "&,&:hover,&:focus": {
           color: "inherit",
@@ -124,6 +136,20 @@ const componentsStyle = theme => ({
           padding: "10px 20px",
           margin: "0"
         }
+    },
+    infoText: {
+        fontWeight: "200",
+    },
+    infoPart: {
+        marginRight: "20px",
+    },
+    infoIcon: {
+        margin: "0 10px 0 0",
+    },
+    tabContainer: {
+        padding: "20px 10px",
+        marginLeft: "0",
+        marginRight: "0",
     }
 });
 

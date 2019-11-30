@@ -49,6 +49,9 @@ router.post("/event/send-invites/:id", async (request, response) => {
     "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";
   sgMail.setApiKey(sendgrid_api_key);
   const { host, eventInfo, emails } = request.body;
+  if (!emails || emails.length === 0) {
+    response.end("No emails need to send");
+  }
   const msg = {
     to: emails,
     from: host.email,
@@ -59,7 +62,7 @@ router.post("/event/send-invites/:id", async (request, response) => {
           Date and Time - ${eventInfo.start_time}`
   };
   sgMail.send(msg).then(() => {
-    response.end("working");
+    response.end("Emails Sent");
   });
 });
 
