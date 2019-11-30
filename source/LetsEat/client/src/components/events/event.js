@@ -245,33 +245,53 @@ const Event = (props) => {
 
               <GridContainer>
                 <GridItem xs={12} sm={12} md={12} lg={12}>
-                <NavPills
-                  color="info"
-                  tabs={[
-                    {
-                      tabButton: "Restaurants",
-                      // tabIcon: Dashboard,
-                      tabContent: (
-                        <RestaurantList
-                          restaurants={eventInfo.restaurants}
-                        />
-                      )
-                    },
-                    {
-                      tabButton: "Guest List",
-                      // tabIcon: Schedule,
-                      tabContent: (
-                        <GuestLists
-                          eventInfo={eventInfo}
-                          isHost={isHost}
-                          setOpenInvitationModal={setOpenInvitationModal}
-                        />
-                      )
-                    },
-                  ]}
-                />
+                {
+                  eventInfo.restaurants ? 
+                    <NavPills
+                      color="info"
+                      tabs={[
+                        {
+                          tabButton: "Restaurants",
+                          // tabIcon: Dashboard,
+                          tabContent: (
+                            <RestaurantList
+                              restaurants={eventInfo.restaurants}
+                            />
+                          )
+                        },
+                        {
+                          tabButton: "Guest List",
+                          // tabIcon: Schedule,
+                          tabContent: (
+                            <GuestLists
+                              eventInfo={eventInfo}
+                              isHost={isHost}
+                              setOpenInvitationModal={setOpenInvitationModal}
+                            />
+                          )
+                        },
+                      ]}
+                    />
+                  :
+                    <NavPills
+                      color="info"
+                      tabs={[
+                        {
+                          tabButton: "Guest List",
+                          // tabIcon: Schedule,
+                          tabContent: (
+                            <GuestLists
+                              eventInfo={eventInfo}
+                              isHost={isHost}
+                              setOpenInvitationModal={setOpenInvitationModal}
+                            />
+                          )
+                        },
+                      ]}
+                    />
+                }
+                
                 </GridItem>
-
               </GridContainer>
             </div>
           </div>
