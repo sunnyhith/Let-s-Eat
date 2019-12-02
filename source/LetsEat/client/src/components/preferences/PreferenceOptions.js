@@ -6,6 +6,11 @@ import "assets/css/geosuggest.css";
 
 const animatedComponents = makeAnimated();
 
+let defaultLocation = "";
+let defaultCuisine = [];
+let defaultDiet = [];
+let defaultPrice = [];
+
 const cuisine = [
   { value: "American", label: "American" },
   { value: "Chinese", label: "Chinese" },
@@ -27,10 +32,9 @@ const cuisine = [
 
 const diet = [
   { value: "vegeterian", label: "Vegeterian" },
-  { value: "none", label: "No dierary restriction" },
   { value: "vegan", label: "Vegan" },
   { value: "halal", label: "Halal" },
-  { value: "gluten_free", label: "Gluten Free"}
+  { value: "gluten_free", label: "Gluten Free" }
 ];
 
 const price = [
@@ -41,6 +45,9 @@ const price = [
 ];
 
 const CurrentLocation = props => {
+  const { required } = props;
+  const { isDisabled } = props;
+  const enableRequired = !isDisabled;
   const updateState = suggest => {
     const description = suggest ? suggest.description : "";
     const params = {
@@ -50,9 +57,35 @@ const CurrentLocation = props => {
       }
     };
     props.handleSelectChange(params);
+    defaultLocation = description;
   };
+  console.log(required);
+
   return (
-    <Geosuggest placeholder="Current Location" onSuggestSelect={updateState} />
+    <div>
+      <Geosuggest
+        placeholder="Current Location"
+        initialValue={defaultLocation}
+        onSuggestSelect={updateState}
+        value={defaultLocation}
+      />
+      {enableRequired && (
+        <input
+          tabIndex={-1}
+          autoComplete="off"
+          style={{
+            opacity: 0,
+            width: "100%",
+            height: 0,
+            position: "absolute"
+          }}
+          // value={this.getValue()}
+          // onChange={noop}
+          // onFocus={() => this.selectRef.focus()}
+          required={required}
+        />
+      )}
+    </div>
   );
 };
 
@@ -65,10 +98,12 @@ const CuisineType = props => {
       }
     };
     props.handleSelectChange(params);
+    defaultCuisine = selectOption;
   };
   return (
     <Select
       isMulti
+      value={defaultCuisine}
       onChange={updateState}
       closeMenuOnSelect={false}
       components={animatedComponents}
@@ -87,16 +122,21 @@ const DietaryRestrictions = props => {
       }
     };
     props.handleSelectChange(params);
+    defaultDiet = selectOption;
   };
-  return (
+  return props.visible ? (
     <Select
       isMulti
+      value={defaultDiet}
       onChange={updateState}
       closeMenuOnSelect={false}
       components={animatedComponents}
       options={diet}
       placeholder="Dietary Restrictions"
+      display="none"
     />
+  ) : (
+    <React.Fragment></React.Fragment>
   );
 };
 
@@ -109,10 +149,13 @@ const PriceRange = props => {
       }
     };
     props.handleSelectChange(params);
+    defaultPrice = selectOption;
   };
+
   return (
     <Select
       isMulti
+      value={defaultPrice}
       onChange={updateState}
       closeMenuOnSelect={false}
       components={animatedComponents}

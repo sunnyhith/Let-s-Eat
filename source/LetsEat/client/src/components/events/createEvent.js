@@ -115,14 +115,14 @@ const CreateEvent = () => {
       });
       console.log(eventId);
       if (eventId) {
-        //send emails to the invite list here
-        fetch(`/api/event/send-invites/${eventId}`, {
+        fetch("/api/event/sendMails", {
           method: "post",
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
+            action: "newEvent",
             host: currentUser,
             eventInfo: eventInfo,
             emails: emails
@@ -140,7 +140,7 @@ const CreateEvent = () => {
     }
   };
 
-  const handleTimeInput = (event) => {
+  const handleTimeInput = event => {
     setEventInfo({
       ...eventInfo,
       start_time: event.toDate()
@@ -210,7 +210,11 @@ const CreateEvent = () => {
                       className={classes.label}
                       error={!isValid["start_time"]}
                     >
-                      {eventInfo['start_time'] ? (isValid['start_time'] ? 'Start Time' : errors.start_time) : ''}
+                      {eventInfo["start_time"]
+                        ? isValid["start_time"]
+                          ? "Start Time"
+                          : errors.start_time
+                        : ""}
                     </InputLabel>
                     <br />
                     <FormControl fullWidth className={classes.placeholderText}>
