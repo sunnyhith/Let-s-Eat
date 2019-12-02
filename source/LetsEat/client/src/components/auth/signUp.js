@@ -24,7 +24,7 @@ const usestyles = makeStyles(styles);
 const SignUp = props => {
   const classes = usestyles();
   const { currentUser, loading } = useContext(AuthContext);
-  const [ isSignedUp, setIsSignedUp ] = useState(false);
+  const [isSignedUp, setIsSignedUp] = useState(false);
 
   const storeUserIntoFirebase = userInfo => {
     const db = firebaseConfig.firestore();
@@ -54,15 +54,16 @@ const SignUp = props => {
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then(async result => {
-        await result.user.updateProfile({
-          displayName: firstName + " " + lastName
-        }).then( ()=>{
-          storeUserIntoFirebase({
-            name: firstName + " " + lastName,
-            email: result.user.email
+        await result.user
+          .updateProfile({
+            displayName: firstName + " " + lastName
+          })
+          .then(() => {
+            storeUserIntoFirebase({
+              name: firstName + " " + lastName,
+              email: result.user.email
+            });
           });
-        })
-        
       })
       .catch(error => {
         console.log(
@@ -99,7 +100,7 @@ const SignUp = props => {
 
   if (loading) {
     return <Loading />;
-  } else if (currentUser && isSignedUp) {
+  } else if (currentUser) {
     return <Redirect to="/" />;
   } else {
     return (

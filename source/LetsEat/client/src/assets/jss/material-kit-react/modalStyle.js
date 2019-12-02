@@ -60,15 +60,21 @@ const modalStyle = {
     marginRight: "auto"
   },
   label: {
-      color: "error",
-      display: "inline-flex",
-      fontSize: "11px",
-      transition: "0.3s ease all",
-      lineHeight: "1.428571429",
-      fontWeight: "400",
-      paddingLeft: "0",
-      letterSpacing: "normal"
+    color: "error",
+    display: "inline-flex",
+    fontSize: "11px",
+    transition: "0.3s ease all",
+    lineHeight: "1.428571429",
+    fontWeight: "400",
+    paddingLeft: "0",
+    letterSpacing: "normal"
   },
+  instrModalBody: {
+    width: "450px"
+  },
+  instrModalStepper: {
+    background: "white"
+  }
 };
 
 export default modalStyle;
