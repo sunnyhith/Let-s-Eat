@@ -61,11 +61,13 @@ router.post("/event/sendMails", async (request, response) => {
 
   switch (action) {
     case "newEvent":
-      mailContent.subject = `Let's Eat! Event Invitation - ${eventInfo.event_name}`;
-      mailContent.text = `${host.displayName} has invited you to the event - ${eventInfo.event_name}\n
-        Location - ${eventInfo.location}\n
-        Event Description - ${eventInfo.message}\n
-        Date and Time - ${eventInfo.start_time}`;
+      mailContent.subject = `Let's Eat! Event Invitation - "${eventInfo.event_name}"`;
+      mailContent.text = `Hurray! ${host.displayName} has invited you to the event - ${eventInfo.event_name}\n\n
+        Event Details:
+        Event Name: ${eventInfo.event_name}\n
+        Location: ${eventInfo.location}\n
+        Event Description: ${eventInfo.message}\n
+        Date and Time: ${eventInfo.start_time}`;
       break;
 
     case "remindInvitees":
@@ -73,9 +75,10 @@ router.post("/event/sendMails", async (request, response) => {
       mailContent.text = `You have been invited to the event ${eventInfo.event_name} and ${host.displayName} is still waiting for your response\n
         Please respond back with either "Going", "Maybe" or "Can't Go"\n\n
         Event Details:
-        Location - ${eventInfo.location}\n
-        Event Description - ${eventInfo.message}\n
-        Date and Time - ${eventInfo.start_time}`;
+        Event Name: ${eventInfo.event_name}\n
+        Location: ${eventInfo.location}\n
+        Event Description: ${eventInfo.message}\n
+        Date and Time: ${eventInfo.start_time}`;
       break;
 
     case "finalRestaurant":
@@ -83,9 +86,20 @@ router.post("/event/sendMails", async (request, response) => {
       mailContent.text = `Hello there! For the event that will be hosted by ${host.displayName}, we have finalized "THIS RESTAURANT" considering the dietary restriction and interests of attendees\n
         Hope you will have a great time there! ^_^\n\n
         Event Details:
-        Location - ${eventInfo.location}\n
-        Event Description - ${eventInfo.message}\n
-        Date and Time - ${eventInfo.start_time}`;
+        Event Name: ${eventInfo.event_name}\n
+        Location: ${eventInfo.location}\n
+        Event Description: ${eventInfo.message}\n
+        Date and Time: ${eventInfo.start_time}`;
+      break;
+
+    case "eventDeleted":
+      mailContent.subject = `Let's Eat! Event Cancelled - "${eventInfo.event_name}"`;
+      mailContent.text = `Hello there! This is to notify you that your host ${host.displayName} has cancelled the event - "${eventInfo.event_name}" that you were invited to earlier.\n\n
+        Details of the cancelled event:
+        Event Name: ${eventInfo.event_name}\n
+        Location: ${eventInfo.location}\n
+        Event Description: ${eventInfo.message}\n
+        Date and Time: ${eventInfo.start_time}`;
       break;
 
     default:

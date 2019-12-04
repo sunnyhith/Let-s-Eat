@@ -100,7 +100,7 @@ const SignUp = props => {
 
   if (loading) {
     return <Loading />;
-  } else if (currentUser) {
+  } else if (currentUser && isSignedUp) {
     return <Redirect to="/" />;
   } else {
     return (

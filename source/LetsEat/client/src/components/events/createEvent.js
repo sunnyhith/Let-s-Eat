@@ -73,6 +73,16 @@ const CreateEvent = () => {
           ...errors,
           email_input: "  - Input valid email address"
         });
+      } else if (currentUser && currentUser.email === newEmail) {
+        setErrors({
+          ...errors,
+          email_input: "  - You cannot invite yourself"
+        });
+      } else if (emails.includes(newEmail)) {
+        setErrors({
+          ...errors,
+          email_input: "  - You can invite a guest only once"
+        });
       } else {
         setEmails(emails.concat(newEmail));
         delete errors.email_input;
@@ -105,10 +115,6 @@ const CreateEvent = () => {
         ...validate
       });
     } else {
-      console.log("ready to submit");
-      console.log(eventInfo);
-      console.log(emails);
-      //send message,
       var eventId = await createEvent({
         ...eventInfo,
         guests: emails
@@ -129,10 +135,10 @@ const CreateEvent = () => {
           })
         }).then(response => {
           if (response.status === 200 || response.status === 202) {
-            console.log(response);
+            window.alert("Event invitations sent to your friends");
             setEventResult(eventId);
           } else {
-            console.log("response failed");
+            window.alert("Error: Failed to send invite emails");
             setEventResult(null);
           }
         });
