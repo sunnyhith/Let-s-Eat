@@ -12,15 +12,15 @@ const usestyles = makeStyles(styles);
 const GuestLists = (props) => {
     const classes = usestyles();
     const guestList = ["invited", "attending", "tentative", "declined"];
+    const listText = ["Invited", "Attending", "Tentative", "Declined"];
 
     return (
         <GridContainer className={classes.tabContainer}>
-        <GridItem xs={12} className={classes.rightOperation}>
+        <GridItem xs={12}>
         {props.isHost ? 
             <Button 
                 className={classes.editButton}
                 size="sm"
-                round
                 simple
                 color="info"
                 onClick={() => {props.setOpenInvitationModal(true)}}
@@ -32,12 +32,12 @@ const GuestLists = (props) => {
         }
         </GridItem>
         {
-            guestList.map(guest => {  
+            guestList.map((guest,index) => {  
                 if (props.eventInfo[guest] && props.eventInfo[guest].length > 0) {
                     return (
                         <>
                             <GridItem xs={12} sm={12} md={3} lg={2}>
-                                <p className={classes.listSubtitle}> {guest} : </p>
+                                <p className={classes.listSubtitle}> {listText[index]} : </p>
                             </GridItem>
                             <GridItem xs={12} sm={12} md={8} lg={9}>
                                 <GridItem xs={12} sm={12} md={12} lg={12}>

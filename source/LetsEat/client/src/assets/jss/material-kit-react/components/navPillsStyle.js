@@ -40,7 +40,6 @@ const navPillsStyle = theme => ({
     float: "left",
     position: "relative",
     display: "block",
-    borderRadius: "30px",
     minWidth: "100px",
     textAlign: "center",
     transition: "all .3s",
@@ -83,10 +82,8 @@ const navPillsStyle = theme => ({
   },
   info: {
     "&,&:hover": {
-      color: "#FFFFFF",
-      backgroundColor: infoColor,
-      boxShadow:
-        "0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(76, 175, 80, 0.4)"
+      color: "#00acc1",
+      borderBottom: "4px solid #00acc1",
     }
   },
   success: {

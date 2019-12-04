@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import { AuthContext } from "../../contexts/Auth";
 import { readEvent, getUserStatus, changeGuestStatus } from "components/events/eventUtil.js";
+import { create_sugst_save_to_db } from "components/suggest-restaurant/suggestionDb.js";
 import moment from "moment";
 // nodejs library that concatenates classes
 import classNames from "classnames";
@@ -32,6 +33,7 @@ const Event = (props) => {
   const [eventInfo, setEventInfo] = useState({});
   const [openInvitationModal, setOpenInvitationModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
+  const [loadingSuggestion, setLoadingSuggestion] = useState(false);
   const [isHost, setIsHost] = useState(undefined);
   const [status, setStatus] = useState(undefined);
   const statusList = {
@@ -98,6 +100,19 @@ const Event = (props) => {
     setEventResult(false);
   }
 
+  const handleGenerateSuggestions = () => {
+    var getSugst = async () => {
+      try {
+        await create_sugst_save_to_db(eventId);
+      } catch(error) {
+        setLoadingSuggestion(false);
+      }
+      setEventResult(false);
+    };
+    setLoadingSuggestion(true);
+    getSugst();
+  }
+
   console.log(eventInfo);
   console.log("restaurants", eventInfo.restaurants);
 
@@ -139,7 +154,7 @@ const Event = (props) => {
           <div className={classes.sections}>
             <div className={classes.container}>
               <div className={classes.sectionTitle}>
-                  <h2> 
+                  <h2 className={classes.eventName}> 
                     {eventInfo.event_name} 
                     {isHost ? 
                         <Button 
@@ -189,8 +204,58 @@ const Event = (props) => {
                       </div>
                     }
                   </h2>
+                  <p className={classes.infoText}>
+                      <i className={classNames("fas fa-map-marker-alt", classes.infoIcon)}></i>
+                      {eventInfo.location}
+                  </p>
+                  <p className={classes.infoText}>
+                      <i className={classNames("far fa-clock", classes.infoIcon)}></i>
+                      {moment(eventInfo.start_time.toDate()).format('llll')}
+                  </p>
+                  <p className={classes.infoText}>
+                    <i className={classNames("fas fa-info-circle", classes.infoIcon)}></i>
+                    {eventInfo.message}
+                  </p>
               </div>
               <div className={classes.sectionBody}>
+
+              {
+                (!Array.isArray(eventInfo.restaurants) || eventInfo.restaurants.length === 0) ? '' :
+                <p className={classes.respondText}>
+                  Vote for your favorite one from restaurant suggestions below. 
+                </p>
+              }
+
+              {
+                (Array.isArray(eventInfo.restaurants) && eventInfo.restaurants.length !== 0) || eventInfo.invited.length === 0 ? '' :
+                <div>
+                  <p className={classes.respondText}>
+                    {eventInfo.invited.length} guests haven't responded yet. Waiting for them to respond.
+                  </p>
+                </div>
+              }
+
+              {
+                (!isHost || (Array.isArray(eventInfo.restaurants) && eventInfo.restaurants.length !== 0)) ? '' :
+                  <>
+                    <p className={classes.respondText}>
+                      Generate Restaurants Suggestions Now: 
+                    </p>
+                    {
+                      loadingSuggestion ? 
+                      <i className="fa fa-spinner fa-pulse fa-fw"></i>
+                      :
+                      <Button 
+                          size="sm"
+                          color="info"
+                          id="attending"
+                          className={classes.respondButton}
+                          onClick={() => {handleGenerateSuggestions()}}
+                      > Generate </Button> 
+                    }
+                  </>
+              } 
+
               {
                 (typeof status === 'undefined' || isHost || status !== 'invited') ? '' :
                   <div>
@@ -198,7 +263,6 @@ const Event = (props) => {
                       You are invited to this event, Respond Now:
                     </p>
                     <Button 
-                        simple
                         size="sm"
                         color="info"
                         id="attending"
@@ -207,9 +271,7 @@ const Event = (props) => {
                     > 
                       Going
                     </Button>
-                    |
                     <Button 
-                        simple
                         size="sm"
                         color="info"
                         id="tentative"
@@ -218,9 +280,7 @@ const Event = (props) => {
                     > 
                       Maybe
                     </Button>
-                    |
                     <Button 
-                        simple
                         size="sm"
                         color="info"
                         id="declined"
@@ -231,16 +291,6 @@ const Event = (props) => {
                     </Button>
                   </div>
               }
-                <p className={classes.infoText}>
-                  <span className={classes.infoPart}>
-                    <i className={classNames("fas fa-map-pin", classes.infoIcon)}></i> {eventInfo.location}
-                  </span>
-                    <i className={classNames("far fa-clock", classes.infoIcon)}></i> {moment(eventInfo.start_time.toDate()).format('LLLL')}
-                </p>
-                <p className={classes.infoText}>
-                  <i className={classNames("fas fa-info-circle", classes.infoIcon)}></i>
-                  {eventInfo.message}
-                </p>
               </div>
 
               <GridContainer>
@@ -252,7 +302,6 @@ const Event = (props) => {
                       tabs={[
                         {
                           tabButton: "Restaurants",
-                          // tabIcon: Dashboard,
                           tabContent: (
                             <RestaurantList
                               restaurants={eventInfo.restaurants}
@@ -261,7 +310,6 @@ const Event = (props) => {
                         },
                         {
                           tabButton: "Guest List",
-                          // tabIcon: Schedule,
                           tabContent: (
                             <GuestLists
                               eventInfo={eventInfo}
