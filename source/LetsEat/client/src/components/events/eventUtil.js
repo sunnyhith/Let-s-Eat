@@ -103,9 +103,6 @@ async function readEvent(eventId){
     catch(error){
         console.log("Failed to read an event from database. ", error);
     }
-  } catch (error) {
-    console.log("Failed to read an event from database. ", error);
-  }
   return null;
 }
 
