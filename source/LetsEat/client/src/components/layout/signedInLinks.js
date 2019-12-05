@@ -50,16 +50,6 @@ const SignedIn = () => {
         </ListItem>
         <ListItem className={classes.listItem}>
           <Button
-            component={Link}
-            to="/preferences"
-            color="transparent"
-            className={classes.navLink}
-          >
-            Preferences
-          </Button>
-        </ListItem>
-        <ListItem className={classes.listItem}>
-          <Button
             color="transparent"
             className={classes.navLink}
             onClick={signOut}

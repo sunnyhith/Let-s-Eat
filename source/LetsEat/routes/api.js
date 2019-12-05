@@ -4,11 +4,6 @@ const fetch = require("node-fetch");
 const sgMail = require("@sendgrid/mail");
 const yelp = require("yelp-fusion");
 
-// create a GET route
-router.get("/express_backend", (req, res) => {
-  res.send({ express: "YOUR EXPREssSS BACKEND IS CONNECTED TO REACT" });
-});
-
 router.post("/suggestion", async (req, res) => {
   const apiKey =
     "ZMhxydcy94rtsyrk-H0GvHXN6h6kLIDOyW20fJjcX5C4k8FYFhEhq0X1HNwj18701MRZZ_cEoI4jTFFyhRIwVmvGSWTaxaFXvgyYmh3I2RuocFVEZSb5kTMVf7qwXXYx";
@@ -21,7 +16,6 @@ router.post("/suggestion", async (req, res) => {
     for (const restaurant of restaurants) {
       restaurant_ids.push(restaurant);
     }
-    console.log("restaurant_ids: ", restaurant_ids);
     res.json(restaurant_ids);
   } catch (e) {
     console.log(e);

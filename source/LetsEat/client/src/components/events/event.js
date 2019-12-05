@@ -1,7 +1,11 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import { AuthContext } from "../../contexts/Auth";
-import { readEvent, getUserStatus, changeGuestStatus } from "components/events/eventUtil.js";
+import {
+  readEvent,
+  getUserStatus,
+  changeGuestStatus
+} from "components/events/eventUtil.js";
 import { create_sugst_save_to_db } from "components/suggest-restaurant/suggestionDb.js";
 import moment from "moment";
 // nodejs library that concatenates classes
@@ -45,16 +49,15 @@ const Event = props => {
   };
 
   useEffect(() => {
-      var getEventInfo = async () => {
-          var tempEvent = await readEvent(eventId);
-          setEventInfo(tempEvent);
-          setEventResult(true);
-      };
-      
-      if (!eventResult) {
-          getEventInfo();
-      }
-  },[eventResult]);  
+    var getEventInfo = async () => {
+      var tempEvent = await readEvent(eventId);
+      setEventInfo(tempEvent);
+      setEventResult(true);
+    };
+    if (!eventResult) {
+      getEventInfo();
+    }
+  }, [eventResult]);
 
   useEffect(() => {
     if (currentUser && eventResult && typeof isHost === "undefined") {
@@ -94,20 +97,20 @@ const Event = props => {
     changeGuestStatus(currentUser.email, eventId, status);
     setStatus(status);
     setEventResult(false);
-  }
+  };
 
   const handleGenerateSuggestions = () => {
     var getSugst = async () => {
       try {
         await create_sugst_save_to_db(eventId);
-      } catch(error) {
+      } catch (error) {
         setLoadingSuggestion(false);
       }
       setEventResult(false);
     };
     setLoadingSuggestion(true);
     getSugst();
-  }
+  };
 
   if (loading) {
     return <Loading />;
@@ -146,143 +149,199 @@ const Event = props => {
           <div className={classes.sections}>
             <div className={classes.container}>
               <div className={classes.sectionTitle}>
-                  <h2 className={classes.eventName}> 
-                    {eventInfo.event_name} 
-                    {isHost ? 
-                        <Button 
-                            justIcon
-                            size="sm"
-                            round
-                            simple
-                            color="github"
-                            className={classes.titleEditButton}
-                            onClick={() => {setOpenEditModal(true)}}
-                        > 
-                            <i className="far fa-edit"></i>
-                        </Button>
-                      : ""
-                    }
-                    
-                    {(typeof status === 'undefined' || isHost || status === 'invited') ? '' :
-                    <div 
-                      className={classes.statusDropdown}>
-                        <CustomDropdown
-                          className={classes.statusDropdown}
-                          noLiPadding
-                          hoverColor="info"
-                          buttonText={statusList[status]}
-                          buttonProps={{
-                            size: "sm",
-                            color: "info"
-                          }}
-                          dropdownList={[
-                            <p 
-                              id="attending"
-                              className={classes.dropdownLink}
-                              onClick={() => {handleStatusChange("attending")}}
-                            >Going</p>,
-                            <p
-                              id="tentative"
-                              className={classes.dropdownLink}
-                              onClick={() => {handleStatusChange("tentative")}}
-                            >Maybe</p>,
-                            <p
-                              id="declined"
-                              className={classes.dropdownLink}
-                              onClick={() => {handleStatusChange("declined")}}
-                            >Can't Go</p>,
-                          ]}
-                        />
-                      </div>
-                    }
-                  </h2>
-                  <p className={classes.infoText}>
-                      <i className={classNames("fas fa-map-marker-alt", classes.infoIcon)}></i>
-                      {eventInfo.location}
-                  </p>
-                  <p className={classes.infoText}>
-                      <i className={classNames("far fa-clock", classes.infoIcon)}></i>
-                      {moment(eventInfo.start_time.toDate()).format('llll')}
-                  </p>
-                  <p className={classes.infoText}>
-                    <i className={classNames("fas fa-info-circle", classes.infoIcon)}></i>
-                    {eventInfo.message}
-                  </p>
+                <h2 className={classes.eventName}>
+                  {eventInfo.event_name}
+                  {isHost ? (
+                    <Button
+                      justIcon
+                      size="sm"
+                      round
+                      simple
+                      color="github"
+                      className={classes.titleEditButton}
+                      onClick={() => {
+                        setOpenEditModal(true);
+                      }}
+                    >
+                      <i className="far fa-edit"></i>
+                    </Button>
+                  ) : (
+                    ""
+                  )}
+
+                  {typeof status === "undefined" ||
+                  isHost ||
+                  status === "invited" ? (
+                    ""
+                  ) : (
+                    <div className={classes.statusDropdown}>
+                      <CustomDropdown
+                        className={classes.statusDropdown}
+                        noLiPadding
+                        hoverColor="info"
+                        buttonText={statusList[status]}
+                        buttonProps={{
+                          size: "sm",
+                          color: "info"
+                        }}
+                        dropdownList={[
+                          <p
+                            id="attending"
+                            className={classes.dropdownLink}
+                            onClick={() => {
+                              handleStatusChange("attending");
+                            }}
+                          >
+                            Going
+                          </p>,
+                          <p
+                            id="tentative"
+                            className={classes.dropdownLink}
+                            onClick={() => {
+                              handleStatusChange("tentative");
+                            }}
+                          >
+                            Maybe
+                          </p>,
+                          <p
+                            id="declined"
+                            className={classes.dropdownLink}
+                            onClick={() => {
+                              handleStatusChange("declined");
+                            }}
+                          >
+                            Can't Go
+                          </p>
+                        ]}
+                      />
+                    </div>
+                  )}
+                </h2>
+                <p className={classes.infoText}>
+                  <i
+                    className={classNames(
+                      "fas fa-map-marker-alt",
+                      classes.infoIcon
+                    )}
+                  ></i>
+                  {eventInfo.location}
+                </p>
+                <p className={classes.infoText}>
+                  <i
+                    className={classNames("far fa-clock", classes.infoIcon)}
+                  ></i>
+                  {moment(eventInfo.start_time.toDate()).format("llll")}
+                </p>
+                <p className={classes.infoText}>
+                  <i
+                    className={classNames(
+                      "fas fa-info-circle",
+                      classes.infoIcon
+                    )}
+                  ></i>
+                  {eventInfo.message}
+                </p>
               </div>
               <div className={classes.sectionBody}>
-
-              {
-                (!Array.isArray(eventInfo.restaurants) || eventInfo.restaurants.length === 0) ? '' :
-                <p className={classes.respondText}>
-                  Vote for your favorite one from restaurant suggestions below. 
-                </p>
-              }
-
-              {
-                !isHost || (Array.isArray(eventInfo.restaurants) && eventInfo.restaurants.length !== 0) || eventInfo.invited.length === 0 ? '' :
-                <div>
+                {!Array.isArray(eventInfo.restaurants) ||
+                eventInfo.restaurants.length === 0 ? (
+                  ""
+                ) : (
                   <p className={classes.respondText}>
-                    {eventInfo.invited.length} guests haven't responded yet. Waiting for them to respond.
+                    Vote for your favorite one from restaurant suggestions
+                    below.
                   </p>
-                </div>
-              }
+                )}
 
-              {
-                (!isHost || (Array.isArray(eventInfo.restaurants) && eventInfo.restaurants.length !== 0)) ? '' :
-                  <>
-                    <p className={classes.respondText}>
-                      Or Generate Restaurants Suggestions Now: 
-                    </p>
-                    {
-                      loadingSuggestion ? 
-                      <i className="fa fa-spinner fa-pulse fa-fw"></i>
-                      :
-                      <Button 
-                          size="sm"
-                          color="info"
-                          id="attending"
-                          className={classes.respondButton}
-                          onClick={() => {handleGenerateSuggestions()}}
-                      > Generate </Button> 
-                    }
-                  </>
-              } 
-
-              {
-                (typeof status === 'undefined' || isHost || status !== 'invited') ? '' :
+                {!isHost ||
+                (Array.isArray(eventInfo.restaurants) &&
+                  eventInfo.restaurants.length !== 0) ||
+                eventInfo.invited.length === 0 ? (
+                  ""
+                ) : (
                   <div>
                     <p className={classes.respondText}>
-                      You are invited to this event, Respond Now:
+                      {eventInfo.invited.length} guests haven't responded yet.
+                      Waiting for them to respond.
                     </p>
-                    <Button 
+                  </div>
+                )}
+
+                {!isHost ||
+                (Array.isArray(eventInfo.restaurants) &&
+                  eventInfo.restaurants.length !== 0) ? (
+                  ""
+                ) : (
+                  <>
+                    <p className={classes.respondText}>
+                      Or Generate Restaurants Suggestions Now:
+                    </p>
+                    {loadingSuggestion ? (
+                      <React.Fragment>
+                        <i className="fa fa-spinner fa-pulse fa-fw" />
+                        Generating suggestions...
+                      </React.Fragment>
+                    ) : (
+                      <Button
                         size="sm"
                         color="info"
                         id="attending"
                         className={classes.respondButton}
-                        onClick={() => {handleStatusChange("attending")}}
-                    > 
+                        onClick={() => {
+                          handleGenerateSuggestions();
+                        }}
+                      >
+                        {" "}
+                        Generate{" "}
+                      </Button>
+                    )}
+                  </>
+                )}
+
+                {typeof status === "undefined" ||
+                isHost ||
+                status !== "invited" ? (
+                  ""
+                ) : (
+                  <div>
+                    <p className={classes.respondText}>
+                      You are invited to this event, Respond Now:
+                    </p>
+                    <Button
+                      size="sm"
+                      color="info"
+                      id="attending"
+                      className={classes.respondButton}
+                      onClick={() => {
+                        handleStatusChange("attending");
+                      }}
+                    >
                       Going
                     </Button>
-                    <Button 
-                        size="sm"
-                        color="info"
-                        id="tentative"
-                        className={classes.respondButton}
-                        onClick={() => {handleStatusChange("tentative")}}
-                    > 
+                    <Button
+                      size="sm"
+                      color="info"
+                      id="tentative"
+                      className={classes.respondButton}
+                      onClick={() => {
+                        handleStatusChange("tentative");
+                      }}
+                    >
                       Maybe
                     </Button>
-                    <Button 
-                        size="sm"
-                        color="info"
-                        id="declined"
-                        className={classes.respondButton}
-                        onClick={() => {handleStatusChange("declined")}}
-                    > 
+                    <Button
+                      size="sm"
+                      color="info"
+                      id="declined"
+                      className={classes.respondButton}
+                      onClick={() => {
+                        handleStatusChange("declined");
+                      }}
+                    >
                       Can't Go
                     </Button>
                   </div>
-              }
+                )}
               </div>
 
               <GridContainer>
@@ -296,6 +355,7 @@ const Event = props => {
                           tabContent: (
                             <RestaurantList
                               restaurants={eventInfo.restaurants}
+                              eventId={eventId}
                             />
                           )
                         },

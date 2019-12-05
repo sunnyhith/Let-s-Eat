@@ -391,21 +391,6 @@ const Survey = () => {
                           </Button>
                         </div>
                       )}
-
-                      {activeStep === steps.length && writeDone === true && (
-                        <div>
-                          <h5>Preferences saved</h5>
-                          <Button
-                            round
-                            disabled={!writeDone}
-                            color="info"
-                            component={Link}
-                            to="/"
-                          >
-                            Go to Dashboard
-                          </Button>
-                        </div>
-                      )}
                     </div>
                     <div>
                       <Snackbar
