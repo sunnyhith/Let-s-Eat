@@ -1,5 +1,6 @@
-import * as firebase from "firebase";
-import { userInfo } from "os";
+import * as firebase from 'firebase';
+import { userInfo } from 'os';
+import {getVoteInfo} from "components/events/votingUtil"
 
 var db = firebase.firestore();
 var event_db = db.collection("event");
@@ -82,19 +83,25 @@ async function get_status_guest(eventId, status) {
   }
 }
 
-async function readEvent(eventId) {
-  try {
-    var event = await event_db.doc(eventId).get();
-    if (event.exists) {
-      var event_info = event.data();
+async function readEvent(eventId){
+    try{
+        var event = await event_db.doc(eventId).get();
+        if(event.exists){
+            var event_info = event.data();
 
-      var statuses = ["invited", "attending", "tentative", "declined"];
-      for (let i = 0; i < statuses.length; i++) {
-        event_info[statuses[i]] = await get_status_guest(eventId, statuses[i]);
-      }
-      return event_info;
-    } else {
-      console.log("Attempted to read an event that does not exist!");
+            var statuses = ["invited", "attending", "tentative", "declined"];
+            for (let i=0; i<statuses.length; i++) {
+                event_info[statuses[i]] = await get_status_guest(eventId, statuses[i]);
+            }
+            var voteInfo = await getVoteInfo(eventId);
+            return {...event_info, ...voteInfo};
+        }
+        else{
+            console.log("Attempted to read an event that does not exist!");
+        }
+    }
+    catch(error){
+        console.log("Failed to read an event from database. ", error);
     }
   } catch (error) {
     console.log("Failed to read an event from database. ", error);

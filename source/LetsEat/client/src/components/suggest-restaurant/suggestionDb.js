@@ -48,7 +48,9 @@ async function cleanup_restaurants_data(restaurants){
             phone: restaurant.display_phone?restaurant.display_phone:"NA",
             address: restaurant.location.display_address,
             image_url: restaurant.image_url,
-            photos: more_restaurant_info.photos? more_restaurant_info.photos: []
+            photos: more_restaurant_info.photos? more_restaurant_info.photos: [],
+            cnt: 0,
+            voter: {}
         }
         cleanup_restaurants.push(cleanup_restaurant);
     }

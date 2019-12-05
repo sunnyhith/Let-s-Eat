@@ -45,16 +45,16 @@ const Event = props => {
   };
 
   useEffect(() => {
-    var getEventInfo = async () => {
-      var tempEvent = await readEvent(eventId);
-      setEventInfo(tempEvent);
-      setEventResult(true);
-    };
-
-    if (!eventResult) {
-      getEventInfo();
-    }
-  }, [eventResult]);
+      var getEventInfo = async () => {
+          var tempEvent = await readEvent(eventId);
+          setEventInfo(tempEvent);
+          setEventResult(true);
+      };
+      
+      if (!eventResult) {
+          getEventInfo();
+      }
+  },[eventResult]);  
 
   useEffect(() => {
     if (currentUser && eventResult && typeof isHost === "undefined") {
@@ -108,9 +108,6 @@ const Event = props => {
     setLoadingSuggestion(true);
     getSugst();
   }
-
-  console.log(eventInfo);
-  console.log("restaurants", eventInfo.restaurants);
 
   if (loading) {
     return <Loading />;
