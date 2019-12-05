@@ -16,7 +16,7 @@ const RestaurantList = (props) => {
           {
             props.restaurants.map((restaurant,index) => {
               return (
-                <GridItem xs={12} md={6} lg={4} key={index}>
+                <GridItem xs={12} sm={6} lg={4} key={index}>
                   <RestaurantCard
                     restaurant={restaurant}
                   />

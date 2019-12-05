@@ -60,7 +60,8 @@ async function create_sugst_save_to_db(eventId){
     var cleanup_suggestions = await cleanup_restaurants_data(suggestions);
     event_db.doc(eventId).update({
         restaurants: cleanup_suggestions
-    })
+    });
+    return cleanup_suggestions;
 }
 
 async function read_sugst_from_db(eventId){

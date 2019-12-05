@@ -19,6 +19,7 @@ const componentsStyle = theme => ({
     sectionBody: {
         ...title,
         marginTop: "0",
+        marginBottom: "0",
         minHeight: "32px",
         padding: "0 5px",
         textDecoration: "none"
@@ -26,6 +27,9 @@ const componentsStyle = theme => ({
     brand: {
         color: "#FFFFFF",
         textAlign: "left"
+    },
+    eventName: {
+        marginBottom: "0",
     },
     title: {
         fontSize: "4.2rem",
@@ -104,7 +108,9 @@ const componentsStyle = theme => ({
         marginTop: "50px",
     },
     editButton: {
-        margin: "15px 0 15px",
+        margin: "-20px 0 0",
+        paddingLeft: "5px",
+        paddingRight: "5px",
     },
     titleEditButton: {
         margin: "0 0 0 20px"
@@ -113,15 +119,15 @@ const componentsStyle = theme => ({
         fontSize: "16px",
         fontWeight: "500",
         display: "inline-block",
-        marginRight: "10px"
+        margin: "15px 10px 15px 0"
     },
     respondButton: {
-        margin: "0 0",
+        margin: "0 20px 5px 0",
         [theme.breakpoints.up('xs')]: {
-            padding: "10px 5px 10px 5px",
+            padding: "5px 10px 5px 10px",
         },
         [theme.breakpoints.up('md')]: {
-            padding: "10px 20px 10px 20px",
+            padding: "5px 20px 5px 20px",
         },
     },
     statusDropdown: {
@@ -139,12 +145,12 @@ const componentsStyle = theme => ({
     },
     infoText: {
         fontWeight: "200",
-    },
-    infoPart: {
-        marginRight: "20px",
+        color: "gray",
+        marginLeft: "5px",
+        marginBottom: "5px",
     },
     infoIcon: {
-        margin: "0 10px 0 0",
+        minWidth: "25px",
     },
     tabContainer: {
         padding: "20px 10px",
