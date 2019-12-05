@@ -23,7 +23,7 @@ const InstructionsModal = () => {
   const [modal, setModal] = useState(true);
   const [activeStep, setActiveStep] = useState(0);
   const stepContent = [
-    "For starters, we'll start with a short survey",
+    "For starters, we'll start with a short survey. Click Next to learn more",
     "We need you to complete this survey for helping us suggest better restaurants for you",
     "After successfully completing the survey, you will automatically be redirected to your personalized Dashboard",
     "Dashboard is the place where you can view the Events that you are hosting, or are invited to!",
@@ -105,7 +105,7 @@ const InstructionsModal = () => {
             className={classes.instrModalStepper}
             nextButton={
               <Button
-                color={activeStep === stepCount - 1 ? "rose" : "info"}
+                color={activeStep === stepCount - 1 ? "success" : "info"}
                 round
                 onClick={activeStep === stepCount - 1 ? closeModal : handleNext}
               >

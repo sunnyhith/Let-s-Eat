@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 // core components
 import { changeVote } from "components/events/votingUtil";
 import Button from "components/CustomButtons/Button.js";
@@ -46,11 +46,18 @@ const usestyles = makeStyles(theme => ({
 const RestaurantCard = props => {
   const classes = usestyles();
   const [isSelected, setIsSelected] = useState(props.isSelected);
+  const [voteCount, setVoteCount] = useState(props.restaurant.cnt);
   const { eventId, index } = props;
 
   const handleVote = event => {
     changeVote(eventId, index);
-    setIsSelected(!isSelected);
+    if (isSelected) {
+      setIsSelected(false);
+      setVoteCount(voteCount - 1);
+    } else {
+      setIsSelected(true);
+      setVoteCount(voteCount + 1);
+    }
   };
 
   return (
@@ -108,7 +115,7 @@ const RestaurantCard = props => {
         >
           <FavoriteIcon />
           <Typography variant="caption" display="block" gutterBottom>
-            {props.restaurant.cnt > 0 ? props.restaurant.cnt : ""}
+            {voteCount > 0 ? voteCount : ""}
           </Typography>
         </IconButton>
         <Button
