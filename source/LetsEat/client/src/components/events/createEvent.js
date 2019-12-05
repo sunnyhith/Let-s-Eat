@@ -12,6 +12,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 // core components
+import { CurrentLocation } from "components/preferences/PreferenceOptions";
 import EmailList from "components/events/emailList";
 import Loading from "components/generic/Loading";
 import Parallax from "components/Parallax/Parallax.js";
@@ -196,7 +197,7 @@ const CreateEvent = () => {
                     />
                   </GridItem>
                   <GridItem xs={12} sm={12} md={6} lg={6}>
-                    <CustomInput
+                    {/* <CustomInput
                       id="location"
                       error={!isValid["location"]}
                       labelText={"Location".concat(
@@ -209,6 +210,10 @@ const CreateEvent = () => {
                       inputProps={{
                         onChange: handleInput
                       }}
+                    /> */}
+                    <CurrentLocation
+                      id="location"
+                      handleSelectChange={handleInput}
                     />
                   </GridItem>
                   <GridItem xs={12} sm={12} md={6} lg={6}>
@@ -227,7 +232,7 @@ const CreateEvent = () => {
                       <Datetime
                         onChange={handleTimeInput}
                         inputProps={{
-                          placeholder: "Start Time",
+                          placeholder: "Event Date and Time *",
                           readOnly: true
                         }}
                         isValidDate={(selectedDate, currentDate) => {

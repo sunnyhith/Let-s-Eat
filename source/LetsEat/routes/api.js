@@ -45,8 +45,13 @@ router.post("/event/sendMails", async (request, response) => {
   let mailContent = {
     to: emails,
     from: host.email,
-    subject: "",
-    text: ""
+    dynamic_template_data: {
+      hostName: host.displayName,
+      eventName: eventInfo.event_name,
+      eventLocation: eventInfo.location,
+      eventMessage: eventInfo.message,
+      eventStartTime: eventInfo.start_time
+    }
   };
 
   if (!emails || emails.length === 0) {
@@ -55,13 +60,7 @@ router.post("/event/sendMails", async (request, response) => {
 
   switch (action) {
     case "newEvent":
-      mailContent.subject = `Let's Eat! Event Invitation - "${eventInfo.event_name}"`;
-      mailContent.text = `Hurray! ${host.displayName} has invited you to the event - ${eventInfo.event_name}\n\n
-        Event Details:
-        Event Name: ${eventInfo.event_name}\n
-        Location: ${eventInfo.location}\n
-        Event Description: ${eventInfo.message}\n
-        Date and Time: ${eventInfo.start_time}`;
+      mailContent.templateId = "d-fefbcd3227da437d8839465b5bb304e4";
       break;
 
     case "remindInvitees":
@@ -87,13 +86,7 @@ router.post("/event/sendMails", async (request, response) => {
       break;
 
     case "eventDeleted":
-      mailContent.subject = `Let's Eat! Event Cancelled - "${eventInfo.event_name}"`;
-      mailContent.text = `Hello there! This is to notify you that your host ${host.displayName} has cancelled the event - "${eventInfo.event_name}" that you were invited to earlier.\n\n
-        Details of the cancelled event:
-        Event Name: ${eventInfo.event_name}\n
-        Location: ${eventInfo.location}\n
-        Event Description: ${eventInfo.message}\n
-        Date and Time: ${eventInfo.start_time}`;
+      mailContent.templateId = "d-388246e9cfa14bc2887a8d28b2eaeade";
       break;
 
     default:
@@ -102,9 +95,12 @@ router.post("/event/sendMails", async (request, response) => {
       break;
   }
 
-  sgMail.send(mailContent).then(() => {
-    response.end("Emails Sent");
-  });
+  sgMail
+    .send(mailContent)
+    .then(() => {
+      response.end("Emails Sent");
+    })
+    .catch(error => console.log(error));
 });
 
 module.exports = router;

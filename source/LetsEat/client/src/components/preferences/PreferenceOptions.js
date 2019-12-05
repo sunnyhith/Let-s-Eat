@@ -45,9 +45,6 @@ const price = [
 ];
 
 const CurrentLocation = props => {
-  const { required } = props;
-  const { isDisabled } = props;
-  const enableRequired = !isDisabled;
   const updateState = suggest => {
     const description = suggest ? suggest.description : "";
     const params = {
@@ -59,32 +56,14 @@ const CurrentLocation = props => {
     props.handleSelectChange(params);
     defaultLocation = description;
   };
-  console.log(required);
-
   return (
     <div>
       <Geosuggest
-        placeholder="Current Location"
+        placeholder="Current Location *"
         initialValue={defaultLocation}
         onSuggestSelect={updateState}
         value={defaultLocation}
       />
-      {enableRequired && (
-        <input
-          tabIndex={-1}
-          autoComplete="off"
-          style={{
-            opacity: 0,
-            width: "100%",
-            height: 0,
-            position: "absolute"
-          }}
-          // value={this.getValue()}
-          // onChange={noop}
-          // onFocus={() => this.selectRef.focus()}
-          required={required}
-        />
-      )}
     </div>
   );
 };

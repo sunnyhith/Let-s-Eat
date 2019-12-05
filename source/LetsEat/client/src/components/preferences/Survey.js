@@ -191,7 +191,6 @@ const Survey = () => {
                 <CurrentLocation
                   id="currentLocation"
                   handleSelectChange={handleChange}
-                  required
                 />
               </GridItem>
             </GridContainer>
