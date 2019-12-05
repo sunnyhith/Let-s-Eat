@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from "react";
 // material-ui components
 import Slide from "@material-ui/core/Slide";
 import Dialog from "@material-ui/core/Dialog";
@@ -12,8 +12,8 @@ import Close from "@material-ui/icons/Close";
 import EmailList from "components/events/emailList";
 import Button from "components/CustomButtons/Button.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
-import {validateEmail} from "util/validator.js";
-import {inviteGuests} from "./eventUtil.js";
+import { validateEmail } from "util/validator.js";
+import { inviteGuests } from "./eventUtil.js";
 // import modalStyle from "assets/jss/layout/modalStyle.js";
 import modalStyle from "assets/jss/material-kit-react/modalStyle";
 import { makeStyles } from "@material-ui/core/styles";
@@ -24,18 +24,18 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 export default function InvitationModal(props) {
-  //Props: 
+  //Props:
   //open : boolean
   //closeModal : function
   //eventId : string
-  const [ errors, setErrors ] = useState(false);
-  const [ emails, setEmails] = useState([]);
+  const [errors, setErrors] = useState(false);
+  const [emails, setEmails] = useState([]);
 
   const classes = useStyles();
 
-  const handleEmailInput = (event) => {
-    let newEmail = event.target.value.replace(/\s+/g, '');
-    if (event.key === ' ' || event.key === 'Enter') {     
+  const handleEmailInput = event => {
+    let newEmail = event.target.value.replace(/\s+/g, "");
+    if (event.key === " " || event.key === "Enter") {
       if (!validateEmail(newEmail)) {
         setErrors(true);
       } else {
@@ -43,15 +43,15 @@ export default function InvitationModal(props) {
         setErrors(false);
       }
       event.target.value = "";
-      if(event.preventDefault) event.preventDefault(); 
-    }    
-  }
+      if (event.preventDefault) event.preventDefault();
+    }
+  };
 
   const handleSubmit = () => {
     var input = document.getElementById("email_input").value;
     console.log(input);
     var newGuests = emails;
-    if (input && validateEmail(input)){
+    if (input && validateEmail(input)) {
       newGuests = newGuests.concat(input);
     }
     console.log(newGuests);
@@ -61,8 +61,8 @@ export default function InvitationModal(props) {
       inviteGuests(props.eventId, newGuests);
       props.closeModal(true);
     }
-  }
-  
+  };
+
   return (
     <div>
       <Dialog
@@ -91,37 +91,33 @@ export default function InvitationModal(props) {
           >
             <Close className={classes.modalClose} />
           </IconButton>
-          <h4 className={classes.modalTitle}>Invite More Friends</h4>
+          <h3 className={classes.modalTitle}>Invite More Friends</h3>
         </DialogTitle>
         <DialogContent
           id="modal-slide-description"
           className={classes.modalBody}
         >
-              <CustomInput
-                id="email_input"
-                error={errors}
-                labelText={("Input Email to Invite Friends!").concat(errors ? ' - Invalid' : '')}
-                inputProps={{
-                  type: "email",
-                  onKeyDown: handleEmailInput
-                }}
-                formControlProps={{
-                  fullWidth: true,
-                }}
-              />
-              
-              <EmailList
-                emails={emails}
-                setEmails={setEmails}
-              />
+          <CustomInput
+            id="email_input"
+            error={errors}
+            labelText={"Input Email to Invite Friends!".concat(
+              errors ? " - Invalid" : ""
+            )}
+            inputProps={{
+              type: "email",
+              onKeyDown: handleEmailInput
+            }}
+            formControlProps={{
+              fullWidth: true
+            }}
+          />
 
-
-
+          <EmailList emails={emails} setEmails={setEmails} />
         </DialogContent>
         <DialogActions
           className={classes.modalFooter + " " + classes.modalFooterCenter}
         >
-          <Button onClick={handleSubmit} color="success">
+          <Button onClick={handleSubmit} round color="success">
             Send Invitation
           </Button>
         </DialogActions>

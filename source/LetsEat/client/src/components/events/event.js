@@ -18,18 +18,19 @@ import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
 import Button from "components/CustomButtons/Button.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
-import CustomDropdown from 'components/CustomDropdown/CustomDropdown.js';
+import CustomDropdown from "components/CustomDropdown/CustomDropdown.js";
 //Styling
 import styles from "assets/jss/layout/CreateEventStyle.js";
 import { makeStyles } from "@material-ui/core/styles";
 const usestyles = makeStyles(styles);
 
-const Event = (props) => {
+const Event = props => {
   const classes = usestyles();
   const { currentUser, preference, loading } = useContext(AuthContext);
-  
+
   const eventId = props.match.params.event_id;
   const [eventResult, setEventResult] = useState(false);
+  const [eventDeleted, setEventDeleted] = useState(false);
   const [eventInfo, setEventInfo] = useState({});
   const [openInvitationModal, setOpenInvitationModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
@@ -40,28 +41,25 @@ const Event = (props) => {
     invited: "invited",
     tentative: "Maybe",
     declined: "Can't go",
-    attending: "Going",
-  }
+    attending: "Going"
+  };
 
   useEffect(() => {
-      var getEventInfo = async () => {
-          console.log("getEventInfo");
-          var tempEvent = await readEvent(eventId);
-          setEventInfo(tempEvent);
-          setEventResult(true);
-      };
-      
-      if (!eventResult) {
-          getEventInfo();
-      }
-  },[eventResult]);  
+    var getEventInfo = async () => {
+      var tempEvent = await readEvent(eventId);
+      setEventInfo(tempEvent);
+      setEventResult(true);
+    };
+
+    if (!eventResult) {
+      getEventInfo();
+    }
+  }, [eventResult]);
 
   useEffect(() => {
-    if (currentUser && eventResult && typeof isHost === 'undefined') {
-      console.log(currentUser.email == eventInfo.host);
+    if (currentUser && eventResult && typeof isHost === "undefined") {
       setIsHost(currentUser.email == eventInfo.host);
     }
-
   }, [currentUser, eventResult, isHost]);
 
   useEffect(() => {
@@ -70,32 +68,30 @@ const Event = (props) => {
       setStatus(status);
     };
 
-    if (currentUser && typeof status === 'undefined') {
+    if (currentUser && typeof status === "undefined") {
       getStatus();
     }
-
   }, [currentUser, status]);
 
-  const handleInvitationModal = (hadUpdate) => {
-      if (hadUpdate) {
-          setEventResult(false);
-      }
-      setOpenInvitationModal(false);
-  }
-
-  const handleEditModal = (hadUpdate) => {
+  const handleInvitationModal = hadUpdate => {
     if (hadUpdate) {
-        setEventResult(false);
+      setEventResult(false);
+    }
+    setOpenInvitationModal(false);
+  };
+
+  const handleEditModal = action => {
+    if (action.delete) {
+      setEventDeleted(true);
+    }
+    if (action.update) {
+      setEventResult(false);
     }
     setOpenEditModal(false);
-}
+  };
 
-  const handleStatusChange = (status) => {
-    changeGuestStatus(
-      currentUser.email,
-      eventId,
-      status,
-    );
+  const handleStatusChange = status => {
+    changeGuestStatus(currentUser.email, eventId, status);
     setStatus(status);
     setEventResult(false);
   }
@@ -117,39 +113,38 @@ const Event = (props) => {
   console.log("restaurants", eventInfo.restaurants);
 
   if (loading) {
-    return <Loading/>;
+    return <Loading />;
   } else if (!currentUser) {
     return <Redirect to="/signin" />;
-  } else if (!eventResult){
-      return (
-        <div>
-            <Parallax image={require("assets/img/bkg.jpg")}/>
-            <div className={classNames(classes.main, classes.mainRaised)}>
-                <div className={classes.sections}>
-                    <div className={classes.container}>
-                        <div className={classes.sectionTitle}>
-                            <h2><i className="fa fa-spinner fa-pulse fa-fw"></i></h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  } else if (eventDeleted) {
+    return <Redirect to="/" />;
+  } else if (!eventResult) {
+    return (
+      <div>
+        <Parallax image={require("assets/img/bkg.jpg")} />
+        <div className={classNames(classes.main, classes.mainRaised)}>
+          <div className={classes.sections}>
+            <Loading />
+          </div>
         </div>
-      );
+      </div>
+    );
   } else {
     return (
       <div>
         <EditModal
-            open={openEditModal}
-            closeModal={handleEditModal}
-            eventId={eventId}
-            eventInfo={eventInfo}
+          open={openEditModal}
+          closeModal={handleEditModal}
+          currentUser={currentUser}
+          eventId={eventId}
+          eventInfo={eventInfo}
         />
         <InvitationModal
-            open={openInvitationModal}
-            closeModal={handleInvitationModal}
-            eventId={eventId}
+          open={openInvitationModal}
+          closeModal={handleInvitationModal}
+          eventId={eventId}
         />
-        <Parallax image={require("assets/img/bkg.jpg")}/>
+        <Parallax image={require("assets/img/bkg.jpg")} />
         <div className={classNames(classes.main, classes.mainRaised)}>
           <div className={classes.sections}>
             <div className={classes.container}>
@@ -295,8 +290,7 @@ const Event = (props) => {
 
               <GridContainer>
                 <GridItem xs={12} sm={12} md={12} lg={12}>
-                {
-                  eventInfo.restaurants ? 
+                  {eventInfo.restaurants ? (
                     <NavPills
                       color="info"
                       tabs={[
@@ -317,10 +311,10 @@ const Event = (props) => {
                               setOpenInvitationModal={setOpenInvitationModal}
                             />
                           )
-                        },
+                        }
                       ]}
                     />
-                  :
+                  ) : (
                     <NavPills
                       color="info"
                       tabs={[
@@ -334,11 +328,10 @@ const Event = (props) => {
                               setOpenInvitationModal={setOpenInvitationModal}
                             />
                           )
-                        },
+                        }
                       ]}
                     />
-                }
-                
+                  )}
                 </GridItem>
               </GridContainer>
             </div>

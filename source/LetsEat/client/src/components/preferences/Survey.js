@@ -86,7 +86,6 @@ const Survey = () => {
 
   const handleNext = () => {
     setActiveStep(prevActiveStep => prevActiveStep + 1);
-    console.log(inputFields);
   };
   const handleBack = () => setActiveStep(prevActiveStep => prevActiveStep - 1);
   const handleReset = () => setActiveStep(0);
@@ -121,7 +120,6 @@ const Survey = () => {
         )
       })
       .then(() => {
-        console.log("Document successfully written!");
         setWriteDone(true);
         setOpen(true);
         setTimeout(() => {
@@ -204,7 +202,8 @@ const Survey = () => {
         return (
           <div id="form">
             <h3>
-              What would be your price preferences, {inputFields.firstName}?
+              What would be your price preferences
+              {", " + inputFields.firstName || ""}?
             </h3>
             <br />
             <GridContainer>
@@ -222,8 +221,8 @@ const Survey = () => {
         return (
           <div id="form">
             <h3>
-              Now {inputFields.firstName}, can you share your Dietary
-              Restrictions?
+              Now {inputFields.firstName || ""}, can you share your Dietary
+              Restrictions
             </h3>
             <br />
             <GridContainer>
@@ -460,7 +459,6 @@ const Survey = () => {
                 )}
               </div>
               <InstructionsModal />
-              {/* {setInstructionsModal(true)} */}
             </div>
           </div>
         </div>
