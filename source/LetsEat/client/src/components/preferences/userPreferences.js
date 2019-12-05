@@ -8,9 +8,7 @@ import React, { useContext, useState, useEffect } from "react";
 import Loading from "components/generic/Loading";
 import Parallax from "components/Parallax/Parallax.js";
 import { Link, Redirect } from "react-router-dom";
-import "../components-css/userPreferences.css";
 import { AuthContext } from "../../contexts/Auth";
-import { getDefaultWatermarks } from "istanbul-lib-report";
 
 const UserPreferences = () => {
   const { currentUser, loading } = useContext(AuthContext);
@@ -42,14 +40,14 @@ const UserPreferences = () => {
     return <Loading />;
   } else if (!currentUser) {
     return <Redirect to="/signin" />;
-  // master branch stuff
+    // master branch stuff
   } else {
     // const { posts } = this.state;
     const postsList = posts.length ? (
       posts.map(post => {
         return (
           <div>
-            <div className="center card container" key={post.id} >
+            <div className="center card container" key={post.id}>
               <div className="card-content">
                 <Link to={"/business/" + post.id}>
                   <span className="card-title">{post.name}</span>
@@ -58,10 +56,14 @@ const UserPreferences = () => {
                 <p>Rating: {post.rating}</p>
                 <p>Review Count: {post.review_count}</p>
                 <p>Phone: {post.display_phone}</p>
-                <img className="imageStyle" src={post.image_url} alt="Food"></img>
+                <img
+                  className="imageStyle"
+                  src={post.image_url}
+                  alt="Food"
+                ></img>
               </div>
             </div>
-            <br/>
+            <br />
           </div>
         );
       })
@@ -70,48 +72,48 @@ const UserPreferences = () => {
     );
     return (
       <div>
-      <Parallax image={require("assets/img/bg.jpg")}>
-      {/* <div className="container"> */}
-        <h4>Below are the Preferences</h4>
-        {postsList}
-      {/* </div> */}
-      </Parallax>
+        <Parallax image={require("assets/img/bg.jpg")}>
+          {/* <div className="container"> */}
+          <h4>Below are the Preferences</h4>
+          {postsList}
+          {/* </div> */}
+        </Parallax>
       </div>
     );
   }
   // const { posts } = this.state;
-//   const postsList = posts.length ? (
-//     posts.map(post => {
-//       return (
-//         <div className="center card container" key={post.id}>
-//           <div className="card-content">
-//             <Link to={"/business/" + post.id}>
-//               <span className="card-title">{post.name}</span>
-//             </Link>
-//             <p>Price: {post.price}</p>
-//             <p>Rating: {post.rating}</p>
-//             <p>Review Count: {post.review_count}</p>
-//             <p>Phone: {post.display_phone}</p>
-//             <img className="imageStyle" src={post.image_url} alt="Food"></img>
-//           </div>
-//         </div>
-//       );
-//     })
-//   ) : (
-//     <div className="center">Loading Restaurants...</div>
-//   );
+  //   const postsList = posts.length ? (
+  //     posts.map(post => {
+  //       return (
+  //         <div className="center card container" key={post.id}>
+  //           <div className="card-content">
+  //             <Link to={"/business/" + post.id}>
+  //               <span className="card-title">{post.name}</span>
+  //             </Link>
+  //             <p>Price: {post.price}</p>
+  //             <p>Rating: {post.rating}</p>
+  //             <p>Review Count: {post.review_count}</p>
+  //             <p>Phone: {post.display_phone}</p>
+  //             <img className="imageStyle" src={post.image_url} alt="Food"></img>
+  //           </div>
+  //         </div>
+  //       );
+  //     })
+  //   ) : (
+  //     <div className="center">Loading Restaurants...</div>
+  //   );
 
-//   return (
-//     <React.Fragment>
-//       <Parallax image={require("assets/img/bkg.jpg")}>
-//         <div className="container">
-//           <h4>Below are the Preferences</h4>
-//           {postsList}
-//         </div>
-//       </Parallax>
-//     </React.Fragment>
-//   );
-// };
+  //   return (
+  //     <React.Fragment>
+  //       <Parallax image={require("assets/img/bkg.jpg")}>
+  //         <div className="container">
+  //           <h4>Below are the Preferences</h4>
+  //           {postsList}
+  //         </div>
+  //       </Parallax>
+  //     </React.Fragment>
+  //   );
+  // };
 };
 
 export default UserPreferences;

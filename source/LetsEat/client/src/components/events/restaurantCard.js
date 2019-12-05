@@ -24,6 +24,9 @@ const usestyles = makeStyles(theme => ({
   content: {
     minHeight: "180px",
   },
+  detail: {
+    margin: "10px 0",
+  },
   expand: {
     transform: 'rotate(0deg)',
     marginLeft: 'auto',
@@ -53,6 +56,7 @@ const RestaurantCard = (props) => {
             <Typography gutterBottom variant="h5" component="h2">
                 {props.restaurant.name}
             </Typography>
+            <div className={classes.detail}>
             {
                 props.restaurant ? props.restaurant.categories.map((type,index) => {
                     return (
@@ -65,8 +69,15 @@ const RestaurantCard = (props) => {
                     );
                 }) : ""
             }
-            <Typography variant="body2" color="textSecondary" component="p">
-                Details
+            </div>
+            <Typography variant="body2" color="textSecondary" component="p" className={classes.text}>
+                price: {props.restaurant.price}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p" className={classes.text}>
+                rating: {props.restaurant.rating}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p" className={classes.text}>
+                {props.restaurant.review_count} reviews on Yelp
             </Typography>
         </CardContent>
         <CardActions disableSpacing>

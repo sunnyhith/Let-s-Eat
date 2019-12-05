@@ -7,8 +7,6 @@ import DialogContent from "@material-ui/core/DialogContent";
 // core components
 import Button from "components/CustomButtons/Button.js";
 import MobileStepper from "@material-ui/core/MobileStepper";
-import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
-import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import Typography from "@material-ui/core/Typography";
 //Styling
 import modalStyle from "assets/jss/material-kit-react/modalStyle";
@@ -112,11 +110,6 @@ const InstructionsModal = () => {
                 onClick={activeStep === stepCount - 1 ? closeModal : handleNext}
               >
                 {activeStep === stepCount - 1 ? "Continue" : "Next"}
-                {theme.direction === "rtl" ? (
-                  <KeyboardArrowLeft />
-                ) : (
-                  <KeyboardArrowRight />
-                )}
               </Button>
             }
             backButton={
@@ -126,11 +119,6 @@ const InstructionsModal = () => {
                 onClick={handleBack}
                 disabled={activeStep === 0}
               >
-                {theme.direction === "rtl" ? (
-                  <KeyboardArrowRight />
-                ) : (
-                  <KeyboardArrowLeft />
-                )}
                 Back
               </Button>
             }
