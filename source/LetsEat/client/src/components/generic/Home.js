@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 import { AuthContext } from "contexts/Auth";
 import { getUserEveryEvents } from "components/events/eventUtil.js";
 //core components
@@ -44,7 +44,8 @@ const Home = () => {
               <div className={classes.brand}>
                 <h2 className={classes.title}> Welcome Back! </h2>
                 <h3 className={classes.subtitle}>
-                {currentUser.displayName.toUpperCase()}, invite your friends to an event now!
+                  {currentUser.displayName.toUpperCase()}, 
+                  <Link to="/create" className={classes.link}>invite your friends to an event now!</Link>
                 </h3>
               </div>
             </GridItem>
