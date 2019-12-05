@@ -222,7 +222,7 @@ const Event = props => {
               }
 
               {
-                (Array.isArray(eventInfo.restaurants) && eventInfo.restaurants.length !== 0) || eventInfo.invited.length === 0 ? '' :
+                !isHost || (Array.isArray(eventInfo.restaurants) && eventInfo.restaurants.length !== 0) || eventInfo.invited.length === 0 ? '' :
                 <div>
                   <p className={classes.respondText}>
                     {eventInfo.invited.length} guests haven't responded yet. Waiting for them to respond.
@@ -234,7 +234,7 @@ const Event = props => {
                 (!isHost || (Array.isArray(eventInfo.restaurants) && eventInfo.restaurants.length !== 0)) ? '' :
                   <>
                     <p className={classes.respondText}>
-                      Generate Restaurants Suggestions Now: 
+                      Or Generate Restaurants Suggestions Now: 
                     </p>
                     {
                       loadingSuggestion ? 
