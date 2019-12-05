@@ -45,7 +45,6 @@ const Event = (props) => {
 
   useEffect(() => {
       var getEventInfo = async () => {
-          console.log("getEventInfo");
           var tempEvent = await readEvent(eventId);
           setEventInfo(tempEvent);
           setEventResult(true);
@@ -112,9 +111,6 @@ const Event = (props) => {
     setLoadingSuggestion(true);
     getSugst();
   }
-
-  console.log(eventInfo);
-  console.log("restaurants", eventInfo.restaurants);
 
   if (loading) {
     return <Loading/>;

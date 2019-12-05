@@ -1,5 +1,6 @@
 import * as firebase from 'firebase';
 import { userInfo } from 'os';
+import {getVoteInfo} from "components/events/votingUtil"
 
 var db = firebase.firestore();
 var event_db = db.collection("event");
@@ -82,7 +83,8 @@ async function readEvent(eventId){
             for (let i=0; i<statuses.length; i++) {
                 event_info[statuses[i]] = await get_status_guest(eventId, statuses[i]);
             }
-            return event_info;
+            var voteInfo = await getVoteInfo(eventId);
+            return {...event_info, ...voteInfo};
         }
         else{
             console.log("Attempted to read an event that does not exist!");
