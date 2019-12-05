@@ -66,4 +66,4 @@ async function testVote(){
     changeVote(eventId, 0);
 }
 
-export {testVote, getVoteInfo};
+export {changeVote, testVote, getVoteInfo};
