@@ -92,6 +92,33 @@ const componentsStyle = theme => ({
         paddingLeft: "0",
         letterSpacing: "normal"
     },
+    locationInput: {
+      color: "#495057",
+      height: "unset",
+      padding: "0 0 5px",
+      boxShadow: "none",
+      borderBottom: "1px solid #D2D2D2",
+      "&,&::placeholder": {
+        fontSize: "14px",
+        fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+        fontWeight: "400",
+        lineHeight: "1.42857",
+        opacity: "1"
+      },
+      "&::placeholder": {
+        color: "#AAAAAA"
+      },
+      "&:focus": {
+        paddingLeft: "5px",
+        borderBottom: "2px solid #9c27b0",
+        borderColor: "transparent"
+      },
+    },
+    locationInputError: {
+      "&::placeholder": {
+        color: "#f44336"
+      },
+    },
     placeholderText: {
         "& input": {
             cursor: "pointer",

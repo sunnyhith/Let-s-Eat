@@ -12,7 +12,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 // core components
-import { CurrentLocation } from "components/preferences/PreferenceOptions";
+import Geosuggest from "react-geosuggest";
 import EmailList from "components/events/emailList";
 import Loading from "components/generic/Loading";
 import Parallax from "components/Parallax/Parallax.js";
@@ -147,6 +147,28 @@ const CreateEvent = () => {
     }
   };
 
+  const handleLocationInput = event => {
+    if (event.hasOwnProperty("description")) {
+      event = event.description;
+    }
+    setEventInfo({
+      ...eventInfo,
+      location: event
+    });
+
+    if (!event) {
+      setIsValid({
+        ...isValid,
+        location: false
+      });
+    } else if (isValid["location"]) {
+      setIsValid({
+        ...isValid,
+        location: true
+      });
+    }
+  };
+
   const handleTimeInput = event => {
     setEventInfo({
       ...eventInfo,
@@ -197,23 +219,20 @@ const CreateEvent = () => {
                     />
                   </GridItem>
                   <GridItem xs={12} sm={12} md={6} lg={6}>
-                    {/* <CustomInput
-                      id="location"
-                      error={!isValid["location"]}
-                      labelText={"Location".concat(
+                     <InputLabel
+                      className={classes.label}
+                    >
+                      {eventInfo["location"] ? "Location" : ""}
+                    </InputLabel>
+                    <Geosuggest
+                      placeholder={"Location".concat(
                         isValid["location"] ? "" : errors.location
-                      )}
-                      formControlProps={{
-                        fullWidth: true,
-                        required: true
-                      }}
-                      inputProps={{
-                        onChange: handleInput
-                      }}
-                    /> */}
-                    <CurrentLocation
-                      id="location"
-                      handleSelectChange={handleInput}
+                      ) .concat(" *")}
+                      initialValue={""}
+                      onChange={handleLocationInput}
+                      onSuggestSelect={handleLocationInput}
+                      value={eventInfo.location}
+                      inputClassName={isValid["location"] ? classes.locationInput : classNames(classes.locationInput, classes.locationInputError)}
                     />
                   </GridItem>
                   <GridItem xs={12} sm={12} md={6} lg={6}>

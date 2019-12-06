@@ -1,10 +1,46 @@
-import React from "react";
+import React, { useState } from "react";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import Geosuggest from "react-geosuggest";
+import InputLabel from "@material-ui/core/InputLabel";
 import "assets/css/geosuggest.css";
+import { makeStyles } from '@material-ui/core/styles';
 
 const animatedComponents = makeAnimated();
+const useStyles = makeStyles({
+  label: {
+      color: "error",
+      display: "inline-flex",
+      fontSize: "11px",
+      transition: "0.3s ease all",
+      lineHeight: "1.428571429",
+      fontWeight: "400",
+      paddingLeft: "0",
+      letterSpacing: "normal"
+  },
+  locationInput: {
+    color: "#495057",
+    height: "unset",
+    padding: "0 0 7px",
+    boxShadow: "none",
+    borderBottom: "1px solid #D2D2D2",
+    "&,&::placeholder": {
+      fontSize: "14px",
+      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+      fontWeight: "400",
+      lineHeight: "1.42857",
+      opacity: "1"
+    },
+    "&::placeholder": {
+      color: "#AAAAAA"
+    },
+    "&:focus": {
+      paddingLeft: "5px",
+      borderBottom: "2px solid #9c27b0",
+      borderColor: "transparent"
+    },
+  },
+});
 
 let defaultLocation = "";
 let defaultCuisine = [];
@@ -45,6 +81,9 @@ const price = [
 ];
 
 const CurrentLocation = props => {
+  const classes = useStyles();
+  const [location, setLocation] = useState(defaultLocation);
+
   const updateState = suggest => {
     const description = suggest ? suggest.description : "";
     const params = {
@@ -54,15 +93,26 @@ const CurrentLocation = props => {
       }
     };
     props.handleSelectChange(params);
-    defaultLocation = description;
   };
+
+  const updateInput  = input => {
+    setLocation(input);
+  }
+
   return (
     <div>
+      <InputLabel
+        className={classes.label}
+      >
+        {location === defaultLocation ? "" : "Location"}
+      </InputLabel>
       <Geosuggest
         placeholder="Current Location *"
         initialValue={defaultLocation}
         onSuggestSelect={updateState}
-        value={defaultLocation}
+        onChange={updateInput}
+        value={location}
+        inputClassName={classes.locationInput}
       />
     </div>
   );

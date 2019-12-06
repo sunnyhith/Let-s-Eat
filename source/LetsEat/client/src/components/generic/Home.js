@@ -55,7 +55,7 @@ const Home = () => {
 
         <div className={classes.mainRaised}>
         {
-          (eventResult && eventLists.hasOwnProperty('host_event')) ? 
+          (eventResult && eventLists.hasOwnProperty('host_event') && eventLists.host_event.length > 0) ? 
             <div className={classes.listTitle}>
               <h2>Events You Host</h2>
             </div>
@@ -71,7 +71,7 @@ const Home = () => {
             }) : ""
         }
         {
-          (eventResult && eventLists.hasOwnProperty('guest_event')) ? 
+          (eventResult && eventLists.hasOwnProperty('guest_event') && eventLists.guest_event.length > 0) ? 
             <div className={classes.listTitle}>
               <h2>Events You Got Invited</h2>
             </div>
