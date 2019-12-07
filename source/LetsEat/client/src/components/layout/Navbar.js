@@ -20,7 +20,7 @@ const Navbar = () => {
           absolute
           rightLinks={currentUser ? <SignedIn /> : <SignedOut />}
           changeColorOnScroll={{
-            height: 400,
+            height: 100,
             color: "white"
           }}
         />

@@ -148,7 +148,7 @@ const CreateEvent = () => {
   };
 
   const handleLocationInput = event => {
-    if (event.hasOwnProperty("description")) {
+    if (event && event.hasOwnProperty("description")) {
       event = event.description;
     }
     setEventInfo({

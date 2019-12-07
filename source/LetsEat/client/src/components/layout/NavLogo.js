@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import logo from 'assets/img/brand.png';
 
 import styles from "assets/jss/material-kit-react/components/headerLinksStyle.js";
 import { makeStyles } from "@material-ui/core/styles";
@@ -12,7 +13,7 @@ const NavLogo = () => {
     <Link to="/"
         className={classes.navLogo}
     >
-        Let's Eat ! 
+        <img src={logo} alt="LET'S EAT" height="40"/>
     </Link>
   );
 };
