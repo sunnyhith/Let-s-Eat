@@ -112,6 +112,31 @@ const Event = props => {
     getSugst();
   };
 
+  const handleSendReminder = () => {
+    fetch("/api/event/sendMails", {
+      method: "post",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        action: "remindInvitees",
+        host: currentUser,
+        eventInfo: eventInfo,
+        emails: eventInfo.invited,
+      })
+    }).then(response => {
+      if (response.status === 200 || response.status === 202) {
+        window.alert("Reminders sent to your friends");
+        setEventResult(eventId);
+      } else {
+        window.alert("Error: Failed to send Reminders");
+        setEventResult(null);
+      }
+    });
+    
+  }
+
   if (loading) {
     return <Loading />;
   } else if (!currentUser) {
@@ -243,6 +268,25 @@ const Event = props => {
                 </p>
               </div>
               <div className={classes.sectionBody}>
+                
+                {!isHost || eventInfo.invited.length === 0 ? "" : (
+                  <div>
+                    <p className={classes.respondText}>
+                      {eventInfo.invited.length} guests haven't responded yet.
+                      Waiting for them to respond.
+                    </p>
+                    <Button
+                      size="sm"
+                      color="info"
+                      id="attending"
+                      className={classes.respondButton}
+                      onClick={() => handleSendReminder()}
+                    >
+                        send reminder
+                      </Button>
+                  </div>
+                )}
+
                 {!Array.isArray(eventInfo.restaurants) ||
                 eventInfo.restaurants.length === 0 ? (
                   ""
@@ -251,20 +295,6 @@ const Event = props => {
                     Vote for your favorite one from restaurant suggestions
                     below.
                   </p>
-                )}
-
-                {!isHost ||
-                (Array.isArray(eventInfo.restaurants) &&
-                  eventInfo.restaurants.length !== 0) ||
-                eventInfo.invited.length === 0 ? (
-                  ""
-                ) : (
-                  <div>
-                    <p className={classes.respondText}>
-                      {eventInfo.invited.length} guests haven't responded yet.
-                      Waiting for them to respond.
-                    </p>
-                  </div>
                 )}
 
                 {!isHost ||
@@ -291,8 +321,7 @@ const Event = props => {
                           handleGenerateSuggestions();
                         }}
                       >
-                        {" "}
-                        Generate{" "}
+                        Generate
                       </Button>
                     )}
                   </>
