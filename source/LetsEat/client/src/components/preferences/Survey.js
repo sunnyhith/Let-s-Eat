@@ -7,6 +7,7 @@ import {
   DietaryRestrictions,
   PriceRange
 } from "components/preferences/PreferenceOptions";
+import InstructionsModal from "components/generic/InstructionsModal";
 // import {testPreference} from "components/preferences/preferenceUtil";
 import { AuthContext } from "../../contexts/Auth";
 import firebase from "firebase";
@@ -22,6 +23,11 @@ import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import Typography from "@material-ui/core/Typography";
+
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControl from "@material-ui/core/FormControl";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 //Snackbar
 import Snackbar from "@material-ui/core/Snackbar";
 import SnackbarContent from "components/Snackbar/SnackbarContent";
@@ -31,7 +37,7 @@ import PropTypes from "prop-types";
 import clsx from "clsx";
 import CloseIcon from "@material-ui/icons/Close";
 import IconButton from "@material-ui/core/IconButton";
-import { amber, green } from "@material-ui/core/colors";
+import { green } from "@material-ui/core/colors";
 //Styling
 import styles from "assets/jss/layout/CreateEventStyle.js";
 import { makeStyles } from "@material-ui/core/styles";
@@ -42,11 +48,17 @@ const Survey = () => {
   const { currentUser, preference, loading } = useContext(AuthContext);
   const [writeDone, setWriteDone] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
+  const [dietRadioFlag, setDietRadioFlag] = useState("");
   const [inputFields, setInputFields] = useState({
     firstName: "",
     lastName: "",
     currentLocation: "",
-    dietaryRestrictions: [],
+    dietaryRestrictions: [
+      {
+        value: "none",
+        label: "No dierary restriction"
+      }
+    ],
     pricePreference: [],
     favCuisines: []
   });
@@ -58,17 +70,23 @@ const Survey = () => {
   ];
 
   useEffect(() => {
-    if (currentUser && !inputFields.firstName && !inputFields.lastName) {
+    if (
+      currentUser &&
+      currentUser.displayName &&
+      !inputFields.firstName &&
+      !inputFields.lastName
+    ) {
       setInputFields({
         ...inputFields,
-        firstName: currentUser.displayName.split(' ')[0],
-        lastName: currentUser.displayName.split(' ')[1],
+        firstName: currentUser.displayName.split(" ")[0],
+        lastName: currentUser.displayName.split(" ")[1]
       });
     }
-    
-  },[currentUser]);
+  }, [currentUser]);
 
-  const handleNext = () => setActiveStep(prevActiveStep => prevActiveStep + 1);
+  const handleNext = () => {
+    setActiveStep(prevActiveStep => prevActiveStep + 1);
+  };
   const handleBack = () => setActiveStep(prevActiveStep => prevActiveStep - 1);
   const handleReset = () => setActiveStep(0);
 
@@ -89,7 +107,7 @@ const Survey = () => {
         name: inputFields.firstName + " " + inputFields.lastName,
         currentLocation: inputFields.currentLocation,
         dietaryRestrictions: inputFields.dietaryRestrictions.reduce(
-          (a, cusine) => ((a[cusine.label] = ""), a),
+          (a, cusine) => ((a[cusine.value] = ""), a),
           {}
         ),
         pricePreference: inputFields.pricePreference.reduce(
@@ -102,14 +120,13 @@ const Survey = () => {
         )
       })
       .then(() => {
-        console.log("Document successfully written!");
         setWriteDone(true);
         setOpen(true);
         setTimeout(() => {
           window.location.reload();
         }, 3500);
       })
-      .catch(function(error) {
+      .catch(error => {
         console.error("Error writing document: ", error);
         setWriteDone(false);
       });
@@ -120,15 +137,20 @@ const Survey = () => {
     setActiveStep(prevActiveStep => prevActiveStep + 1);
     updatePreference(currentUser);
   };
+  const handleDietRadioValue = event => {
+    setDietRadioFlag(event.target.value);
+  };
 
   const getStepContent = stepIndex => {
     switch (stepIndex) {
       case 0:
-        const fullName = currentUser.displayName.split(" ");
         let fName, lName;
-        if (fullName.length === 2) {
-          fName = fullName[0];
-          lName = fullName[1];
+        if (currentUser && currentUser.displayName) {
+          const fullName = currentUser.displayName.split(" ");
+          if (fullName.length === 2) {
+            fName = fullName[0];
+            lName = fullName[1];
+          }
         }
         return (
           <div id="form">
@@ -144,7 +166,8 @@ const Survey = () => {
                   inputProps={{
                     onChange: handleChange,
                     value: fName ? fName : inputFields.firstName,
-                    disabled: fName ? true : false
+                    disabled: fName ? true : false,
+                    required: true
                   }}
                 />
               </GridItem>
@@ -159,7 +182,8 @@ const Survey = () => {
                   inputProps={{
                     onChange: handleChange,
                     value: lName ? lName : inputFields.lastName,
-                    disabled: lName ? true : false
+                    disabled: lName ? true : false,
+                    required: true
                   }}
                 />
               </GridItem>
@@ -170,11 +194,17 @@ const Survey = () => {
                 />
               </GridItem>
             </GridContainer>
+            <br />
           </div>
         );
       case 1:
         return (
           <div id="form">
+            <h3>
+              What would be your price preferences
+              {", " + inputFields.firstName || ""}?
+            </h3>
+            <br />
             <GridContainer>
               <GridItem xs={12} sm={12} md={6} lg={6}>
                 <PriceRange
@@ -183,24 +213,61 @@ const Survey = () => {
                 />
               </GridItem>
             </GridContainer>
+            <br />
           </div>
         );
       case 2:
         return (
           <div id="form">
+            <h3>
+              Now {inputFields.firstName || ""}, can you share your Dietary
+              Restrictions
+            </h3>
+            <br />
             <GridContainer>
               <GridItem xs={12} sm={12} md={6} lg={6}>
+                <h5>
+                  Do you have any Dietary Restrictions? If Yes, please select
+                  from the list
+                </h5>
+                <FormControl
+                  component="fieldset"
+                  className={classes.formControl}
+                >
+                  <RadioGroup
+                    row
+                    value={dietRadioFlag}
+                    onChange={handleDietRadioValue}
+                  >
+                    <FormControlLabel
+                      value="true"
+                      control={<Radio />}
+                      label="Yes"
+                    />
+                    <FormControlLabel
+                      value="false"
+                      control={<Radio />}
+                      label="No"
+                    />
+                  </RadioGroup>
+                </FormControl>
                 <DietaryRestrictions
                   id="dietaryRestrictions"
                   handleSelectChange={handleChange}
+                  visible={dietRadioFlag === "true"}
                 />
               </GridItem>
             </GridContainer>
+            <br />
           </div>
         );
       case 3:
         return (
           <div id="form">
+            <h3>
+              Lastly, please select atleast three of your favourite Cuisines
+            </h3>
+            <br />
             <GridContainer>
               <GridItem xs={12} sm={12} md={6} lg={6}>
                 <CuisineType
@@ -209,6 +276,7 @@ const Survey = () => {
                 />
               </GridItem>
             </GridContainer>
+            <br />
           </div>
         );
       default:
@@ -311,23 +379,16 @@ const Survey = () => {
                 {activeStep === steps.length ? (
                   <div>
                     <div>
-                      <Button round simple color="info" onClick={handleReset}>
-                        Reset
-                      </Button>
-                      <Button
-                        round
-                        disabled={!writeDone}
-                        color="info"
-                        component={Link}
-                        to="/"
-                      >
-                        Dashboard
-                      </Button>
-                      {activeStep === steps.length && writeDone === true && (
-                        <p>SUCCESS: Preferences Saved</p>
-                      )}
                       {activeStep === steps.length && writeDone === false && (
-                        <p>ERROR: Preferences Not Saved</p>
+                        <div>
+                          <h5>
+                            Preferences could not be saved. Please try again by
+                            clicking "Reset"
+                          </h5>
+                          <Button round color="rose" onClick={handleReset}>
+                            Reset
+                          </Button>
+                        </div>
                       )}
                     </div>
                     <div>
@@ -381,6 +442,7 @@ const Survey = () => {
                   </div>
                 )}
               </div>
+              <InstructionsModal />
             </div>
           </div>
         </div>

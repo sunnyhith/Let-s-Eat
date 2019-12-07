@@ -10,15 +10,23 @@ const dashboardStyle = theme => ({
       textAlign: "left"
     },
     title: {
+      textShadow:  "2px 0 10px rgba(0, 0, 0, 0.50)",
       fontSize: "3.2rem",
       fontWeight: "600",
       display: "inline-block",
       position: "relative"
     },
     subtitle: {
+      textShadow:  "2px 0 5px rgba(0, 0, 0, 0.50)",
       fontSize: "1.313rem",
       maxWidth: "500px",
       margin: "10px 0 0"
+    },
+    link: {
+        marginLeft: "10px",
+        "&,&:hover": {
+            color: "inherit", 
+        }        
     },
     listTitle: {
         position: "relative",

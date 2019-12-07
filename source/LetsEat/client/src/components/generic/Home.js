@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 import { AuthContext } from "contexts/Auth";
 import { getUserEveryEvents } from "components/events/eventUtil.js";
 //core components
@@ -44,7 +44,8 @@ const Home = () => {
               <div className={classes.brand}>
                 <h2 className={classes.title}> Welcome Back! </h2>
                 <h3 className={classes.subtitle}>
-                {currentUser.displayName.toUpperCase()}, invite your friends to an event now!
+                  {currentUser.displayName.toUpperCase()}, 
+                  <Link to="/create" className={classes.link}>invite your friends to an event now!</Link>
                 </h3>
               </div>
             </GridItem>
@@ -54,31 +55,33 @@ const Home = () => {
 
         <div className={classes.mainRaised}>
         {
-          (eventResult && eventLists.hasOwnProperty('host_event')) ? 
+          (eventResult && eventLists.hasOwnProperty('host_event') && eventLists.host_event.length > 0) ? 
             <div className={classes.listTitle}>
               <h2>Events You Host</h2>
             </div>
           : ""
         }
         {
-          (eventResult && eventLists.host_event) ? (eventLists.host_event).map((event) => {
+          (eventResult && eventLists.host_event) ? (eventLists.host_event).map((event, index) => {
               return (
               <EventCard 
+                key={index}
                 eventInfo={event}
               />);
             }) : ""
         }
         {
-          (eventResult && eventLists.hasOwnProperty('guest_event')) ? 
+          (eventResult && eventLists.hasOwnProperty('guest_event') && eventLists.guest_event.length > 0) ? 
             <div className={classes.listTitle}>
               <h2>Events You Got Invited</h2>
             </div>
           : ""
         }
         {
-          (eventResult && eventLists.guest_event) ? (eventLists.guest_event).map((event) => {
+          (eventResult && eventLists.guest_event) ? (eventLists.guest_event).map((event, index) => {
               return (
               <EventCard 
+                key={index}
                 eventInfo={event}
               />);
             }) : ""

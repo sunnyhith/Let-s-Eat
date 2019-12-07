@@ -3,22 +3,33 @@ import { title, container } from "assets/jss/material-kit-react.js";
 const componentsStyle = theme => ({
     sections: {
         [theme.breakpoints.down('xs')]: {
-            padding: "50px 12px"
+            padding: "20px 12px 30px"
         },
         [theme.breakpoints.up('sm')]: {
-            padding: "50px 20px"
+            padding: "20px 20px 30px"
         },
     },
     container,
     sectionTitle: {
         ...title,
-        marginTop: "30px",
+        marginTop: "20px",
         minHeight: "32px",
+        textDecoration: "none"
+    },
+    sectionBody: {
+        ...title,
+        marginTop: "0",
+        marginBottom: "0",
+        minHeight: "32px",
+        padding: "0 5px",
         textDecoration: "none"
     },
     brand: {
         color: "#FFFFFF",
         textAlign: "left"
+    },
+    eventName: {
+        marginBottom: "0",
     },
     title: {
         fontSize: "4.2rem",
@@ -52,17 +63,17 @@ const componentsStyle = theme => ({
         boxShadow:
             "0 16px 24px 2px rgba(0, 0, 0, 0.14), 0 6px 30px 5px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2)",
         [theme.breakpoints.down('xs')]: {
-            margin: "-85vh 30px 0px",
+            margin: "-85vh 30px 200px",
         },
         [theme.breakpoints.down('sm')]: {
-            margin: "-85vh 30px 0px",
+            margin: "-85vh 30px 200px",
         },
         [theme.breakpoints.up('md')]: {
-            margin: "-85vh 150px 0px",
+            margin: "-85vh 150px 200px",
         },
         [theme.breakpoints.up('lg')]: {
             minWidth: "900px",
-            margin: "-85vh 300px 0px",
+            margin: "-85vh 300px 200px",
         },
     },
     link: {
@@ -81,6 +92,33 @@ const componentsStyle = theme => ({
         paddingLeft: "0",
         letterSpacing: "normal"
     },
+    locationInput: {
+      color: "#495057",
+      height: "unset",
+      padding: "0 0 5px",
+      boxShadow: "none",
+      borderBottom: "1px solid #D2D2D2",
+      "&,&::placeholder": {
+        fontSize: "14px",
+        fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+        fontWeight: "400",
+        lineHeight: "1.42857",
+        opacity: "1"
+      },
+      "&::placeholder": {
+        color: "#AAAAAA"
+      },
+      "&:focus": {
+        paddingLeft: "5px",
+        borderBottom: "2px solid #9c27b0",
+        borderColor: "transparent"
+      },
+    },
+    locationInputError: {
+      "&::placeholder": {
+        color: "#f44336"
+      },
+    },
     placeholderText: {
         "& input": {
             cursor: "pointer",
@@ -97,24 +135,31 @@ const componentsStyle = theme => ({
         marginTop: "50px",
     },
     editButton: {
-        margin: "15px 0 15px",
+        margin: "-20px 0 0",
+        paddingLeft: "5px",
+        paddingRight: "5px",
     },
     titleEditButton: {
         margin: "0 0 0 20px"
     },
     respondText: {
-        fontSize: "0.5rem",
+        fontSize: "16px",
+        fontWeight: "500",
         display: "inline-block",
-        marginRight: "10px"
+        margin: "15px 10px 15px 0"
     },
     respondButton: {
-        margin: "0 0",
+        margin: "0 20px 5px 0",
         [theme.breakpoints.up('xs')]: {
-            padding: "10px 5px 10px 5px",
+            padding: "5px 10px 5px 10px",
         },
         [theme.breakpoints.up('md')]: {
-            padding: "10px 20px 10px 20px",
+            padding: "5px 20px 5px 20px",
         },
+    },
+    statusDropdown: {
+        display: "inline-block",
+        marginLeft: "20px",
     },
     dropdownLink: {
         "&,&:hover,&:focus": {
@@ -124,6 +169,20 @@ const componentsStyle = theme => ({
           padding: "10px 20px",
           margin: "0"
         }
+    },
+    infoText: {
+        fontWeight: "200",
+        color: "gray",
+        marginLeft: "5px",
+        marginBottom: "5px",
+    },
+    infoIcon: {
+        minWidth: "25px",
+    },
+    tabContainer: {
+        padding: "20px 10px",
+        marginLeft: "0",
+        marginRight: "0",
     }
 });
 

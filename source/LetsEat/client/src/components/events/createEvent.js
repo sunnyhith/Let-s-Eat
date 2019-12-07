@@ -12,6 +12,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 // core components
+import Geosuggest from "react-geosuggest";
 import EmailList from "components/events/emailList";
 import Loading from "components/generic/Loading";
 import Parallax from "components/Parallax/Parallax.js";
@@ -73,6 +74,16 @@ const CreateEvent = () => {
           ...errors,
           email_input: "  - Input valid email address"
         });
+      } else if (currentUser && currentUser.email === newEmail) {
+        setErrors({
+          ...errors,
+          email_input: "  - You cannot invite yourself"
+        });
+      } else if (emails.includes(newEmail)) {
+        setErrors({
+          ...errors,
+          email_input: "  - You can invite a guest only once"
+        });
       } else {
         setEmails(emails.concat(newEmail));
         delete errors.email_input;
@@ -105,34 +116,30 @@ const CreateEvent = () => {
         ...validate
       });
     } else {
-      console.log("ready to submit");
-      console.log(eventInfo);
-      console.log(emails);
-      //send message,
       var eventId = await createEvent({
         ...eventInfo,
         guests: emails
       });
       console.log(eventId);
       if (eventId) {
-        //send emails to the invite list here
-        fetch(`/api/event/send-invites/${eventId}`, {
+        fetch("/api/event/sendMails", {
           method: "post",
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
+            action: "newEvent",
             host: currentUser,
             eventInfo: eventInfo,
             emails: emails
           })
         }).then(response => {
           if (response.status === 200 || response.status === 202) {
-            console.log(response);
+            window.alert("Event invitations sent to your friends");
             setEventResult(eventId);
           } else {
-            console.log("response failed");
+            window.alert("Error: Failed to send invite emails");
             setEventResult(null);
           }
         });
@@ -140,7 +147,29 @@ const CreateEvent = () => {
     }
   };
 
-  const handleTimeInput = (event) => {
+  const handleLocationInput = event => {
+    if (event && event.hasOwnProperty("description")) {
+      event = event.description;
+    }
+    setEventInfo({
+      ...eventInfo,
+      location: event
+    });
+
+    if (!event) {
+      setIsValid({
+        ...isValid,
+        location: false
+      });
+    } else if (isValid["location"]) {
+      setIsValid({
+        ...isValid,
+        location: true
+      });
+    }
+  };
+
+  const handleTimeInput = event => {
     setEventInfo({
       ...eventInfo,
       start_time: event.toDate()
@@ -190,19 +219,20 @@ const CreateEvent = () => {
                     />
                   </GridItem>
                   <GridItem xs={12} sm={12} md={6} lg={6}>
-                    <CustomInput
-                      id="location"
-                      error={!isValid["location"]}
-                      labelText={"Location".concat(
+                     <InputLabel
+                      className={classes.label}
+                    >
+                      {eventInfo["location"] ? "Location" : ""}
+                    </InputLabel>
+                    <Geosuggest
+                      placeholder={"Location".concat(
                         isValid["location"] ? "" : errors.location
-                      )}
-                      formControlProps={{
-                        fullWidth: true,
-                        required: true
-                      }}
-                      inputProps={{
-                        onChange: handleInput
-                      }}
+                      ) .concat(" *")}
+                      initialValue={""}
+                      onChange={handleLocationInput}
+                      onSuggestSelect={handleLocationInput}
+                      value={eventInfo.location}
+                      inputClassName={isValid["location"] ? classes.locationInput : classNames(classes.locationInput, classes.locationInputError)}
                     />
                   </GridItem>
                   <GridItem xs={12} sm={12} md={6} lg={6}>
@@ -210,14 +240,18 @@ const CreateEvent = () => {
                       className={classes.label}
                       error={!isValid["start_time"]}
                     >
-                      {eventInfo['start_time'] ? (isValid['start_time'] ? 'Start Time' : errors.start_time) : ''}
+                      {eventInfo["start_time"]
+                        ? isValid["start_time"]
+                          ? "Start Time"
+                          : errors.start_time
+                        : ""}
                     </InputLabel>
                     <br />
                     <FormControl fullWidth className={classes.placeholderText}>
                       <Datetime
                         onChange={handleTimeInput}
                         inputProps={{
-                          placeholder: "Start Time",
+                          placeholder: "Event Date and Time *",
                           readOnly: true
                         }}
                         isValidDate={(selectedDate, currentDate) => {

@@ -1,18 +1,59 @@
-import React from "react";
+import React, { useState } from "react";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import Geosuggest from "react-geosuggest";
+import InputLabel from "@material-ui/core/InputLabel";
 import "assets/css/geosuggest.css";
+import { makeStyles } from '@material-ui/core/styles';
 
 const animatedComponents = makeAnimated();
+const useStyles = makeStyles({
+  label: {
+      color: "error",
+      display: "inline-flex",
+      fontSize: "11px",
+      transition: "0.3s ease all",
+      lineHeight: "1.428571429",
+      fontWeight: "400",
+      paddingLeft: "0",
+      letterSpacing: "normal"
+  },
+  locationInput: {
+    color: "#495057",
+    height: "unset",
+    padding: "0 0 7px",
+    boxShadow: "none",
+    borderBottom: "1px solid #D2D2D2",
+    "&,&::placeholder": {
+      fontSize: "14px",
+      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+      fontWeight: "400",
+      lineHeight: "1.42857",
+      opacity: "1"
+    },
+    "&::placeholder": {
+      color: "#AAAAAA"
+    },
+    "&:focus": {
+      paddingLeft: "5px",
+      borderBottom: "2px solid #9c27b0",
+      borderColor: "transparent"
+    },
+  },
+});
+
+let defaultLocation = "";
+let defaultCuisine = [];
+let defaultDiet = [];
+let defaultPrice = [];
 
 const cuisine = [
-  { value: "american", label: "American" },
+  { value: "American", label: "American" },
   { value: "Chinese", label: "Chinese" },
-  { value: "indian", label: "Indian" },
-  { value: "italian", label: "Italian" },
-  { value: "japanese", label: "Japanese" },
-  { value: "mexican", label: "Mexican" },
+  { value: "Indian", label: "Indian" },
+  { value: "Italian", label: "Italian" },
+  { value: "Japanese", label: "Japanese" },
+  { value: "Mexican", label: "Mexican" },
   { value: "Mediterranean", label: "Mediterranean" },
   { value: "Middle Eastern", label: "Middle Eastern" },
   { value: "Korean", label: "Korean" },
@@ -26,10 +67,10 @@ const cuisine = [
 ];
 
 const diet = [
-  { value: "veg", label: "Vegeterian" },
-  { value: "nonveg", label: "Non-Vegeterian" },
+  { value: "vegeterian", label: "Vegeterian" },
   { value: "vegan", label: "Vegan" },
-  { value: "hala", label: "Hala" }
+  { value: "halal", label: "Halal" },
+  { value: "gluten_free", label: "Gluten Free" }
 ];
 
 const price = [
@@ -40,6 +81,9 @@ const price = [
 ];
 
 const CurrentLocation = props => {
+  const classes = useStyles();
+  const [location, setLocation] = useState(defaultLocation);
+
   const updateState = suggest => {
     const description = suggest ? suggest.description : "";
     const params = {
@@ -50,8 +94,27 @@ const CurrentLocation = props => {
     };
     props.handleSelectChange(params);
   };
+
+  const updateInput  = input => {
+    setLocation(input);
+  }
+
   return (
-    <Geosuggest placeholder="Current Location" onSuggestSelect={updateState} />
+    <div>
+      <InputLabel
+        className={classes.label}
+      >
+        {location === defaultLocation ? "" : "Location"}
+      </InputLabel>
+      <Geosuggest
+        placeholder="Current Location *"
+        initialValue={defaultLocation}
+        onSuggestSelect={updateState}
+        onChange={updateInput}
+        value={location}
+        inputClassName={classes.locationInput}
+      />
+    </div>
   );
 };
 
@@ -64,10 +127,12 @@ const CuisineType = props => {
       }
     };
     props.handleSelectChange(params);
+    defaultCuisine = selectOption;
   };
   return (
     <Select
       isMulti
+      value={defaultCuisine}
       onChange={updateState}
       closeMenuOnSelect={false}
       components={animatedComponents}
@@ -86,16 +151,21 @@ const DietaryRestrictions = props => {
       }
     };
     props.handleSelectChange(params);
+    defaultDiet = selectOption;
   };
-  return (
+  return props.visible ? (
     <Select
       isMulti
+      value={defaultDiet}
       onChange={updateState}
       closeMenuOnSelect={false}
       components={animatedComponents}
       options={diet}
       placeholder="Dietary Restrictions"
+      display="none"
     />
+  ) : (
+    <React.Fragment></React.Fragment>
   );
 };
 
@@ -108,10 +178,13 @@ const PriceRange = props => {
       }
     };
     props.handleSelectChange(params);
+    defaultPrice = selectOption;
   };
+
   return (
     <Select
       isMulti
+      value={defaultPrice}
       onChange={updateState}
       closeMenuOnSelect={false}
       components={animatedComponents}
