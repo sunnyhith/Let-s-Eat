@@ -41,7 +41,7 @@ router.post("/event/sendMails", async (request, response) => {
   const sendgrid_api_key =
     "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";
   sgMail.setApiKey(sendgrid_api_key);
-  const { action, host, eventInfo, emails } = request.body;
+  const { action, host, eventInfo, emails, restaurant } = request.body;
   let mailContent = {
     to: emails,
     from: host.email,
@@ -71,7 +71,9 @@ router.post("/event/sendMails", async (request, response) => {
         Event Name: ${eventInfo.event_name}\n
         Location: ${eventInfo.location}\n
         Event Description: ${eventInfo.message}\n
-        Date and Time: ${eventInfo.start_time}`;
+        Date and Time: ${eventInfo.start_time}\n
+        Restaurant: ${restaurant.name}\n
+        Restaurant on Yelp: ${restaurant.url}\n`;
       break;
 
     case "finalRestaurant":

@@ -244,6 +244,17 @@ function getUserEveryEvents(email) {
   });
 }
 
+async function setFinalDecision(eventId, restaurantId) {
+  try {
+    await event_db
+      .doc(eventId)
+      .update({final_decision: restaurantId});
+  } catch (error) {
+    console.error("Unable to generate final Descision for event ", eventId);
+    return;
+  }
+}
+
 /*function testEvent(){
     var eventId = "C5jYNt7VRcgBGPBRPtS1";
     var emails = ["tzuyuc@uci.edu", "zoechaozoe@gmail.com", "aso@yahoo.com"];
@@ -279,5 +290,6 @@ export {
   getUserEveryEvents,
   inviteGuests,
   getUserStatus,
-  get_status_guest
+  get_status_guest,
+  setFinalDecision
 };
