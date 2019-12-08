@@ -125,22 +125,22 @@ const Event = props => {
         action: "remindInvitees",
         host: currentUser,
         eventInfo: eventInfo,
-        emails: eventInfo.invited,
+        emails: eventInfo.invited
       })
     }).then(response => {
       if (response.status === 200 || response.status === 202) {
         window.alert("Reminders sent to your friends");
         setEventResult(eventId);
       } else {
-        window.alert("Error: Failed to send Reminders");
+        window.alert("Error: Failed to send Reminders. Please try again");
         setEventResult(null);
       }
     });
-  }
+  };
 
   const updateVote = (id, vote) => {
-      eventInfo.vote_cnt[id] = vote;
-  }
+    eventInfo.vote_cnt[id] = vote;
+  };
 
   const handleFinalDecision = () => {
     var updateDecision = async () => {
@@ -148,8 +148,8 @@ const Event = props => {
       let maxIndex = 0;
       for (var i = 1; i < eventInfo.vote_cnt.length; i++) {
         if (eventInfo.vote_cnt[i] > max) {
-            maxIndex = i;
-            max = eventInfo.vote_cnt[i];
+          maxIndex = i;
+          max = eventInfo.vote_cnt[i];
         }
       }
 
@@ -162,7 +162,7 @@ const Event = props => {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            action: "remindInvitees",
+            action: "finalRestaurant",
             host: currentUser,
             eventInfo: eventInfo,
             emails: eventInfo.invited,
@@ -170,24 +170,24 @@ const Event = props => {
           })
         }).then(response => {
           if (response.status === 200 || response.status === 202) {
-            window.alert("Reminders sent to your friends");
+            window.alert("Final restaurant details mailed to your friends");
             setEventResult(false);
             setLoadingFinalDecision(false);
           } else {
-            window.alert("Error: Failed to send Notification Emails");
+            window.alert(
+              "Error: Failed to send the Finalized Restaurant. Please try again"
+            );
             setLoadingFinalDecision(false);
           }
         });
-        
       } catch (error) {
         setLoadingFinalDecision(false);
       }
+    };
 
-    }
-    
     setLoadingFinalDecision(true);
     updateDecision();
-  }
+  };
 
   if (loading) {
     return <Loading />;
@@ -220,6 +220,7 @@ const Event = props => {
           open={openInvitationModal}
           closeModal={handleInvitationModal}
           eventId={eventId}
+          eventInfo={eventInfo}
         />
         <Parallax image={require("assets/img/bkg.jpg")} />
         <div className={classNames(classes.main, classes.mainRaised)}>
@@ -320,8 +321,9 @@ const Event = props => {
                 </p>
               </div>
               <div className={classes.sectionBody}>
-                
-                {!isHost || eventInfo.invited.length === 0 ? "" : (
+                {!isHost || eventInfo.invited.length === 0 ? (
+                  ""
+                ) : (
                   <div>
                     <p className={classes.respondText}>
                       {eventInfo.invited.length} guests haven't responded yet.
@@ -334,30 +336,38 @@ const Event = props => {
                       className={classes.respondButton}
                       onClick={() => handleSendReminder()}
                     >
-                        send reminder
-                      </Button>
+                      send reminder
+                    </Button>
                   </div>
                 )}
 
-                {!eventInfo.final_decision ? '' : 
+                {!eventInfo.final_decision ? (
+                  ""
+                ) : (
                   <div>
                     <p className={classes.respondText}>
-                      Final decision has been maked: {eventInfo.restaurants[eventInfo.final_decision].name}
+                      Final decision has been made:{" "}
+                      {eventInfo.restaurants[eventInfo.final_decision].name}
                     </p>
                   </div>
-                }
+                )}
 
-                {!isHost || eventInfo.final_decision || !Array.isArray(eventInfo.restaurants) || eventInfo.restaurants.length === 0 ? "" : (
+                {!isHost ||
+                eventInfo.final_decision ||
+                !Array.isArray(eventInfo.restaurants) ||
+                eventInfo.restaurants.length === 0 ? (
+                  ""
+                ) : (
                   <div>
                     <p className={classes.respondText}>
-                      Ready to send the final decison? 
+                      Ready to send the final decison?
                     </p>
                     {loadingFinalDecision ? (
                       <React.Fragment>
                         <i className="fa fa-spinner fa-pulse fa-fw" />
                         Generating Final Restaurant Decision...
                       </React.Fragment>
-                      ) : (
+                    ) : (
                       <Button
                         size="sm"
                         color="info"
@@ -365,11 +375,9 @@ const Event = props => {
                         className={classes.respondButton}
                         onClick={() => handleFinalDecision()}
                       >
-                          generate final decision.
-                        </Button>
-                      )
-                    }
-                    
+                        generate final decision.
+                      </Button>
+                    )}
                   </div>
                 )}
 

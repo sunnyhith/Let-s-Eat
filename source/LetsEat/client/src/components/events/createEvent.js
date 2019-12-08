@@ -206,7 +206,8 @@ const CreateEvent = () => {
                       classes.infoIcon
                     )}
                   ></i>
-                  You're creating a new event. Please enter the following information.
+                  Please enter the following information for creating a new
+                  event
                 </p>
               </div>
               <div id="form">
@@ -228,20 +229,25 @@ const CreateEvent = () => {
                     />
                   </GridItem>
                   <GridItem xs={12} sm={12} md={6} lg={6}>
-                     <InputLabel
-                      className={classes.label}
-                    >
+                    <InputLabel className={classes.label}>
                       {eventInfo["location"] ? "Location" : ""}
                     </InputLabel>
                     <Geosuggest
-                      placeholder={"Location".concat(
-                        isValid["location"] ? "" : errors.location
-                      ) .concat(" *")}
+                      placeholder={"Location"
+                        .concat(isValid["location"] ? "" : errors.location)
+                        .concat(" *")}
                       initialValue={""}
                       onChange={handleLocationInput}
                       onSuggestSelect={handleLocationInput}
                       value={eventInfo.location}
-                      inputClassName={isValid["location"] ? classes.locationInput : classNames(classes.locationInput, classes.locationInputError)}
+                      inputClassName={
+                        isValid["location"]
+                          ? classes.locationInput
+                          : classNames(
+                              classes.locationInput,
+                              classes.locationInputError
+                            )
+                      }
                     />
                   </GridItem>
                   <GridItem xs={12} sm={12} md={6} lg={6}>
@@ -316,7 +322,7 @@ const CreateEvent = () => {
                 </GridContainer>
                 <div className={classes.submitButton}>
                   <Button round color="info" onClick={handleSubmit}>
-                    Submit
+                    Create
                   </Button>
                 </div>
               </div>
