@@ -199,6 +199,15 @@ const CreateEvent = () => {
             <div className={classes.container}>
               <div className={classes.sectionTitle}>
                 <h2>Create Event</h2>
+                <p className={classes.infoText}>
+                  <i
+                    className={classNames(
+                      "fas fa-info-circle",
+                      classes.infoIcon
+                    )}
+                  ></i>
+                  You're creating a new event. Please enter the following information.
+                </p>
               </div>
               <div id="form">
                 <GridContainer>
