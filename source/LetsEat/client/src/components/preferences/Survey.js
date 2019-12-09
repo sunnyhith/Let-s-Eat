@@ -8,7 +8,6 @@ import {
   PriceRange
 } from "components/preferences/PreferenceOptions";
 import InstructionsModal from "components/generic/InstructionsModal";
-// import {testPreference} from "components/preferences/preferenceUtil";
 import { AuthContext } from "../../contexts/Auth";
 import firebase from "firebase";
 // nodejs library that concatenates classes
@@ -23,7 +22,6 @@ import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import Typography from "@material-ui/core/Typography";
-
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControl from "@material-ui/core/FormControl";
@@ -265,7 +263,7 @@ const Survey = () => {
         return (
           <div id="form">
             <h3>
-              Lastly, please select atleast three of your favourite Cuisines
+              Lastly, please select at least three of your favourite Cuisines
             </h3>
             <br />
             <GridContainer>

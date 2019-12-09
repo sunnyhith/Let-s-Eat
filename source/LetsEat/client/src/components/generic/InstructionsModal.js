@@ -23,10 +23,10 @@ const InstructionsModal = () => {
   const [modal, setModal] = useState(true);
   const [activeStep, setActiveStep] = useState(0);
   const stepContent = [
-    "For starters, we'll start with a short survey. Click Next to learn more",
+    "For starters, we'll begin with a short survey about your food preferences. Click Next to learn more",
     "We need you to complete this survey for helping us suggest better restaurants for you",
-    "After successfully completing the survey, you will automatically be redirected to your personalized Dashboard",
-    "Dashboard is the place where you can view the Events that you are hosting, or are invited to!",
+    "After successfully completing the survey, you will be automatically redirected to your personalized Dashboard",
+    "Dashboard is the place where you can view the Events that you are hosting, or are invited to",
     "Excited? Let's get this survey out of the way!"
   ];
   const stepCount = stepContent.length;
