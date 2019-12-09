@@ -86,9 +86,9 @@ async function read_sugst_from_db(eventId){
 
 async function testSuggest(){
     console.log("Entering test fcn");
-    var eventId = "SW3vtMVhLzFkpJjQmFJd";
-    await create_sugst_save_to_db(eventId);
-    console.log("Finish saveSuggestionInDb");
+    // var eventId = "SW3vtMVhLzFkpJjQmFJd";
+    // await create_sugst_save_to_db(eventId);
+    // console.log("Finish saveSuggestionInDb");
     // var suggestions = await read_sugst_from_db(eventId);
     // console.log("suggestions is", suggestions);
 }
