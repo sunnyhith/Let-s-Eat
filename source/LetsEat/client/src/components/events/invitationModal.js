@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { AuthContext } from "contexts/Auth";
 // material-ui components
 import Slide from "@material-ui/core/Slide";
 import Dialog from "@material-ui/core/Dialog";
@@ -28,6 +29,7 @@ export default function InvitationModal(props) {
   //open : boolean
   //closeModal : function
   //eventId : string
+  const { currentUser } = useContext(AuthContext);
   const [errors, setErrors] = useState(false);
   const [emails, setEmails] = useState([]);
 
@@ -49,17 +51,34 @@ export default function InvitationModal(props) {
 
   const handleSubmit = () => {
     var input = document.getElementById("email_input").value;
-    console.log(input);
     var newGuests = emails;
     if (input && validateEmail(input)) {
       newGuests = newGuests.concat(input);
     }
-    console.log(newGuests);
     if (newGuests === undefined || newGuests.length === 0) {
       props.closeModal(false);
     } else {
       inviteGuests(props.eventId, newGuests);
-      props.closeModal(true);
+      fetch("/api/event/sendMails", {
+        method: "post",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          action: "newEvent",
+          host: currentUser,
+          eventInfo: props.eventInfo,
+          emails: newGuests
+        })
+      }).then(response => {
+        if (response.status === 200 || response.status === 202) {
+          window.alert("Event invitations sent to your friends");
+          props.closeModal(true);
+        } else {
+          window.alert("Error: Failed to send invite emails");
+        }
+      });
     }
   };
 

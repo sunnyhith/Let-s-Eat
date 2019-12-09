@@ -23,6 +23,7 @@ const RestaurantList = props => {
               index={index}
               eventId={props.eventId}
               isSelected={currentUser in restaurant.voter}
+              updateVote={props.updateVote}
             />
           </GridItem>
         );

@@ -54,9 +54,11 @@ const RestaurantCard = props => {
     if (isSelected) {
       setIsSelected(false);
       setVoteCount(voteCount - 1);
+      props.updateVote(props.index, voteCount - 1);
     } else {
       setIsSelected(true);
       setVoteCount(voteCount + 1);
+      props.updateVote(props.index, voteCount + 1);
     }
   };
 

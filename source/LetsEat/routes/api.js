@@ -41,7 +41,7 @@ router.post("/event/sendMails", async (request, response) => {
   const sendgrid_api_key =
     "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";
   sgMail.setApiKey(sendgrid_api_key);
-  const { action, host, eventInfo, emails } = request.body;
+  const { action, host, eventInfo, emails, restaurant } = request.body;
   let mailContent = {
     to: emails,
     from: host.email,
@@ -64,25 +64,15 @@ router.post("/event/sendMails", async (request, response) => {
       break;
 
     case "remindInvitees":
-      mailContent.subject = `Let's Eat! ${host.displayName} is waiting for your response`;
-      mailContent.text = `You have been invited to the event ${eventInfo.event_name} and ${host.displayName} is still waiting for your response\n
-        Please respond back with either "Going", "Maybe" or "Can't Go"\n\n
-        Event Details:
-        Event Name: ${eventInfo.event_name}\n
-        Location: ${eventInfo.location}\n
-        Event Description: ${eventInfo.message}\n
-        Date and Time: ${eventInfo.start_time}`;
+      mailContent.templateId = "d-cccc0af4778d47b7bd35bb33c6086a23";
       break;
 
     case "finalRestaurant":
-      mailContent.subject = `Let's Eat! Restaurant has been finalized`;
-      mailContent.text = `Hello there! For the event that will be hosted by ${host.displayName}, we have finalized "THIS RESTAURANT" considering the dietary restriction and interests of attendees\n
-        Hope you will have a great time there! ^_^\n\n
-        Event Details:
-        Event Name: ${eventInfo.event_name}\n
-        Location: ${eventInfo.location}\n
-        Event Description: ${eventInfo.message}\n
-        Date and Time: ${eventInfo.start_time}`;
+      mailContent.dynamic_template_data.restaurantName = restaurant.name;
+      mailContent.dynamic_template_data.eventLocation = restaurant.address;
+      mailContent.dynamic_template_data.restaurantPhone = restaurant.phone;
+      mailContent.dynamic_template_data.restaurantUrl = restaurant.url;
+      mailContent.templateId = "d-a8c9576a1ce34aa9ab03f9a746d12ead";
       break;
 
     case "eventDeleted":

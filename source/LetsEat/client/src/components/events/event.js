@@ -4,7 +4,8 @@ import { AuthContext } from "../../contexts/Auth";
 import {
   readEvent,
   getUserStatus,
-  changeGuestStatus
+  changeGuestStatus,
+  setFinalDecision
 } from "components/events/eventUtil.js";
 import { create_sugst_save_to_db } from "components/suggest-restaurant/suggestionDb.js";
 import moment from "moment";
@@ -39,6 +40,7 @@ const Event = props => {
   const [openInvitationModal, setOpenInvitationModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [loadingSuggestion, setLoadingSuggestion] = useState(false);
+  const [loadingFinalDecision, setLoadingFinalDecision] = useState(false);
   const [isHost, setIsHost] = useState(undefined);
   const [status, setStatus] = useState(undefined);
   const statusList = {
@@ -123,19 +125,69 @@ const Event = props => {
         action: "remindInvitees",
         host: currentUser,
         eventInfo: eventInfo,
-        emails: eventInfo.invited,
+        emails: eventInfo.invited
       })
     }).then(response => {
       if (response.status === 200 || response.status === 202) {
         window.alert("Reminders sent to your friends");
         setEventResult(eventId);
       } else {
-        window.alert("Error: Failed to send Reminders");
+        window.alert("Error: Failed to send Reminders. Please try again");
         setEventResult(null);
       }
     });
-    
-  }
+  };
+
+  const updateVote = (id, vote) => {
+    eventInfo.vote_cnt[id] = vote;
+  };
+
+  const handleFinalDecision = () => {
+    var updateDecision = async () => {
+      let max = eventInfo.vote_cnt[0];
+      let maxIndex = 0;
+      for (var i = 1; i < eventInfo.vote_cnt.length; i++) {
+        if (eventInfo.vote_cnt[i] > max) {
+          maxIndex = i;
+          max = eventInfo.vote_cnt[i];
+        }
+      }
+
+      try {
+        await setFinalDecision(eventId, maxIndex);
+        fetch("/api/event/sendMails", {
+          method: "post",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            action: "finalRestaurant",
+            host: currentUser,
+            eventInfo: eventInfo,
+            emails: eventInfo.invited,
+            restaurant: eventInfo.restaurants[maxIndex]
+          })
+        }).then(response => {
+          if (response.status === 200 || response.status === 202) {
+            window.alert("Final restaurant details mailed to your friends");
+            setEventResult(false);
+            setLoadingFinalDecision(false);
+          } else {
+            window.alert(
+              "Error: Failed to send the Finalized Restaurant. Please try again"
+            );
+            setLoadingFinalDecision(false);
+          }
+        });
+      } catch (error) {
+        setLoadingFinalDecision(false);
+      }
+    };
+
+    setLoadingFinalDecision(true);
+    updateDecision();
+  };
 
   if (loading) {
     return <Loading />;
@@ -168,6 +220,7 @@ const Event = props => {
           open={openInvitationModal}
           closeModal={handleInvitationModal}
           eventId={eventId}
+          eventInfo={eventInfo}
         />
         <Parallax image={require("assets/img/bkg.jpg")} />
         <div className={classNames(classes.main, classes.mainRaised)}>
@@ -268,8 +321,9 @@ const Event = props => {
                 </p>
               </div>
               <div className={classes.sectionBody}>
-                
-                {!isHost || eventInfo.invited.length === 0 ? "" : (
+                {!isHost || eventInfo.invited.length === 0 ? (
+                  ""
+                ) : (
                   <div>
                     <p className={classes.respondText}>
                       {eventInfo.invited.length} guests haven't responded yet.
@@ -282,8 +336,48 @@ const Event = props => {
                       className={classes.respondButton}
                       onClick={() => handleSendReminder()}
                     >
-                        send reminder
+                      send reminder
+                    </Button>
+                  </div>
+                )}
+
+                {!eventInfo.final_decision ? (
+                  ""
+                ) : (
+                  <div>
+                    <p className={classes.respondText}>
+                      Final decision has been made:{" "}
+                      {eventInfo.restaurants[eventInfo.final_decision].name}
+                    </p>
+                  </div>
+                )}
+
+                {!isHost ||
+                eventInfo.final_decision ||
+                !Array.isArray(eventInfo.restaurants) ||
+                eventInfo.restaurants.length === 0 ? (
+                  ""
+                ) : (
+                  <div>
+                    <p className={classes.respondText}>
+                      Ready to send the final decison?
+                    </p>
+                    {loadingFinalDecision ? (
+                      <React.Fragment>
+                        <i className="fa fa-spinner fa-pulse fa-fw" />
+                        Generating Final Restaurant Decision...
+                      </React.Fragment>
+                    ) : (
+                      <Button
+                        size="sm"
+                        color="info"
+                        id="attending"
+                        className={classes.respondButton}
+                        onClick={() => handleFinalDecision()}
+                      >
+                        generate final decision.
                       </Button>
+                    )}
                   </div>
                 )}
 
@@ -385,6 +479,7 @@ const Event = props => {
                             <RestaurantList
                               restaurants={eventInfo.restaurants}
                               eventId={eventId}
+                              updateVote={updateVote}
                             />
                           )
                         },
