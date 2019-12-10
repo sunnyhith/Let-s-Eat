@@ -3,6 +3,7 @@ import { Redirect } from "react-router-dom";
 import { AuthContext } from "../../contexts/Auth";
 import { createEvent } from "components/events/eventUtil.js";
 import Datetime from "react-datetime";
+import moment from "moment";
 import { validateEmail } from "util/validator.js";
 // nodejs library that concatenates classes
 import classNames from "classnames";

@@ -125,7 +125,8 @@ const Event = props => {
         action: "remindInvitees",
         host: currentUser,
         eventInfo: eventInfo,
-        emails: eventInfo.invited
+        emails: eventInfo.invited,
+        start_time: moment(eventInfo.start_time.toDate()).format("llll")
       })
     }).then(response => {
       if (response.status === 200 || response.status === 202) {
@@ -399,9 +400,9 @@ const Event = props => {
                   ""
                 ) : (
                   <>
-                    <p className={classes.respondText}>
+                    <h5 className={classes.respondText}>
                       Or Generate Restaurants Suggestions Now:
-                    </p>
+                    </h5>
                     {loadingSuggestion ? (
                       <React.Fragment>
                         <i className="fa fa-spinner fa-pulse fa-fw" />

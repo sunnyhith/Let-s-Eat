@@ -42,8 +42,14 @@ router.post("/event/sendMails", async (request, response) => {
     "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";
   sgMail.setApiKey(sendgrid_api_key);
 
-  const { action, host, eventInfo, emails, start_time, restaurant } = request.body;
-  console.log("#########recieved start_time is", typeof(start_time));
+  const {
+    action,
+    host,
+    eventInfo,
+    emails,
+    start_time,
+    restaurant
+  } = request.body;
   let mailContent = {
     to: emails,
     from: host.email,
@@ -62,6 +68,7 @@ router.post("/event/sendMails", async (request, response) => {
 
   switch (action) {
     case "newEvent":
+      mailContent.dynamic_template_data.eventStartTime = eventInfo.start_time;
       mailContent.templateId = "d-fefbcd3227da437d8839465b5bb304e4";
       break;
 
