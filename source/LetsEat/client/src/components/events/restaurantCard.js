@@ -122,7 +122,7 @@ const RestaurantCard = props => {
         </IconButton>
         <Button
           simple
-          size="small"
+          size="sm"
           color="info"
           href={props.restaurant.url}
           target="_blank"

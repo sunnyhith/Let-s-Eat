@@ -342,7 +342,7 @@ const Event = props => {
                   </div>
                 )}
 
-                {!eventInfo.final_decision ? (
+                {!eventInfo.hasOwnProperty("final_decision") ? (
                   ""
                 ) : (
                   <div>
@@ -356,7 +356,7 @@ const Event = props => {
                 )}
 
                 {!isHost ||
-                eventInfo.final_decision ||
+                eventInfo.hasOwnProperty("final_decision") ||
                 !Array.isArray(eventInfo.restaurants) ||
                 eventInfo.restaurants.length === 0 ? (
                   ""
