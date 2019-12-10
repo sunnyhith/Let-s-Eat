@@ -19,10 +19,10 @@ import GuestLists from "components/events/guestLists";
 import Loading from "components/generic/Loading";
 import NavPills from "components/NavPills/NavPills.js";
 import Parallax from "components/Parallax/Parallax.js";
+import Badge from "components/Badge/Badge.js";
 import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
 import Button from "components/CustomButtons/Button.js";
-import CustomInput from "components/CustomInput/CustomInput.js";
 import CustomDropdown from "components/CustomDropdown/CustomDropdown.js";
 //Styling
 import styles from "assets/jss/layout/CreateEventStyle.js";
@@ -31,7 +31,7 @@ const usestyles = makeStyles(styles);
 
 const Event = props => {
   const classes = usestyles();
-  const { currentUser, preference, loading } = useContext(AuthContext);
+  const { currentUser, loading } = useContext(AuthContext);
 
   const eventId = props.match.params.event_id;
   const [eventResult, setEventResult] = useState(false);
@@ -325,10 +325,10 @@ const Event = props => {
                   ""
                 ) : (
                   <div>
-                    <p className={classes.respondText}>
+                    <h5 className={classes.respondText}>
                       {eventInfo.invited.length} guests haven't responded yet.
-                      Waiting for them to respond.
-                    </p>
+                      You can wait or send them a reminder
+                    </h5>
                     <Button
                       size="sm"
                       color="info"
@@ -345,10 +345,12 @@ const Event = props => {
                   ""
                 ) : (
                   <div>
-                    <p className={classes.respondText}>
+                    <h5 className={classes.respondText}>
                       Final decision has been made:{" "}
-                      {eventInfo.restaurants[eventInfo.final_decision].name}
-                    </p>
+                      <Badge color="info">
+                        {eventInfo.restaurants[eventInfo.final_decision].name}
+                      </Badge>
+                    </h5>
                   </div>
                 )}
 
@@ -359,9 +361,9 @@ const Event = props => {
                   ""
                 ) : (
                   <div>
-                    <p className={classes.respondText}>
-                      Ready to send the final decison?
-                    </p>
+                    <h5 className={classes.respondText}>
+                      Ready to generate and send the final decison?
+                    </h5>
                     {loadingFinalDecision ? (
                       <React.Fragment>
                         <i className="fa fa-spinner fa-pulse fa-fw" />
@@ -375,7 +377,7 @@ const Event = props => {
                         className={classes.respondButton}
                         onClick={() => handleFinalDecision()}
                       >
-                        generate final decision.
+                        generate final decision
                       </Button>
                     )}
                   </div>
@@ -385,10 +387,10 @@ const Event = props => {
                 eventInfo.restaurants.length === 0 ? (
                   ""
                 ) : (
-                  <p className={classes.respondText}>
-                    Vote for your favorite one from restaurant suggestions
-                    below.
-                  </p>
+                  <h4 className={classes.respondText}>
+                    Vote for your favorite restaurants from the suggestions
+                    below
+                  </h4>
                 )}
 
                 {!isHost ||
