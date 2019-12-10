@@ -42,8 +42,14 @@ router.post("/event/sendMails", async (request, response) => {
     "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";
   sgMail.setApiKey(sendgrid_api_key);
 
-  const { action, host, eventInfo, emails, start_time, restaurant } = request.body;
-  console.log("#########recieved start_time is", typeof(start_time));
+  const {
+    action,
+    host,
+    eventInfo,
+    emails,
+    start_time,
+    restaurant
+  } = request.body;
   let mailContent = {
     to: emails,
     from: host.email,
@@ -58,10 +64,12 @@ router.post("/event/sendMails", async (request, response) => {
 
   if (!emails || emails.length === 0) {
     response.end("No emails need to send");
+    return;
   }
 
   switch (action) {
     case "newEvent":
+      mailContent.dynamic_template_data.eventStartTime = eventInfo.start_time;
       mailContent.templateId = "d-fefbcd3227da437d8839465b5bb304e4";
       break;
 
@@ -71,7 +79,7 @@ router.post("/event/sendMails", async (request, response) => {
 
     case "finalRestaurant":
       mailContent.dynamic_template_data.restaurantName = restaurant.name;
-      mailContent.dynamic_template_data.eventLocation = restaurant.address;
+      mailContent.dynamic_template_data.eventLocation = restaurant.address[0];
       mailContent.dynamic_template_data.restaurantPhone = restaurant.phone;
       mailContent.dynamic_template_data.restaurantUrl = restaurant.url;
       mailContent.templateId = "d-a8c9576a1ce34aa9ab03f9a746d12ead";
