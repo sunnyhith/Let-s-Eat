@@ -152,7 +152,6 @@ const Event = props => {
           max = eventInfo.vote_cnt[i];
         }
       }
-
       try {
         await setFinalDecision(eventId, maxIndex);
         fetch("/api/event/sendMails", {
@@ -166,6 +165,7 @@ const Event = props => {
             host: currentUser,
             eventInfo: eventInfo,
             emails: eventInfo.attending.concat(eventInfo.tentative),
+            start_time: moment(eventInfo.start_time.toDate()).format("llll"),
             restaurant: eventInfo.restaurants[maxIndex]
           })
         }).then(response => {
