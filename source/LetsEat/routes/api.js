@@ -64,6 +64,7 @@ router.post("/event/sendMails", async (request, response) => {
 
   if (!emails || emails.length === 0) {
     response.end("No emails need to send");
+    return;
   }
 
   switch (action) {
@@ -78,7 +79,7 @@ router.post("/event/sendMails", async (request, response) => {
 
     case "finalRestaurant":
       mailContent.dynamic_template_data.restaurantName = restaurant.name;
-      mailContent.dynamic_template_data.eventLocation = restaurant.address;
+      mailContent.dynamic_template_data.eventLocation = restaurant.address[0];
       mailContent.dynamic_template_data.restaurantPhone = restaurant.phone;
       mailContent.dynamic_template_data.restaurantUrl = restaurant.url;
       mailContent.templateId = "d-a8c9576a1ce34aa9ab03f9a746d12ead";
