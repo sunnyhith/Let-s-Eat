@@ -33,34 +33,3 @@ https://let-s-eat-342c9.appspot.com/
 2.  The host can only generate the list once, and the algorithm suggests restaurants based on members accepted the invitation. To have suggestions represents the accurate demography, it is recommended that the host wait to generate the list after a portion of invitees responded.
 3.  After the host generates suggestions, attendees will get email notifications to vote for their restaurant preference.
 4.  After voting, the host clicks on the "Generate Final Decision" button to send the final decision to members.
-
-
-# Developer Mode
-
-## To launch in local
-
-run `npm install` in both the `./source/LetsEat` and `./source/LetsEat/client` directories separately, which will install all the npm packages for server and client(React frontend) respectively.
-
-Then run the following command from inside the `./source/LetsEat` directory.
-
-`npm run dev`
-
-This will start both the client (port 3000) and server (port 8080) and launch the site in port 3000.
-
-## To deploy
-Remember to build the project for production and serve the React static files from `/source/LetsEat/client/build`
-
-Do these steps before deploying to Google Cloud Platform's Google App Engine
-
-```
-cd client
-
-npm run build
-
-cd ..
-
-npm start
-
-# deploy commands
-
-```
