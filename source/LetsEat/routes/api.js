@@ -6,7 +6,7 @@ const yelp = require("yelp-fusion");
 
 router.post("/suggestion", async (req, res) => {
   const apiKey =
-    "ZMhxydcy94rtsyrk-H0GvHXN6h6kLIDOyW20fJjcX5C4k8FYFhEhq0X1HNwj18701MRZZ_cEoI4jTFFyhRIwVmvGSWTaxaFXvgyYmh3I2RuocFVEZSb5kTMVf7qwXXYx";
+    "";
   const searchRequest = req.body;
   const client = yelp.client(apiKey);
   try {
@@ -27,7 +27,7 @@ router.post("/get_restaurant", async (request, response) => {
   const config = {
     headers: {
       Authorization:
-        "Bearer ZMhxydcy94rtsyrk-H0GvHXN6h6kLIDOyW20fJjcX5C4k8FYFhEhq0X1HNwj18701MRZZ_cEoI4jTFFyhRIwVmvGSWTaxaFXvgyYmh3I2RuocFVEZSb5kTMVf7qwXXYx"
+        "Bearer "
     }
   };
   const url = `https://api.yelp.com/v3/businesses/${businessId}`;
@@ -39,7 +39,7 @@ router.post("/get_restaurant", async (request, response) => {
 router.post("/event/sendMails", async (request, response) => {
   // const eventId = request.params.id;
   const sendgrid_api_key =
-    "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";
+    "";
   sgMail.setApiKey(sendgrid_api_key);
 
   const {
